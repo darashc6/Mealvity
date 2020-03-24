@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SignUpActivity"
+    android:background="@color/backgroundColor"
+    >
+
+
+    <EditText
+        android:id="@+id/editText_full_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/custom_edit_text"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="@string/text_hint_full_name"
+        android:inputType="text"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/editText_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/custom_edit_text"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="@string/text_hint_email"
+        android:inputType="textEmailAddress"
+        app:layout_constraintTop_toBottomOf="@+id/editText_full_name" />
+
+    <EditText
+        android:id="@+id/editText_password"
+        style="@style/custom_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        android:ems="10"
+        android:hint="@string/text_hint_password"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_email" />
+
+    <EditText
+        android:id="@+id/editText_password_repeat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:autofillHints=""
+        style="@style/custom_edit_text"
+        android:ems="10"
+        android:hint="@string/text_hint_password_repeat"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_password"/>
+
+    <Button
+        android:id="@+id/button_new_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="50dp"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:background="@drawable/square_button_shape"
+        android:text="@string/text_sign_up_button"
+        android:textSize="18sp"
+        android:fontFamily="@font/fonarto_regular"
+        android:textColor="@color/backgroundColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editText_password_repeat" />
+
+    <TextView
+        android:id="@+id/text_no_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="80dp"
+        android:layout_marginTop="40dp"
+        android:text="@string/text_account"
+        android:fontFamily="@font/fonarto_regular"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_new_account" />
+
+    <TextView
+        android:id="@+id/button_sign_in"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:text="@string/text_sign_in"
+        android:textColor="@color/colorAccent"
+        android:fontFamily="@font/fonarto_bold"
+        android:textSize="15sp"
+        android:onClick="emailSignIn"
+        app:layout_constraintStart_toEndOf="@+id/text_no_account"
+        app:layout_constraintTop_toTopOf="@+id/text_no_account" />
+</androidx.constraintlayout.widget.ConstraintLayout>
