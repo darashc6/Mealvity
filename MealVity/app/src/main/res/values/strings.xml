@@ -2,14 +2,20 @@
     <string name="app_name">MealVity</string>
     <string name="text_sign_in_google">SIGN IN WITH GOOGLE</string>
     <string name="text_sign_in_email">SIGN IN WITH EMAIL</string>
-    <string name="text_no_account">Don\'t have an Account?</string>
+
+    <string name="text_no_account">Don\'t have an account?</string>
+    <string name="text_account">Already have an account?</string>
+
     <string name="text_sign_up"><u>Sign up</u></string>
+    <string name="text_sign_up_button">SIGN UP</string>
+    <string name="text_sign_in"><u>Sign in</u></string>
+    <string name="text_sign_in_button">SIGN IN</string>
+
     <string name="text_hint_full_name">Full Name</string>
     <string name="text_hint_email">E-Mail</string>
     <string name="text_hint_password">Password</string>
     <string name="text_hint_password_repeat">Repeat Password</string>
-    <string name="text_sign_up_button">SIGN UP</string>
-    <string name="text_account">Already have an account?</string>
-    <string name="text_sign_in"><u>Sign in</u></string>
-    <string name="text_sign_in_button">SIGN IN</string>
+
+    <string name="logo_transition_name">transition_logo</string>
+
 </resources>

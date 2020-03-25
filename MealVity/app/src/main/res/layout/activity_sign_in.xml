@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".SignInActivity"
-    android:background="@color/backgroundColor"
+    android:background="@color/colorPrimary"
     >
 
     <EditText
@@ -38,14 +38,8 @@
         android:id="@+id/button_sign_in"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginStart="50dp"
-        android:layout_marginEnd="50dp"
-        android:background="@drawable/square_button_shape"
+        style="@style/custom_square_shape_button"
         android:text="@string/text_sign_in_button"
-        android:textSize="18sp"
-        android:fontFamily="@font/fonarto_regular"
-        android:textColor="@color/backgroundColor"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/editText_sign_in_password" />

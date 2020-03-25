@@ -2,6 +2,8 @@
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowContentTransitions">true</item>
+        <item name="android:windowBackground">@color/colorPrimary</item>
     </style>
 
     <style name="custom_edit_text" parent="Widget.AppCompat.EditText">
@@ -11,5 +13,25 @@
         <item name="android:backgroundTint">@color/colorAccent</item>
         <item name="android:textColorHint">@color/colorAccent</item>
         <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textCursorDrawable">@null</item>
+    </style>
+
+    <style name="custom_button" parent="Widget.AppCompat.Button">
+        <item name="android:layout_marginTop">50dp</item>
+        <item name="android:layout_marginStart">50dp</item>
+        <item name="android:layout_marginEnd">50dp</item>
+        <item name="android:fontFamily">@font/fonarto_regular</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="custom_round_shape_button" parent="custom_button">
+        <item name="android:background">@drawable/circle_button_shape</item>
+        <item name="android:paddingStart">10dp</item>
+        <item name="android:paddingEnd">10dp</item>
+    </style>
+
+    <style name="custom_square_shape_button" parent="custom_button">
+        <item name="android:background">@drawable/square_button_shape</item>
     </style>
 </resources>

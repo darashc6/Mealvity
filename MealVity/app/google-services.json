@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "596290841583",
+    "firebase_url": "https://mealvity.firebaseio.com",
+    "project_id": "mealvity",
+    "storage_bucket": "mealvity.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:596290841583:android:e70f535d4695dadbb0e41a",
+        "android_client_info": {
+          "package_name": "cenec.darash.mealvity"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "596290841583-0veq2iabir4b2vbjp75fk1i8hufiomcp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "cenec.darash.mealvity",
+            "certificate_hash": "13d1f848049264021bf1c50b45522736301dfc53"
+          }
+        },
+        {
+          "client_id": "596290841583-9llvjmab2ilcmis5oa6bdhpuk6r2uh1n.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6CZm5tky-cVUR1OIm08IpCuIxdgBSIDE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "596290841583-9llvjmab2ilcmis5oa6bdhpuk6r2uh1n.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
