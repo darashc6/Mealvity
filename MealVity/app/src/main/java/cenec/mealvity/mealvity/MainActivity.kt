@@ -1,15 +1,13 @@
-package cenec.darash.mealvity
+package cenec.mealvity.mealvity
 
 import android.content.Intent
-import android.graphics.Paint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.transition.Fade
 import android.transition.Slide
 import android.view.Gravity
 import android.view.View
 import android.view.animation.AnimationUtils
-import android.widget.TextView
+import cenec.darash.mealvity.R
 
 class MainActivity : AppCompatActivity() {
 

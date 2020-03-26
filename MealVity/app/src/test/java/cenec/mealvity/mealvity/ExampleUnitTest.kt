@@ -1,4 +1,4 @@
-package cenec.darash.mealvity
+package cenec.mealvity.mealvity
 
 import org.junit.Test
 

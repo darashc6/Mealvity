@@ -1,16 +1,12 @@
-package cenec.darash.mealvity
+package cenec.mealvity.mealvity
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.transition.Fade
-import android.transition.Slide
-import android.view.Gravity
-import android.view.View
-import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import androidx.core.app.ActivityOptionsCompat
+import cenec.darash.mealvity.R
 
 class SplashScreenActivity : AppCompatActivity() {
     private val imageLogo by lazy { findViewById<ImageView>(R.id.mealvity_logo) }

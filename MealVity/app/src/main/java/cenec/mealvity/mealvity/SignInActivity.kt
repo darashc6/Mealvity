@@ -1,9 +1,10 @@
-package cenec.darash.mealvity
+package cenec.mealvity.mealvity
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import cenec.darash.mealvity.R
 
 class SignInActivity : AppCompatActivity() {
 
