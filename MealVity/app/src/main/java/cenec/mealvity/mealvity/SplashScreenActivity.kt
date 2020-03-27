@@ -15,18 +15,8 @@ class SplashScreenActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
 
-        /*val fade=Fade()
-        val decor=window.decorView
-        fade.excludeTarget(decor.findViewById(R.id.action_bar_container) as View?, true)
-        fade.excludeTarget(android.R.id.statusBarBackground, true)
-        fade.excludeTarget(android.R.id.navigationBarBackground, true)
-        window.enterTransition=fade
-        // window.exitTransition=fade*/
-
-
         window.exitTransition=null
         window.sharedElementExitTransition.duration=1000
-
 
         val handler=Handler()
         handler.postDelayed({

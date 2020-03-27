@@ -18,4 +18,11 @@
 
     <string name="logo_transition_name">transition_logo</string>
 
+    <string name="text_field_empty">Field is empty</string>
+    <string name="text_password_not_equal">Passwords do not match</string>
+    <string name="text_email_invalid">E-Mail is invalid</string>
+    <string name="text_weak_password">Password must have more than 6 characters</string>
+    <string name="text_user_already_exists">Account already created using this e-mail</string>
+    <string name="text_invalid_user">E-mail or password is invalid</string>
+
 </resources>
