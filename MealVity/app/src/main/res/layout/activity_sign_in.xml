@@ -95,15 +95,43 @@
     </androidx.cardview.widget.CardView>
 
     <TextView
+        android:id="@+id/text_password_forgot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="50dp"
+        android:fontFamily="@font/fonarto_regular"
+        android:text="@string/text_forgot_password"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_log_in" />
+
+    <TextView
+        android:id="@+id/button_recover_password"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="15dp"
+        android:fontFamily="@font/fonarto_bold"
+        android:onClick="gotoResetPasswordActivity"
+        android:text="@string/text_reset_password"
+        android:textColor="@color/colorAccent"
+        android:textSize="15sp"
+        app:layout_constraintStart_toEndOf="@+id/text_password_forgot"
+        app:layout_constraintTop_toTopOf="@+id/text_password_forgot" />
+
+    <TextView
         android:id="@+id/text_no_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:layout_marginStart="80dp"
+        android:layout_marginTop="60dp"
+        android:layout_marginEnd="70dp"
         android:fontFamily="@font/fonarto_regular"
         android:text="@string/text_no_account"
         android:textColor="@color/white"
         android:textSize="15sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_log_in" />
 
@@ -116,7 +144,7 @@
         android:textColor="@color/colorAccent"
         android:fontFamily="@font/fonarto_bold"
         android:textSize="15sp"
-        android:onClick="createNewAccount"
+        android:onClick="gotoSignUpActivity"
         app:layout_constraintStart_toEndOf="@+id/text_no_account"
         app:layout_constraintTop_toTopOf="@+id/text_no_account" />
 

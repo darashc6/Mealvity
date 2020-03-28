@@ -30,7 +30,7 @@ class SignUpActivity : AppCompatActivity() {
         setContentView(R.layout.activity_sign_up)
     }
 
-    fun emailSignIn(view: View) {
+    fun gotoSignInActivity(view: View) {
         startActivity(Intent(this, SignInActivity::class.java))
     }
 
@@ -63,31 +63,27 @@ class SignUpActivity : AppCompatActivity() {
             else -> {
                 pbSignUp.visibility=View.VISIBLE
                 tvSignUp.visibility=View.GONE
-                pbSignUp
-                val handler=Handler()
-                handler.postDelayed(Runnable {
-                    mFirebaseAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                Toast.makeText(this@SignUpActivity, "Account created successfully", Toast.LENGTH_LONG).show()
-                            } else {
-                                try {
-                                    throw task.exception!!
-                                } catch (passwordException: FirebaseAuthWeakPasswordException) {
-                                    etPassword.error=getString(R.string.text_weak_password)
-                                    etPassword.requestFocus()
-                                } catch (emailException: FirebaseAuthInvalidCredentialsException) {
-                                    etEmail.error=getString(R.string.text_email_invalid)
-                                    etEmail.requestFocus()
-                                } catch (existingUserException: FirebaseAuthUserCollisionException) {
-                                    etEmail.error=getString(R.string.text_user_already_exists)
-                                    etEmail.requestFocus()
-                                }
+                mFirebaseAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener { task ->
+                        pbSignUp.visibility=View.GONE
+                        tvSignUp.visibility=View.VISIBLE
+                        if (task.isSuccessful) {
+                            Toast.makeText(this@SignUpActivity, "Account created successfully", Toast.LENGTH_LONG).show()
+                        } else {
+                            try {
+                                throw task.exception!!
+                            } catch (passwordException: FirebaseAuthWeakPasswordException) {
+                                etPassword.error=getString(R.string.text_weak_password)
+                                etPassword.requestFocus()
+                            } catch (emailException: FirebaseAuthInvalidCredentialsException) {
+                                etEmail.error=getString(R.string.text_email_invalid)
+                                etEmail.requestFocus()
+                            } catch (existingUserException: FirebaseAuthUserCollisionException) {
+                                etEmail.error=getString(R.string.text_user_already_exists)
+                                etEmail.requestFocus()
                             }
                         }
-                    pbSignUp.visibility=View.GONE
-                    tvSignUp.visibility=View.VISIBLE
-                }, 1250)
+                    }
             }
         }
     }

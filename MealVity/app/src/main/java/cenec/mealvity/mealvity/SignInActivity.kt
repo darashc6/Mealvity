@@ -30,8 +30,12 @@ class SignInActivity : AppCompatActivity() {
         setContentView(R.layout.activity_sign_in)
     }
 
-    fun createNewAccount(view: View) {
+    fun gotoSignUpActivity(view: View) {
         startActivity(Intent(this, SignUpActivity::class.java))
+    }
+
+    fun gotoResetPasswordActivity(view: View) {
+        startActivity(Intent(this, ResetPasswordActivity::class.java))
     }
 
     fun logInAccount(view: View) {
@@ -51,31 +55,28 @@ class SignInActivity : AppCompatActivity() {
             else -> {
                 tvSignIn.visibility=View.GONE
                 pbSignIn.visibility=View.VISIBLE
-                val handler=Handler()
-                handler.postDelayed(Runnable {
-                    mFirebaseAuth.signInWithEmailAndPassword(email, password)
-                        .addOnCompleteListener {task ->
-                            if (task.isSuccessful) {
-                                Toast.makeText(this@SignInActivity, "Sign-In successful", Toast.LENGTH_SHORT).show()
-                            } else {
-                                try {
-                                    throw task.exception!!
-                                } catch (invalidUser: FirebaseAuthInvalidUserException) {
-                                    tvError.visibility=View.VISIBLE
-                                } catch (emailException: FirebaseAuthInvalidCredentialsException) {
-                                    when (emailException.errorCode) {
-                                        "ERROR_WRONG_PASSWORD" -> tvError.visibility=View.VISIBLE
-                                        "ERROR_INVALID_EMAIL" -> {
-                                            etEmail.error=getString(R.string.text_email_invalid)
-                                            etEmail.requestFocus()
-                                        }
+                mFirebaseAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener {task ->
+                        tvSignIn.visibility=View.VISIBLE
+                        pbSignIn.visibility=View.GONE
+                        if (task.isSuccessful) {
+                            Toast.makeText(this@SignInActivity, "Sign-In successful", Toast.LENGTH_SHORT).show()
+                        } else {
+                            try {
+                                throw task.exception!!
+                            } catch (invalidUser: FirebaseAuthInvalidUserException) {
+                                tvError.visibility=View.VISIBLE
+                            } catch (emailException: FirebaseAuthInvalidCredentialsException) {
+                                when (emailException.errorCode) {
+                                    "ERROR_WRONG_PASSWORD" -> tvError.visibility=View.VISIBLE
+                                    "ERROR_INVALID_EMAIL" -> {
+                                        etEmail.error=getString(R.string.text_email_invalid)
+                                        etEmail.requestFocus()
                                     }
                                 }
                             }
                         }
-                    tvSignIn.visibility=View.VISIBLE
-                    pbSignIn.visibility=View.GONE
-                }, 1250)
+                    }
             }
         }
     }
