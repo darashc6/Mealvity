@@ -60,7 +60,9 @@ class SignInActivity : AppCompatActivity() {
                         tvSignIn.visibility=View.VISIBLE
                         pbSignIn.visibility=View.GONE
                         if (task.isSuccessful) {
-                            Toast.makeText(this@SignInActivity, "Sign-In successful", Toast.LENGTH_SHORT).show()
+                            val currentUser = mFirebaseAuth.currentUser
+                            Toast.makeText(this@SignInActivity, "Welcome back to Mealvity, ${currentUser!!.displayName}!", Toast.LENGTH_LONG).show()
+                            startActivity(Intent(this@SignInActivity, LoadingActivity::class.java))
                         } else {
                             try {
                                 throw task.exception!!

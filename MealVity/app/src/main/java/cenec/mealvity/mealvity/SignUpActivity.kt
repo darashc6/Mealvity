@@ -69,6 +69,7 @@ class SignUpActivity : AppCompatActivity() {
                         tvSignUp.visibility=View.VISIBLE
                         if (task.isSuccessful) {
                             Toast.makeText(this@SignUpActivity, "Account created successfully", Toast.LENGTH_LONG).show()
+                            startActivity(Intent(this@SignUpActivity, LoadingActivity::class.java))
                         } else {
                             try {
                                 throw task.exception!!

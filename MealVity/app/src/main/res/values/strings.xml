@@ -30,4 +30,10 @@
     <string name="text_invalid_user">E-mail or password is invalid</string>
     <string name="text_no_exisiting_email">No account has been created with this e-mail</string>
 
+    <string name="text_loading">Loading...</string>
+
+    <string name="home_tab">Home</string>
+    <string name="orders_tab">Orders</string>
+    <string name="profile_tab">Profile</string>
+
 </resources>
