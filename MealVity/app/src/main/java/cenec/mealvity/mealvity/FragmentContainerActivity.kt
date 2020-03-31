@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.viewpager.widget.ViewPager
 import cenec.darash.mealvity.R
-import cenec.mealvity.mealvity.classes.FragmentAdapter
+import cenec.mealvity.mealvity.classes.fragment.FragmentAdapter
 import cenec.mealvity.mealvity.fragments.HomeTabFragment
 import cenec.mealvity.mealvity.fragments.OrdersTabFragment
 import cenec.mealvity.mealvity.fragments.ProfileTabFragment
@@ -43,7 +43,10 @@ class FragmentContainerActivity : AppCompatActivity() {
     }
 
     private fun setupViewPager() {
-        val fragmentAdapter=FragmentAdapter(supportFragmentManager)
+        val fragmentAdapter=
+            FragmentAdapter(
+                supportFragmentManager
+            )
         fragmentAdapter.addFragment(HomeTabFragment())
         fragmentAdapter.addFragment(OrdersTabFragment())
         fragmentAdapter.addFragment(ProfileTabFragment())

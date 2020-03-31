@@ -4,27 +4,34 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.transition.Slide
+import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import cenec.darash.mealvity.R
+import cenec.mealvity.mealvity.classes.constants.Constants
+import cenec.mealvity.mealvity.classes.user.User
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.OnSuccessListener
 import com.google.android.gms.tasks.RuntimeExecutionException
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
     private lateinit var googleSignInClient: GoogleSignInClient
     private val RC_GOOGLE_SIGN_IN = 123
     private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +72,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 val taskSignIn=GoogleSignIn.getSignedInAccountFromIntent(data)
                 val googleAccount=taskSignIn.result
-                firebaseAuthWithGoogle(googleAccount!!)
+                checkUserInDatabase(googleAccount!!)
             } catch (e: ApiException) {
                 Toast.makeText(this, e.statusCode, Toast.LENGTH_LONG).show()
             }
@@ -75,24 +82,50 @@ class MainActivity : AppCompatActivity() {
     private fun firebaseAuthWithGoogle(googleAccount: GoogleSignInAccount) {
         val credential=GoogleAuthProvider.getCredential(googleAccount.idToken, null)
         mFirebaseAuth.signInWithCredential(credential)
-            .addOnCompleteListener(object : OnCompleteListener<AuthResult>{
-                override fun onComplete(task: Task<AuthResult>) {
-                    if (task.isSuccessful) {
-                        val currentUser = mFirebaseAuth.currentUser
-                        Toast.makeText(this@MainActivity, "Welcome back to Mealvity, ${currentUser!!.displayName}!", Toast.LENGTH_LONG).show()
-                        startActivity(Intent(this@MainActivity, LoadingActivity::class.java))
-                    } else {
-                        Toast.makeText(this@MainActivity, task.exception!!.message, Toast.LENGTH_LONG).show()
-                    }
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(this@MainActivity, "Welcome back to MealVity, ${mFirebaseAuth.currentUser!!.displayName}!", Toast.LENGTH_LONG).show()
+                    startActivity(Intent(this@MainActivity, LoadingActivity::class.java))
+                } else {
+                    Toast.makeText(this@MainActivity, task.exception!!.message, Toast.LENGTH_LONG).show()
                 }
-            })
+            }
+    }
+
+    private fun checkUserInDatabase(googleAccount: GoogleSignInAccount) {
+        mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(googleAccount.email!!).get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val result = task.result!!.toObject(User::class.java)
+                    if (result==null) {
+                        addUserToDatabase(googleAccount)
+                    } else {
+                        firebaseAuthWithGoogle(googleAccount)
+                    }
+                } else {
+
+                }
+            }
+    }
+
+    private fun addUserToDatabase(googleAccount: GoogleSignInAccount) {
+        val newUser = User(googleAccount.displayName, "", googleAccount.email, "none")
+        mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(newUser.email!!).set(newUser)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    firebaseAuthWithGoogle(googleAccount)
+                } else {
+                    Toast.makeText(this@MainActivity, "Error, please try again later", Toast.LENGTH_LONG).show()
+                    Log.d("DebugUser", "${task.exception!!.message}")
+                }
+            }
     }
 
     override fun onStart() {
         super.onStart()
-        if (mFirebaseAuth.currentUser!=null) {
+        /*if (mFirebaseAuth.currentUser!=null) {
             startActivity(Intent(this, LoadingActivity::class.java))
-        }
+        }*/
     }
 
     override fun onBackPressed() {

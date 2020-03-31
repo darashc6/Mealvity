@@ -1,4 +1,4 @@
-package cenec.mealvity.mealvity.classes
+package cenec.mealvity.mealvity.classes.fragment
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager

@@ -35,5 +35,6 @@
     <string name="home_tab">Home</string>
     <string name="orders_tab">Orders</string>
     <string name="profile_tab">Profile</string>
+    <string name="text_phone_number">Phone Number</string>
 
 </resources>

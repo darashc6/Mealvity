@@ -11,10 +11,16 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import cenec.darash.mealvity.R
+import cenec.mealvity.mealvity.classes.constants.Constants
+import cenec.mealvity.mealvity.classes.user.User
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
 import org.w3c.dom.Text
 
 class SignInActivity : AppCompatActivity() {
@@ -24,6 +30,7 @@ class SignInActivity : AppCompatActivity() {
     private val pbSignIn by lazy { findViewById<ProgressBar>(R.id.progressBar_sign_in) }
     private val tvSignIn by lazy { findViewById<TextView>(R.id.textview_sign_in) }
     private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,9 +67,7 @@ class SignInActivity : AppCompatActivity() {
                         tvSignIn.visibility=View.VISIBLE
                         pbSignIn.visibility=View.GONE
                         if (task.isSuccessful) {
-                            val currentUser = mFirebaseAuth.currentUser
-                            Toast.makeText(this@SignInActivity, "Welcome back to Mealvity, ${currentUser!!.displayName}!", Toast.LENGTH_LONG).show()
-                            startActivity(Intent(this@SignInActivity, LoadingActivity::class.java))
+                            returnDisplayName(email)
                         } else {
                             try {
                                 throw task.exception!!
@@ -81,5 +86,20 @@ class SignInActivity : AppCompatActivity() {
                     }
             }
         }
+    }
+
+    private fun returnDisplayName(email: String) {
+        var fullName = ""
+        mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(email).get()
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    val user = task.result!!.toObject(User::class.java)
+                    if (user!=null) {
+                        fullName = user.fullName!!
+                        Toast.makeText(this@SignInActivity, "Welcome back to MealVity, ${fullName}!", Toast.LENGTH_LONG).show()
+                        startActivity(Intent(this@SignInActivity, LoadingActivity::class.java))
+                    }
+                }
+            }
     }
 }
