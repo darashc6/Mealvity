@@ -1,5 +1,6 @@
 package cenec.mealvity.mealvity.fragments
 
+import android.content.Intent
 import android.media.Image
 import android.os.Bundle
 import android.util.Log
@@ -10,7 +11,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
 import cenec.darash.mealvity.R
+import cenec.mealvity.mealvity.activities.*
 import cenec.mealvity.mealvity.classes.constants.Constants
 import cenec.mealvity.mealvity.classes.user.User
 import com.bumptech.glide.Glide
@@ -29,42 +33,69 @@ import java.lang.Exception
  */
 class ProfileTabFragment : Fragment() {
     private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() }
-    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private lateinit var etProfileName: TextView
     private lateinit var etProfileEmail: TextView
     private lateinit var ivProfilePhoto: ImageView
-    private var currentUser: User? = null
+    private lateinit var cvAccountInfo: CardView
+    private lateinit var cvChangePassword: CardView
+    private lateinit var cvUserAddresses: CardView
+    private lateinit var cvNotifications: CardView
+    private lateinit var cvHelp: CardView
+    private lateinit var currentUser: User
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        var fragmentView = inflater.inflate(R.layout.fragment_profile_tab, container, false)
-        val userEmail = mFirebaseAuth.currentUser!!.email.toString()
-        val profilePhoto = mFirebaseAuth.currentUser!!.photoUrl
-        etProfileEmail = fragmentView.findViewById(R.id.textview_profile_email)
-        etProfileName = fragmentView.findViewById(R.id.textview_profile_name)
-        ivProfilePhoto = fragmentView.findViewById(R.id.profile_logo)
+        val fragmentView=inflater.inflate(R.layout.fragment_profile_tab, container, false)
+        currentUser=arguments!!.getSerializable(Constants.BUNDLE_KEY_CURRENT_USER) as User
+        val profilePhoto=mFirebaseAuth.currentUser!!.photoUrl
 
-        mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(userEmail).get()
-            .addOnCompleteListener(object : OnCompleteListener<DocumentSnapshot> {
-                override fun onComplete(task: Task<DocumentSnapshot>) {
-                    if (task.isSuccessful) {
-                        currentUser = task.result!!.toObject(User::class.java)
-                        etProfileName.text = currentUser!!.fullName
-                        etProfileEmail.text = currentUser!!.email
-                        if (profilePhoto!=null) {
-                            Glide.with(context!!).load(profilePhoto).into(ivProfilePhoto)
-                        }
-                    } else {
-                        Toast.makeText(context, task.exception!!.message, Toast.LENGTH_LONG).show()
-                        Log.d("ErrorData", "${task.exception!!.message}")
-                    }
-                }
+        etProfileEmail=fragmentView.findViewById(R.id.textview_profile_email)
+        etProfileName=fragmentView.findViewById(R.id.textview_profile_name)
+        ivProfilePhoto=fragmentView.findViewById(R.id.profile_logo)
 
-            })
+        cvAccountInfo=fragmentView.findViewById(R.id.cardview_account_info)
+        cvChangePassword=fragmentView.findViewById(R.id.cardView_change_password)
+        cvUserAddresses=fragmentView.findViewById(R.id.cardView_delivery_addresses)
+        cvNotifications=fragmentView.findViewById(R.id.cardView_notifiacions)
+        cvHelp=fragmentView.findViewById(R.id.cardView_help)
+
+        etProfileEmail.text=currentUser.email
+        etProfileName.text=currentUser.fullName
+        if (profilePhoto!=null) {
+            Glide.with(this).load(profilePhoto).into(ivProfilePhoto)
+        }
+
+        cvAccountInfo.setOnClickListener {
+            newActivity(EditProfileActivity::class.java)
+        }
+
+        cvChangePassword.setOnClickListener{
+            newActivity(ChangePasswordActivity::class.java)
+        }
+
+        cvUserAddresses.setOnClickListener {
+            newActivity(UserAddressesActivity::class.java)
+        }
+
+        cvNotifications.setOnClickListener {
+            newActivity(NotificationsActivity::class.java)
+        }
+
+        cvHelp.setOnClickListener {
+            newActivity(HelpActivity::class.java)
+        }
 
         return fragmentView
+    }
+
+    private fun newActivity(className: Class<*>) {
+        val intentNewActivity=Intent(context, className)
+        val bun=Bundle()
+        bun.putSerializable(Constants.BUNDLE_KEY_CURRENT_USER, currentUser)
+        intentNewActivity.putExtras(bun)
+        startActivity(intentNewActivity)
     }
 
 }

@@ -1,10 +1,8 @@
-package cenec.mealvity.mealvity
+package cenec.mealvity.mealvity.activities
 
 import android.content.Intent
-import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -13,15 +11,10 @@ import android.widget.Toast
 import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.classes.constants.Constants
 import cenec.mealvity.mealvity.classes.user.User
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
-import org.w3c.dom.Text
 
 class SignInActivity : AppCompatActivity() {
     private val etEmail by lazy { findViewById<EditText>(R.id.editText_sign_in_email) }
@@ -67,7 +60,7 @@ class SignInActivity : AppCompatActivity() {
                         tvSignIn.visibility=View.VISIBLE
                         pbSignIn.visibility=View.GONE
                         if (task.isSuccessful) {
-                            returnDisplayName(email)
+                            goToLoadingScreen(email)
                         } else {
                             try {
                                 throw task.exception!!
@@ -88,7 +81,7 @@ class SignInActivity : AppCompatActivity() {
         }
     }
 
-    private fun returnDisplayName(email: String) {
+    private fun goToLoadingScreen(email: String) {
         var fullName = ""
         mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(email).get()
             .addOnCompleteListener { task ->
@@ -96,8 +89,9 @@ class SignInActivity : AppCompatActivity() {
                     val user = task.result!!.toObject(User::class.java)
                     if (user!=null) {
                         fullName = user.fullName!!
+                        val intentLoading=Intent(this@SignInActivity, LoadingActivity::class.java)
                         Toast.makeText(this@SignInActivity, "Welcome back to MealVity, ${fullName}!", Toast.LENGTH_LONG).show()
-                        startActivity(Intent(this@SignInActivity, LoadingActivity::class.java))
+                        startActivity(intentLoading)
                     }
                 }
             }

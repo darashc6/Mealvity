@@ -9,19 +9,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="cenec.mealvity.mealvity.FragmentContainerActivity" />
-        <activity android:name="cenec.mealvity.mealvity.LoadingActivity" />
-        <activity android:name="cenec.mealvity.mealvity.ResetPasswordActivity" />
-        <activity android:name="cenec.mealvity.mealvity.SplashScreenActivity">
+        <activity android:name="cenec.mealvity.mealvity.activities.HelpActivity"></activity>
+        <activity android:name="cenec.mealvity.mealvity.activities.NotificationsActivity" />
+        <activity android:name="cenec.mealvity.mealvity.activities.UserAddressesActivity" />
+        <activity android:name="cenec.mealvity.mealvity.activities.ChangePasswordActivity" />
+        <activity android:name="cenec.mealvity.mealvity.activities.EditProfileActivity" />
+        <activity android:name="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
+        <activity android:name="cenec.mealvity.mealvity.activities.LoadingActivity" />
+        <activity android:name="cenec.mealvity.mealvity.activities.ResetPasswordActivity" />
+        <activity android:name="cenec.mealvity.mealvity.activities.SplashScreenActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="cenec.mealvity.mealvity.SignUpActivity" />
-        <activity android:name="cenec.mealvity.mealvity.SignInActivity" />
-        <activity android:name="cenec.mealvity.mealvity.MainActivity" />
+        <activity android:name="cenec.mealvity.mealvity.activities.SignUpActivity" />
+        <activity android:name="cenec.mealvity.mealvity.activities.SignInActivity" />
+        <activity android:name="cenec.mealvity.mealvity.activities.MainActivity" />
     </application>
 
 </manifest>

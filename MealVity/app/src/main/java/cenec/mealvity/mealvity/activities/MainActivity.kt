@@ -1,4 +1,4 @@
-package cenec.mealvity.mealvity
+package cenec.mealvity.mealvity.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
@@ -17,14 +17,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.RuntimeExecutionException
-import com.google.android.gms.tasks.Task
-import com.google.firebase.auth.AuthResult
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 
 class MainActivity : AppCompatActivity() {
@@ -79,13 +73,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun firebaseAuthWithGoogle(googleAccount: GoogleSignInAccount) {
+    private fun firebaseAuthWithGoogle(googleAccount: GoogleSignInAccount, user: User) {
         val credential=GoogleAuthProvider.getCredential(googleAccount.idToken, null)
         mFirebaseAuth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Toast.makeText(this@MainActivity, "Welcome back to MealVity, ${mFirebaseAuth.currentUser!!.displayName}!", Toast.LENGTH_LONG).show()
-                    startActivity(Intent(this@MainActivity, LoadingActivity::class.java))
+                    val loadingActivity=Intent(this@MainActivity, LoadingActivity::class.java)
+                    startActivity(loadingActivity)
                 } else {
                     Toast.makeText(this@MainActivity, task.exception!!.message, Toast.LENGTH_LONG).show()
                 }
@@ -100,7 +95,7 @@ class MainActivity : AppCompatActivity() {
                     if (result==null) {
                         addUserToDatabase(googleAccount)
                     } else {
-                        firebaseAuthWithGoogle(googleAccount)
+                        firebaseAuthWithGoogle(googleAccount, result)
                     }
                 } else {
 
@@ -113,7 +108,7 @@ class MainActivity : AppCompatActivity() {
         mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(newUser.email!!).set(newUser)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    firebaseAuthWithGoogle(googleAccount)
+                    firebaseAuthWithGoogle(googleAccount, newUser)
                 } else {
                     Toast.makeText(this@MainActivity, "Error, please try again later", Toast.LENGTH_LONG).show()
                     Log.d("DebugUser", "${task.exception!!.message}")
@@ -123,9 +118,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        /*if (mFirebaseAuth.currentUser!=null) {
-            startActivity(Intent(this, LoadingActivity::class.java))
-        }*/
+        if (mFirebaseAuth.currentUser!=null) {
+            val intentLoading=Intent(this, LoadingActivity::class.java)
+            startActivity(intentLoading)
+        }
     }
 
     override fun onBackPressed() {

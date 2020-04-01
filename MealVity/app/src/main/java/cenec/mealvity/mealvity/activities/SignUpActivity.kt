@@ -1,8 +1,7 @@
-package cenec.mealvity.mealvity
+package cenec.mealvity.mealvity.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
 import android.view.View
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -83,7 +82,8 @@ class SignUpActivity : AppCompatActivity() {
                                 document(newUser.email!!).set(newUser) // 100% works, so no need to add a listener
 
                             Toast.makeText(this@SignUpActivity, "Account created successfully", Toast.LENGTH_LONG).show()
-                            startActivity(Intent(this@SignUpActivity, LoadingActivity::class.java))
+                            val intentLoading=Intent(this@SignUpActivity, LoadingActivity::class.java)
+                            startActivity(intentLoading)
                         } else {
                             try {
                                 throw task.exception!!

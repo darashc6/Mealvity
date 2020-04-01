@@ -1,4 +1,4 @@
-package cenec.mealvity.mealvity
+package cenec.mealvity.mealvity.activities
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity

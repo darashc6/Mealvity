@@ -36,5 +36,9 @@
     <string name="orders_tab">Orders</string>
     <string name="profile_tab">Profile</string>
     <string name="text_phone_number">Phone Number</string>
+    <string name="text_change_password">Change Password</string>
+    <string name="text_delivery_addresses">Delivery Addresses</string>
+    <string name="text_notifications">Notifications</string>
+    <string name="text_help_service">Help</string>
 
 </resources>

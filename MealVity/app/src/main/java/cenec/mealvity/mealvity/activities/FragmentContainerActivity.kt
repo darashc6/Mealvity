@@ -1,10 +1,14 @@
-package cenec.mealvity.mealvity
+package cenec.mealvity.mealvity.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.viewpager.widget.ViewPager
 import cenec.darash.mealvity.R
+import cenec.mealvity.mealvity.classes.constants.Constants
 import cenec.mealvity.mealvity.classes.fragment.FragmentAdapter
+import cenec.mealvity.mealvity.classes.user.User
 import cenec.mealvity.mealvity.fragments.HomeTabFragment
 import cenec.mealvity.mealvity.fragments.OrdersTabFragment
 import cenec.mealvity.mealvity.fragments.ProfileTabFragment
@@ -13,6 +17,7 @@ import com.gauravk.bubblenavigation.BubbleNavigationLinearView
 class FragmentContainerActivity : AppCompatActivity() {
     private val vpFragment by lazy { findViewById<ViewPager>(R.id.view_pager) }
     private val navigation by lazy { findViewById<BubbleNavigationLinearView>(R.id.navigation_menu) }
+    private val currentUser by lazy { intent.extras!!.getSerializable(Constants.BUNDLE_KEY_CURRENT_USER) as User }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,13 +48,18 @@ class FragmentContainerActivity : AppCompatActivity() {
     }
 
     private fun setupViewPager() {
-        val fragmentAdapter=
-            FragmentAdapter(
-                supportFragmentManager
-            )
-        fragmentAdapter.addFragment(HomeTabFragment())
-        fragmentAdapter.addFragment(OrdersTabFragment())
-        fragmentAdapter.addFragment(ProfileTabFragment())
+        val fragmentAdapter=FragmentAdapter(supportFragmentManager)
+        val homeTab=HomeTabFragment()
+        val ordersTab=OrdersTabFragment()
+        val profileTab=ProfileTabFragment()
+        val bun=Bundle()
+        bun.putSerializable(Constants.BUNDLE_KEY_CURRENT_USER, currentUser)
+        homeTab.arguments=bun
+        ordersTab.arguments=bun
+        profileTab.arguments=bun
+        fragmentAdapter.addFragment(homeTab)
+        fragmentAdapter.addFragment(ordersTab)
+        fragmentAdapter.addFragment(profileTab)
 
         vpFragment.adapter=fragmentAdapter
     }
