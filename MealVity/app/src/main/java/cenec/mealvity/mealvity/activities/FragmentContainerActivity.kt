@@ -17,7 +17,6 @@ import com.gauravk.bubblenavigation.BubbleNavigationLinearView
 class FragmentContainerActivity : AppCompatActivity() {
     private val vpFragment by lazy { findViewById<ViewPager>(R.id.view_pager) }
     private val navigation by lazy { findViewById<BubbleNavigationLinearView>(R.id.navigation_menu) }
-    private val currentUser by lazy { intent.extras!!.getSerializable(Constants.BUNDLE_KEY_CURRENT_USER) as User }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,11 +51,6 @@ class FragmentContainerActivity : AppCompatActivity() {
         val homeTab=HomeTabFragment()
         val ordersTab=OrdersTabFragment()
         val profileTab=ProfileTabFragment()
-        val bun=Bundle()
-        bun.putSerializable(Constants.BUNDLE_KEY_CURRENT_USER, currentUser)
-        homeTab.arguments=bun
-        ordersTab.arguments=bun
-        profileTab.arguments=bun
         fragmentAdapter.addFragment(homeTab)
         fragmentAdapter.addFragment(ordersTab)
         fragmentAdapter.addFragment(profileTab)

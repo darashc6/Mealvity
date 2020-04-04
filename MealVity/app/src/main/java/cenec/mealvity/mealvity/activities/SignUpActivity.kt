@@ -72,14 +72,22 @@ class SignUpActivity : AppCompatActivity() {
             else -> {
                 pbSignUp.visibility=View.VISIBLE
                 tvSignUp.visibility=View.GONE
-                val newUser=User(fullName, phoneNumber, email, password)
                 mFirebaseAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         pbSignUp.visibility=View.GONE
                         tvSignUp.visibility=View.VISIBLE
                         if (task.isSuccessful) {
+                            val newUser = hashMapOf(
+                                Constants.FIRESTORE_KEY_DATABASE_USERS_FULL_NAME to fullName,
+                                Constants.FIRESTORE_KEY_DATABASE_USERS_PHONE_NUMBER to phoneNumber,
+                                Constants.FIRESTORE_KEY_DATABASE_USERS_EMAIL to email,
+                                Constants.FIRESTORE_KEY_DATABASE_USERS_PASSWORD to password,
+                                Constants.FIRESTORE_KEY_DATABASE_USERS_ORDERS to null,
+                                Constants.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES to null
+                            )
+
                             mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).
-                                document(newUser.email!!).set(newUser) // 100% works, so no need to add a listener
+                                document(email).set(newUser) // TODO Listener
 
                             Toast.makeText(this@SignUpActivity, "Account created successfully", Toast.LENGTH_LONG).show()
                             val intentLoading=Intent(this@SignUpActivity, LoadingActivity::class.java)

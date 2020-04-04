@@ -14,7 +14,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 class LoadingActivity : AppCompatActivity() {
     private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() }
-    private lateinit var currentUser: User
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -23,7 +22,7 @@ class LoadingActivity : AppCompatActivity() {
         mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(mFirebaseAuth.currentUser!!.email!!).get()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    currentUser = task.result!!.toObject(User::class.java)!!
+                    Constants.currentUser = task.result!!.toObject(User::class.java)!!
                 } else {
                     // TODO
                 }
@@ -32,10 +31,6 @@ class LoadingActivity : AppCompatActivity() {
         val handler=Handler()
         handler.postDelayed(Runnable {
             val intentHomePage=Intent(this, FragmentContainerActivity::class.java)
-            val bun=Bundle()
-            bun.putSerializable(Constants.BUNDLE_KEY_CURRENT_USER, currentUser)
-            intentHomePage.putExtras(bun)
-
             startActivity(intentHomePage)
         }, 4000)
     }

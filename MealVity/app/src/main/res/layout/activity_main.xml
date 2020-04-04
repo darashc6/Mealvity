@@ -46,25 +46,26 @@
         android:id="@+id/text_no_account"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="80dp"
+        android:layout_marginStart="35dp"
         android:layout_marginTop="40dp"
-        android:text="@string/text_no_account"
         android:fontFamily="@font/fonarto_regular"
+        android:text="@string/text_no_account"
         android:textColor="@color/white"
         android:textSize="15sp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/button_email"
         app:layout_constraintTop_toBottomOf="@+id/button_email" />
 
     <TextView
         android:id="@+id/button_sign_up"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="15dp"
+        android:layout_marginEnd="35dp"
+        android:fontFamily="@font/fonarto_bold"
+        android:onClick="createNewAccount"
         android:text="@string/text_sign_up"
         android:textColor="@color/colorAccent"
-        android:fontFamily="@font/fonarto_bold"
         android:textSize="15sp"
-        android:onClick="createNewAccount"
+        app:layout_constraintEnd_toEndOf="@+id/button_email"
         app:layout_constraintStart_toEndOf="@+id/text_no_account"
         app:layout_constraintTop_toTopOf="@+id/text_no_account" />
 

@@ -1,9 +1,7 @@
 package cenec.mealvity.mealvity.fragments
 
 import android.content.Intent
-import android.media.Image
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,27 +10,21 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
-import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.lifecycle.Observer
 import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.activities.*
 import cenec.mealvity.mealvity.classes.constants.Constants
 import cenec.mealvity.mealvity.classes.user.User
 import com.bumptech.glide.Glide
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.OnFailureListener
-import com.google.android.gms.tasks.OnSuccessListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.fragment_profile_tab.*
-import java.lang.Exception
+import java.util.*
 
 /**
  * A simple [Fragment] subclass.
  */
 class ProfileTabFragment : Fragment() {
     private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private lateinit var fragmentView: View
     private lateinit var etProfileName: TextView
     private lateinit var etProfileEmail: TextView
     private lateinit var ivProfilePhoto: ImageView
@@ -43,12 +35,11 @@ class ProfileTabFragment : Fragment() {
     private lateinit var cvHelp: CardView
     private lateinit var currentUser: User
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val fragmentView=inflater.inflate(R.layout.fragment_profile_tab, container, false)
-        currentUser=arguments!!.getSerializable(Constants.BUNDLE_KEY_CURRENT_USER) as User
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        currentUser=Constants.currentUser!!
+        fragmentView=LayoutInflater.from(context).inflate(R.layout.fragment_profile_tab, null)
+
         val profilePhoto=mFirebaseAuth.currentUser!!.photoUrl
 
         etProfileEmail=fragmentView.findViewById(R.id.textview_profile_email)
@@ -72,7 +63,11 @@ class ProfileTabFragment : Fragment() {
         }
 
         cvChangePassword.setOnClickListener{
-            newActivity(ChangePasswordActivity::class.java)
+            if (currentUser.email!!.contains("@gmail")) {
+                // TODO User can't change password since he's logged in via Google
+            } else {
+                newActivity(ChangePasswordActivity::class.java)
+            }
         }
 
         cvUserAddresses.setOnClickListener {
@@ -86,15 +81,31 @@ class ProfileTabFragment : Fragment() {
         cvHelp.setOnClickListener {
             newActivity(HelpActivity::class.java)
         }
+    }
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return fragmentView
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        currentUser.getUserLiveData().observe(viewLifecycleOwner, object : Observer<User>{
+            override fun onChanged(updatedUser: User?) {
+                if (updatedUser!=null) {
+                    etProfileName.text = updatedUser.fullName
+                    etProfileEmail.text = updatedUser.email
+                }
+            }
+
+        })
+    }
+
+
     private fun newActivity(className: Class<*>) {
         val intentNewActivity=Intent(context, className)
-        val bun=Bundle()
-        bun.putSerializable(Constants.BUNDLE_KEY_CURRENT_USER, currentUser)
-        intentNewActivity.putExtras(bun)
         startActivity(intentNewActivity)
     }
 

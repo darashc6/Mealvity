@@ -19,6 +19,9 @@
     <string name="text_hint_email">E-Mail</string>
     <string name="text_hint_password">Password</string>
     <string name="text_hint_password_repeat">Repeat Password</string>
+    <string name="text_hint_old_password">Current Password</string>
+    <string name="text_hint_new_password">New Password</string>
+    <string name="text_hint_repeat_new_password">Repeat New Password</string>
 
     <string name="logo_transition_name">transition_logo</string>
 
@@ -29,6 +32,8 @@
     <string name="text_user_already_exists">Account already created using this e-mail</string>
     <string name="text_invalid_user">E-mail or password is invalid</string>
     <string name="text_no_exisiting_email">No account has been created with this e-mail</string>
+    <string name="text_old_new_password_equal">Old password and new password are the same</string>
+    <string name="text_invalid_password">Password is invalid</string>
 
     <string name="text_loading">Loading...</string>
 
@@ -40,5 +45,18 @@
     <string name="text_delivery_addresses">Delivery Addresses</string>
     <string name="text_notifications">Notifications</string>
     <string name="text_help_service">Help</string>
+    <string name="text_button_save_changes">SAVE CHANGES</string>
+    <string name="text_button_log_out">LOG OUT</string>
+
+    <string name="cancel_changes_dialog_title">Cancel changes</string>
+    <string name="cancel_changes_dialog_message">Are you sure you want to cancel your changes?</string>
+    <string name="cancel_changes_dialog_positive_button">YES</string>
+    <string name="cancel_changes_dialog_negative_button">NO</string>
+
+    <string name="insert_password_dialog_title">Password</string>
+    <string name="insert_password_dialog_message">Please write your password in order to confirm your changes</string>
+    <string name="insert_password_dialog_positive_button">ACCEPT</string>
+    <string name="insert_password_dialog_negative_button">CANCEL</string>
+    <string name="text_save_new_password_button">SAVE NEW PASSWORD</string>
 
 </resources>

@@ -17,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.RuntimeExecutionException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
@@ -69,11 +70,14 @@ class MainActivity : AppCompatActivity() {
                 checkUserInDatabase(googleAccount!!)
             } catch (e: ApiException) {
                 Toast.makeText(this, e.statusCode, Toast.LENGTH_LONG).show()
+            } catch (runtimeExecution: RuntimeExecutionException) {
+                // This exception happens when the user doesn't choose a google account from the Google account chooser
+                Log.d("errorException", runtimeExecution.message!!)
             }
         }
     }
 
-    private fun firebaseAuthWithGoogle(googleAccount: GoogleSignInAccount, user: User) {
+    private fun firebaseAuthWithGoogle(googleAccount: GoogleSignInAccount) {
         val credential=GoogleAuthProvider.getCredential(googleAccount.idToken, null)
         mFirebaseAuth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
@@ -95,20 +99,27 @@ class MainActivity : AppCompatActivity() {
                     if (result==null) {
                         addUserToDatabase(googleAccount)
                     } else {
-                        firebaseAuthWithGoogle(googleAccount, result)
+                        firebaseAuthWithGoogle(googleAccount)
                     }
                 } else {
-
+                    // TODO
                 }
             }
     }
 
     private fun addUserToDatabase(googleAccount: GoogleSignInAccount) {
-        val newUser = User(googleAccount.displayName, "", googleAccount.email, "none")
-        mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(newUser.email!!).set(newUser)
+        val newUser = hashMapOf(
+            Constants.FIRESTORE_KEY_DATABASE_USERS_FULL_NAME to googleAccount.displayName,
+            Constants.FIRESTORE_KEY_DATABASE_USERS_PHONE_NUMBER to "",
+            Constants.FIRESTORE_KEY_DATABASE_USERS_EMAIL to googleAccount.email,
+            Constants.FIRESTORE_KEY_DATABASE_USERS_PASSWORD to "",
+            Constants.FIRESTORE_KEY_DATABASE_USERS_ORDERS to null,
+            Constants.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES to null
+        )
+        mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(googleAccount.email!!).set(newUser)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    firebaseAuthWithGoogle(googleAccount, newUser)
+                    firebaseAuthWithGoogle(googleAccount)
                 } else {
                     Toast.makeText(this@MainActivity, "Error, please try again later", Toast.LENGTH_LONG).show()
                     Log.d("DebugUser", "${task.exception!!.message}")
