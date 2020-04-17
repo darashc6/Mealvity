@@ -14,15 +14,14 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import cenec.darash.mealvity.R
-import cenec.mealvity.mealvity.classes.constants.Constants
+import cenec.mealvity.mealvity.classes.constants.Database
 import cenec.mealvity.mealvity.classes.dialogs.CancelSavedChangesDialog
 import cenec.mealvity.mealvity.classes.dialogs.InsertPasswordDialog
-import cenec.mealvity.mealvity.classes.models.UserModel
+import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.User
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.firebase.auth.EmailAuthCredential
 import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -31,7 +30,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDialogListener, InsertPasswordDialog.InsertPasswordDialogListener {
     private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
-    private val userLoggedIn by lazy { UserModel.getInstance().getCurrentUser() }
+    private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() }
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private val etFullName by lazy { findViewById<EditText>(R.id.editText_full_name) }
     private val etPhoneNumber by lazy { findViewById<EditText>(R.id.editText_phone_number) }
@@ -135,19 +134,30 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
         passwordDialog.show(supportFragmentManager, "")
     }
 
+    private fun updateEmail(fUser: FirebaseUser, email: String){
+        fUser.updateEmail(email)
+            .addOnCompleteListener{ task ->
+                if (task.isSuccessful) {
+                    updateUserInDatabase(userLoggedIn)
+                } else {
+                    Toast.makeText(this, task.exception!!.toString(), Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
     private fun updateUserInDatabase(userToUpdate: User) {
-        mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(userToUpdate.email!!)
+        mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).document(mFirebaseAuth.currentUser!!.uid)
             .update(
-                Constants.FIRESTORE_KEY_DATABASE_USERS_FULL_NAME, userToUpdate.fullName!!,
-                Constants.FIRESTORE_KEY_DATABASE_USERS_PHONE_NUMBER, userToUpdate.phoneNumber!!,
-                Constants.FIRESTORE_KEY_DATABASE_USERS_EMAIL, userToUpdate.email!!
+                Database.FIRESTORE_KEY_DATABASE_USERS_FULL_NAME, userToUpdate.fullName!!,
+                Database.FIRESTORE_KEY_DATABASE_USERS_PHONE_NUMBER, userToUpdate.phoneNumber!!,
+                Database.FIRESTORE_KEY_DATABASE_USERS_EMAIL, userToUpdate.email!!
             )
             .addOnCompleteListener{task ->
                 tvSaveChanges.visibility=View.VISIBLE
                 pbSaveChanges.visibility=View.GONE
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Changes saved!", Toast.LENGTH_SHORT).show()
-                    UserModel.getInstance().setCurrentUser(userToUpdate)
+                    UserSingleton.getInstance().setCurrentUser(userToUpdate)
                     finish()
                 } else {
                     Toast.makeText(this@EditProfileActivity, "Error saving changes. Please try again later", Toast.LENGTH_LONG).show()
@@ -204,51 +214,6 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
             .addOnCompleteListener{task ->
                 if (task.isSuccessful) {
                     updateEmail(userSignedIn, userLoggedIn.email!!)
-                } else {
-                    Toast.makeText(this, task.exception!!.toString(), Toast.LENGTH_SHORT).show()
-                }
-            }
-    }
-
-    private fun deleteUserFromDatabase(email: String) {
-        mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(email).delete()
-            .addOnCompleteListener{ task ->
-                if (task.isSuccessful) {
-                    addUpdatedUserToDatabase(userLoggedIn)
-                } else {
-                    Toast.makeText(this, task.exception!!.toString(), Toast.LENGTH_SHORT).show()
-                }
-            }
-    }
-
-    private fun addUpdatedUserToDatabase(updatedUser: User) {
-        val user = hashMapOf(
-            Constants.FIRESTORE_KEY_DATABASE_USERS_FULL_NAME to updatedUser.fullName,
-            Constants.FIRESTORE_KEY_DATABASE_USERS_PHONE_NUMBER to updatedUser.phoneNumber,
-            Constants.FIRESTORE_KEY_DATABASE_USERS_EMAIL to updatedUser.email,
-            Constants.FIRESTORE_KEY_DATABASE_USERS_PASSWORD to updatedUser.password,
-            Constants.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES to updatedUser.addresses,
-            Constants.FIRESTORE_KEY_DATABASE_USERS_ORDERS to updatedUser.orders
-        )
-
-        mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(updatedUser.email!!).set(user)
-            .addOnCompleteListener{ task ->
-                tvSaveChanges.visibility=View.VISIBLE
-                pbSaveChanges.visibility=View.GONE
-                if (task.isSuccessful) {
-                    Toast.makeText(this@EditProfileActivity, "Changes saved!", Toast.LENGTH_SHORT).show()
-                    finish()
-                } else {
-                    Toast.makeText(this, task.exception!!.toString(), Toast.LENGTH_SHORT).show()
-                }
-            }
-    }
-
-    private fun updateEmail(userSignedIn: FirebaseUser, email: String){
-        userSignedIn.updateEmail(email)
-            .addOnCompleteListener{ task ->
-                if (task.isSuccessful) {
-                    deleteUserFromDatabase(oldUser.email!!)
                 } else {
                     Toast.makeText(this, task.exception!!.toString(), Toast.LENGTH_SHORT).show()
                 }

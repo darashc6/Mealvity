@@ -14,10 +14,11 @@ import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.activities.SaveAddressActivity
 import cenec.mealvity.mealvity.activities.UserAddressesActivity
 import cenec.mealvity.mealvity.classes.adapters.AddressRecyclerViewAdapter
-import cenec.mealvity.mealvity.classes.constants.Constants
-import cenec.mealvity.mealvity.classes.models.UserModel
+import cenec.mealvity.mealvity.classes.constants.Database
+import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.User
 import cenec.mealvity.mealvity.classes.viewmodels.UserViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import io.sulek.ssml.SSMLLinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_address_list.view.*
@@ -49,7 +50,7 @@ class AddressListFragment : Fragment() {
 
     private fun setupRecyclerView(context: Context) {
         rvAddressList.layoutManager=SSMLLinearLayoutManager(context)
-        rvAdapter=AddressRecyclerViewAdapter(UserModel.getInstance().getCurrentUser().addresses!!)
+        rvAdapter=AddressRecyclerViewAdapter(UserSingleton.getInstance().getCurrentUser().addresses!!)
         rvAdapter.setOnAddressRecyclerViewListener(object : AddressRecyclerViewAdapter.AddressRecyclerViewListener{
             override fun onAddressDelete(position: Int) {
                 deleteAddressFromDatabase(position)
@@ -80,15 +81,16 @@ class AddressListFragment : Fragment() {
 
     private fun deleteAddressFromDatabase(position: Int) {
         val mFirebaseFirestore = FirebaseFirestore.getInstance()
-        val userLoggedIn = UserModel.getInstance().getCurrentUser()
-        userLoggedIn.addresses!!.removeAt(position)
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        val userLoggedIn = UserSingleton.getInstance().getCurrentUser()
+        userLoggedIn.addresses.removeAt(position)
 
-        mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS)
-            .document(userLoggedIn.email!!)
-            .update(Constants.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES, userLoggedIn.addresses)
+        mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS)
+            .document(firebaseUser!!.uid)
+            .update(Database.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES, userLoggedIn.addresses)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    UserModel.getInstance().setCurrentUser(userLoggedIn)
+                    UserSingleton.getInstance().setCurrentUser(userLoggedIn)
                     userViewModel.setUserLiveData(userLoggedIn)
                     Toast.makeText(context, "Address deleted", Toast.LENGTH_SHORT).show()
                 } else {

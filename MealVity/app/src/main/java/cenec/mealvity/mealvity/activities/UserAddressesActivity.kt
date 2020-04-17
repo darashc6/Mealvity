@@ -3,9 +3,11 @@ package cenec.mealvity.mealvity.activities
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.ViewModelProvider
 import cenec.darash.mealvity.R
-import cenec.mealvity.mealvity.classes.models.UserModel
+import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.User
 import cenec.mealvity.mealvity.classes.viewmodels.UserViewModel
 import cenec.mealvity.mealvity.fragments.profileaddress.AddressListFragment
@@ -16,7 +18,7 @@ class UserAddressesActivity : AppCompatActivity() {
     private val fabAddAddress by lazy { findViewById<FloatingActionButton>(R.id.fab_add_address) }
     private val fragmentWithEmptyList by lazy { EmptyAddressListFragment() }
     private val fragmentWithList by lazy { AddressListFragment() }
-    private val userLoggedIn by lazy { UserModel.getInstance().getCurrentUser() }
+    private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() }
     private lateinit var userViewModel: UserViewModel
     private var showingAddressList = false
 
@@ -24,10 +26,14 @@ class UserAddressesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_addresses)
 
-        userViewModel=ViewModelProvider(this).get(UserViewModel::class.java)
-        userViewModel.setUserLiveData(UserModel.getInstance().getCurrentUser())
+        val toolbar=findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        if (userLoggedIn.addresses == null) {
+        userViewModel=ViewModelProvider(this).get(UserViewModel::class.java)
+        userViewModel.setUserLiveData(UserSingleton.getInstance().getCurrentUser())
+
+        if (userLoggedIn.addresses.isEmpty()) {
             supportFragmentManager.beginTransaction()
                 .add(R.id.layout_fragment, fragmentWithEmptyList)
                 .commit()
@@ -42,10 +48,10 @@ class UserAddressesActivity : AppCompatActivity() {
             startActivity(intentAddAddress)
         }
 
-        UserModel.getInstance().setUserModelListener(object : UserModel.UserModelListener {
+        UserSingleton.getInstance().setUserModelListener(object : UserSingleton.UserModelListener {
             override fun onUserUpdate(updatedUser: User) {
                 userViewModel.setUserLiveData(updatedUser)
-                if (userViewModel.getUserLiveData().value!!.addresses!!.isNotEmpty()) {
+                if (userViewModel.getUserLiveData().value!!.addresses.isNotEmpty()) {
                     if (!showingAddressList) {
                         supportFragmentManager.beginTransaction()
                             .replace(R.id.layout_fragment, fragmentWithList)
@@ -65,5 +71,13 @@ class UserAddressesActivity : AppCompatActivity() {
 
     fun getUserViewModel(): UserViewModel {
         return userViewModel
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> finish()
+        }
+
+        return true
     }
 }

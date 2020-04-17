@@ -1,16 +1,16 @@
-package cenec.mealvity.mealvity.classes.models
+package cenec.mealvity.mealvity.classes.singleton
 
 import cenec.mealvity.mealvity.classes.user.User
 
-class UserModel {
+class UserSingleton {
     companion object {
-        private var mUserInstance: UserModel? = null
+        private var mUserInstance: UserSingleton? = null
         private var mUserListener: UserModelListener? = null
         private var currentUser: User? = null
 
-        fun getInstance(): UserModel {
+        fun getInstance(): UserSingleton {
             if (mUserInstance == null) {
-                mUserInstance = UserModel()
+                mUserInstance = UserSingleton()
             }
             return mUserInstance!!
         }

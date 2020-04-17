@@ -9,8 +9,9 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import cenec.darash.mealvity.R
-import cenec.mealvity.mealvity.classes.constants.Constants
-import cenec.mealvity.mealvity.classes.user.User
+import cenec.mealvity.mealvity.classes.constants.Database
+import cenec.mealvity.mealvity.classes.user.Address
+import cenec.mealvity.mealvity.classes.user.Orders
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthUserCollisionException
@@ -77,21 +78,25 @@ class SignUpActivity : AppCompatActivity() {
                         pbSignUp.visibility=View.GONE
                         tvSignUp.visibility=View.VISIBLE
                         if (task.isSuccessful) {
+                            val firebaseUser = mFirebaseAuth.currentUser
                             val newUser = hashMapOf(
-                                Constants.FIRESTORE_KEY_DATABASE_USERS_FULL_NAME to fullName,
-                                Constants.FIRESTORE_KEY_DATABASE_USERS_PHONE_NUMBER to phoneNumber,
-                                Constants.FIRESTORE_KEY_DATABASE_USERS_EMAIL to email,
-                                Constants.FIRESTORE_KEY_DATABASE_USERS_PASSWORD to password,
-                                Constants.FIRESTORE_KEY_DATABASE_USERS_ORDERS to null,
-                                Constants.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES to null
+                                Database.FIRESTORE_KEY_DATABASE_USERS_FULL_NAME to fullName,
+                                Database.FIRESTORE_KEY_DATABASE_USERS_PHONE_NUMBER to phoneNumber,
+                                Database.FIRESTORE_KEY_DATABASE_USERS_EMAIL to email,
+                                Database.FIRESTORE_KEY_DATABASE_USERS_ORDERS to arrayListOf<Orders>(),
+                                Database.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES to arrayListOf<Address>()
                             )
 
-                            mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).
-                                document(email).set(newUser) // TODO Listener
-
-                            Toast.makeText(this@SignUpActivity, "Account created successfully", Toast.LENGTH_LONG).show()
-                            val intentLoading=Intent(this@SignUpActivity, LoadingActivity::class.java)
-                            startActivity(intentLoading)
+                            mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).
+                                document(firebaseUser!!.uid).set(newUser)
+                                .addOnCompleteListener { databaseTask ->
+                                    if (databaseTask.isSuccessful) {
+                                        val intentLoading=Intent(this@SignUpActivity, LoadingActivity::class.java)
+                                        startActivity(intentLoading)
+                                    } else {
+                                        Toast.makeText(this, task.exception.toString(), Toast.LENGTH_SHORT).show()
+                                    }
+                                }
                         } else {
                             try {
                                 throw task.exception!!

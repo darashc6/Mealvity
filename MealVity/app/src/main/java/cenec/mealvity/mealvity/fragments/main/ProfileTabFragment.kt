@@ -8,13 +8,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.Observer
 import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.activities.*
-import cenec.mealvity.mealvity.classes.constants.Constants
-import cenec.mealvity.mealvity.classes.models.UserModel
+import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.User
 import cenec.mealvity.mealvity.classes.viewmodels.UserViewModel
 import com.bumptech.glide.Glide
@@ -39,19 +37,22 @@ class ProfileTabFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        currentUser=UserModel.getInstance().getCurrentUser()
+        currentUser=UserSingleton.getInstance().getCurrentUser()
+        val isUserAccountGoogle=FirebaseAuth.getInstance().currentUser!!.
+            getIdToken(false).result!!.signInProvider.equals("google.com", true)
         userViewModel=(activity as FragmentContainerActivity).getUserViewModel()
-        // TODO To get user provider use -> Toast.makeText(context, mFirebaseAuth.currentUser!!.getIdToken(false).result!!.signInProvider, Toast.LENGTH_SHORT).show()
-        fragmentView=LayoutInflater.from(context).inflate(R.layout.fragment_profile_tab, null)
+        fragmentView = if (!isUserAccountGoogle) {
+            LayoutInflater.from(context).inflate(R.layout.fragment_profile_tab, null)
+        } else {
+            LayoutInflater.from(context).inflate(R.layout.fragment_profile_tab_google, null)
+        }
 
         val profilePhoto=mFirebaseAuth.currentUser!!.photoUrl
-
         etProfileEmail=fragmentView.findViewById(R.id.textview_profile_email)
         etProfileName=fragmentView.findViewById(R.id.textview_profile_name)
         ivProfilePhoto=fragmentView.findViewById(R.id.profile_logo)
 
         cvAccountInfo=fragmentView.findViewById(R.id.cardview_account_info)
-        cvChangePassword=fragmentView.findViewById(R.id.cardView_change_password)
         cvUserAddresses=fragmentView.findViewById(R.id.cardView_delivery_addresses)
         cvNotifications=fragmentView.findViewById(R.id.cardView_notifiacions)
         cvHelp=fragmentView.findViewById(R.id.cardView_help)
@@ -66,10 +67,9 @@ class ProfileTabFragment : Fragment() {
             newActivity(EditProfileActivity::class.java)
         }
 
-        cvChangePassword.setOnClickListener{
-            if (currentUser.email!!.contains("@gmail")) {
-                // TODO User can't change password since he's logged in via Google
-            } else {
+        if (!isUserAccountGoogle) {
+            cvChangePassword=fragmentView.findViewById(R.id.cardView_change_password)
+            cvChangePassword.setOnClickListener{
                 newActivity(ChangePasswordActivity::class.java)
             }
         }

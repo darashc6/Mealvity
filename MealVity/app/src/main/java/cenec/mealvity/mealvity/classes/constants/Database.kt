@@ -1,6 +1,6 @@
 package cenec.mealvity.mealvity.classes.constants
 
-object Constants {
+object Database {
     const val FIRESTORE_KEY_DATABASE_USERS = "users"
     const val FIRESTORE_KEY_DATABASE_USERS_FULL_NAME = "fullName"
     const val FIRESTORE_KEY_DATABASE_USERS_PHONE_NUMBER = "phoneNumber"

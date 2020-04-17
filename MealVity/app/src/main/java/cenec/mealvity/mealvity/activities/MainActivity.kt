@@ -10,7 +10,9 @@ import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Toast
 import cenec.darash.mealvity.R
-import cenec.mealvity.mealvity.classes.constants.Constants
+import cenec.mealvity.mealvity.classes.constants.Database
+import cenec.mealvity.mealvity.classes.user.Address
+import cenec.mealvity.mealvity.classes.user.Orders
 import cenec.mealvity.mealvity.classes.user.User
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -19,6 +21,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.RuntimeExecutionException
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -67,9 +70,9 @@ class MainActivity : AppCompatActivity() {
             try {
                 val taskSignIn=GoogleSignIn.getSignedInAccountFromIntent(data)
                 val googleAccount=taskSignIn.result
-                checkUserInDatabase(googleAccount!!)
+                firebaseAuthWithGoogle(googleAccount!!)
             } catch (e: ApiException) {
-                Toast.makeText(this, e.statusCode, Toast.LENGTH_LONG).show()
+                Toast.makeText(this, e.message, Toast.LENGTH_LONG).show()
             } catch (runtimeExecution: RuntimeExecutionException) {
                 // This exception happens when the user doesn't choose a google account from the Google account chooser
                 Log.d("errorException", runtimeExecution.message!!)
@@ -82,24 +85,22 @@ class MainActivity : AppCompatActivity() {
         mFirebaseAuth.signInWithCredential(credential)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this@MainActivity, "Welcome back to MealVity, ${mFirebaseAuth.currentUser!!.displayName}!", Toast.LENGTH_LONG).show()
-                    val loadingActivity=Intent(this@MainActivity, LoadingActivity::class.java)
-                    startActivity(loadingActivity)
+                    checkUserInDatabase(FirebaseAuth.getInstance().currentUser!!)
                 } else {
                     Toast.makeText(this@MainActivity, task.exception!!.message, Toast.LENGTH_LONG).show()
                 }
             }
     }
 
-    private fun checkUserInDatabase(googleAccount: GoogleSignInAccount) {
-        mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(googleAccount.email!!).get()
+    private fun checkUserInDatabase(currentUser: FirebaseUser) {
+        mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).document(currentUser.uid).get()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val result = task.result!!.toObject(User::class.java)
                     if (result==null) {
-                        addUserToDatabase(googleAccount)
+                        addUserToDatabase(currentUser)
                     } else {
-                        firebaseAuthWithGoogle(googleAccount)
+                        goToLoadingActivity()
                     }
                 } else {
                     // TODO
@@ -107,24 +108,28 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
-    private fun addUserToDatabase(googleAccount: GoogleSignInAccount) {
+    private fun addUserToDatabase(currentUser: FirebaseUser) {
         val newUser = hashMapOf(
-            Constants.FIRESTORE_KEY_DATABASE_USERS_FULL_NAME to googleAccount.displayName,
-            Constants.FIRESTORE_KEY_DATABASE_USERS_PHONE_NUMBER to "",
-            Constants.FIRESTORE_KEY_DATABASE_USERS_EMAIL to googleAccount.email,
-            Constants.FIRESTORE_KEY_DATABASE_USERS_PASSWORD to "",
-            Constants.FIRESTORE_KEY_DATABASE_USERS_ORDERS to null,
-            Constants.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES to null
+            Database.FIRESTORE_KEY_DATABASE_USERS_FULL_NAME to currentUser.displayName,
+            Database.FIRESTORE_KEY_DATABASE_USERS_PHONE_NUMBER to "",
+            Database.FIRESTORE_KEY_DATABASE_USERS_EMAIL to currentUser.email,
+            Database.FIRESTORE_KEY_DATABASE_USERS_ORDERS to arrayListOf<Orders>(),
+            Database.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES to arrayListOf<Address>()
         )
-        mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(googleAccount.email!!).set(newUser)
+        mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).document(currentUser.uid).set(newUser)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    firebaseAuthWithGoogle(googleAccount)
+                    goToLoadingActivity()
                 } else {
                     Toast.makeText(this@MainActivity, "Error, please try again later", Toast.LENGTH_LONG).show()
                     Log.d("DebugUser", "${task.exception!!.message}")
                 }
             }
+    }
+
+    private fun goToLoadingActivity() {
+        val loadingActivity=Intent(this@MainActivity, LoadingActivity::class.java)
+        startActivity(loadingActivity)
     }
 
     override fun onStart() {

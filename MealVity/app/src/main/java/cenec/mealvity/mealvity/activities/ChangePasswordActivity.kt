@@ -72,7 +72,6 @@ class ChangePasswordActivity : AppCompatActivity() {
                                         Toast.makeText(this@ChangePasswordActivity, "Password changed", Toast.LENGTH_SHORT).show()
                                         finish()
                                     } else {
-                                        //Toast.makeText(this@ChangePasswordActivity, taskChangePassword.exception!!.toString(), Toast.LENGTH_LONG).show()
                                         try {
                                             throw taskChangePassword.exception!!
                                         } catch (weakPasswordExcetion: FirebaseAuthWeakPasswordException) {

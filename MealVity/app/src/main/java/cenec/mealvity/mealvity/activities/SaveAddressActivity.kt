@@ -1,17 +1,18 @@
 package cenec.mealvity.mealvity.activities
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import cenec.darash.mealvity.R
-import cenec.mealvity.mealvity.classes.constants.Constants
-import cenec.mealvity.mealvity.classes.models.UserModel
+import cenec.mealvity.mealvity.classes.constants.Database
+import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.Address
 import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class SaveAddressActivity : AppCompatActivity() {
@@ -26,15 +27,19 @@ class SaveAddressActivity : AppCompatActivity() {
     private val bSaveAddress by lazy { findViewById<CardView>(R.id.button_save_address) }
     private val tvCardView by lazy { findViewById<TextView>(R.id.textview_save_address) }
     private val pbCardView by lazy { findViewById<ProgressBar>(R.id.progressBar_save_address) }
-    private val userLoggedIn by lazy { UserModel.getInstance().getCurrentUser() }
+    private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() }
     private var isModifyingAddress = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_address)
+        setContentView(R.layout.activity_save_address)
+
+        val toolbar=findViewById<Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
         if (intent.extras != null) {
-            val addressToModify = userLoggedIn.addresses!![intent.extras!!.getInt("position_list")]
+            val addressToModify = userLoggedIn.addresses[intent.extras!!.getInt("position_list")]
 
             etAddressTitle.setText(addressToModify.title)
             etStreetName.setText(addressToModify.name)
@@ -89,14 +94,11 @@ class SaveAddressActivity : AppCompatActivity() {
 
                     val newAddress=Address(addressTitle, streetName, streetNumber, doorInfo, addressExtras, town, postalCode)
                     if (!isModifyingAddress) {
-                        if (userLoggedIn.addresses == null) {
-                            userLoggedIn.addresses=arrayListOf()
-                        }
-                        userLoggedIn.addresses!!.add(newAddress)
+                        userLoggedIn.addresses.add(newAddress)
                     } else {
                         val position = intent.extras!!.getInt("position_list")
-                        userLoggedIn.addresses!!.removeAt(position)
-                        userLoggedIn.addresses!!.add(position, newAddress)
+                        userLoggedIn.addresses.removeAt(position)
+                        userLoggedIn.addresses.add(position, newAddress)
                     }
                     updateAddressListToDatabase()
                 }
@@ -105,18 +107,20 @@ class SaveAddressActivity : AppCompatActivity() {
     }
 
     private fun updateAddressListToDatabase() {
-        mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS)
-            .document(userLoggedIn.email!!)
-            .update(Constants.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES, userLoggedIn.addresses)
+        val firebaseUser = FirebaseAuth.getInstance().currentUser
+        mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS)
+            .document(firebaseUser!!.uid)
+            .update(Database.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES, userLoggedIn.addresses)
             .addOnCompleteListener { task ->
                 pbCardView.visibility=View.GONE
                 tvCardView.visibility=View.VISIBLE
                 if (task.isSuccessful) {
-                    UserModel.getInstance().setCurrentUser(userLoggedIn)
+                    UserSingleton.getInstance().setCurrentUser(userLoggedIn)
                     Toast.makeText(this, "Address saved", Toast.LENGTH_SHORT).show()
                     finish()
                 } else {
-                    // TODO
+                    Toast.makeText(this, "Error saving the address. Please try again later", Toast.LENGTH_SHORT).show()
+                    Log.d("errorAddressSave", task.exception!!.message!!, task.exception)
                 }
             }
     }

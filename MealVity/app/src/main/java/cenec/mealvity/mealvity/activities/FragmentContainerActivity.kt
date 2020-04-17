@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.classes.fragment.FragmentAdapter
-import cenec.mealvity.mealvity.classes.models.UserModel
+import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.User
 import cenec.mealvity.mealvity.classes.viewmodels.UserViewModel
 import cenec.mealvity.mealvity.fragments.main.HomeTabFragment
@@ -26,9 +26,9 @@ class FragmentContainerActivity : AppCompatActivity() {
         setContentView(R.layout.activity_fragment_container)
 
         userViewModel=ViewModelProvider(this).get(UserViewModel::class.java)
-        userViewModel.setUserLiveData(UserModel.getInstance().getCurrentUser())
+        userViewModel.setUserLiveData(UserSingleton.getInstance().getCurrentUser())
 
-        UserModel.getInstance().setUserModelListener(object : UserModel.UserModelListener{
+        UserSingleton.getInstance().setUserModelListener(object : UserSingleton.UserModelListener{
             override fun onUserUpdate(updatedUser: User) {
                 userViewModel.setUserLiveData(updatedUser)
             }

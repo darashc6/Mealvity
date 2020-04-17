@@ -42,7 +42,6 @@ class ResetPasswordActivity : AppCompatActivity() {
                         if (task.isSuccessful) {
                             Toast.makeText(this@ResetPasswordActivity, "E-mail sent", Toast.LENGTH_LONG).show()
                         } else {
-                            Toast.makeText(this@ResetPasswordActivity, task.exception.toString(), Toast.LENGTH_LONG).show()
                             try {
                                 throw task.exception!!
                             } catch (userInvalid: FirebaseAuthInvalidUserException) {

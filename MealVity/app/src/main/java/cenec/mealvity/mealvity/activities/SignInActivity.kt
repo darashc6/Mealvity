@@ -9,7 +9,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import cenec.darash.mealvity.R
-import cenec.mealvity.mealvity.classes.constants.Constants
+import cenec.mealvity.mealvity.classes.constants.Database
 import cenec.mealvity.mealvity.classes.user.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
@@ -60,7 +60,8 @@ class SignInActivity : AppCompatActivity() {
                         tvSignIn.visibility=View.VISIBLE
                         pbSignIn.visibility=View.GONE
                         if (task.isSuccessful) {
-                            goToLoadingScreen(email)
+                            val intentLoading=Intent(this@SignInActivity, LoadingActivity::class.java)
+                            startActivity(intentLoading)
                         } else {
                             try {
                                 throw task.exception!!
@@ -79,21 +80,5 @@ class SignInActivity : AppCompatActivity() {
                     }
             }
         }
-    }
-
-    private fun goToLoadingScreen(email: String) {
-        var fullName = ""
-        mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(email).get()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val user = task.result!!.toObject(User::class.java)
-                    if (user!=null) {
-                        fullName = user.fullName!!
-                        val intentLoading=Intent(this@SignInActivity, LoadingActivity::class.java)
-                        Toast.makeText(this@SignInActivity, "Welcome back to MealVity, ${fullName}!", Toast.LENGTH_LONG).show()
-                        startActivity(intentLoading)
-                    }
-                }
-            }
     }
 }
