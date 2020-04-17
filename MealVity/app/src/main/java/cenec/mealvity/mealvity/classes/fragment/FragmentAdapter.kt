@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 
 class FragmentAdapter(fragmentManager: FragmentManager): FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-    private var listFragments= arrayListOf<Fragment>()
+    private var listFragments=arrayListOf<Fragment>()
 
     override fun getItem(position: Int): Fragment {
         return listFragments[position]
@@ -15,7 +15,7 @@ class FragmentAdapter(fragmentManager: FragmentManager): FragmentPagerAdapter(fr
         return listFragments.size
     }
 
-    fun addFragment(frag: Fragment) {
+    fun addFragment (frag: Fragment) {
         listFragments.add(frag)
     }
 }

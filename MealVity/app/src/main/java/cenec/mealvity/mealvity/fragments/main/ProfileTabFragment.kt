@@ -1,4 +1,4 @@
-package cenec.mealvity.mealvity.fragments
+package cenec.mealvity.mealvity.fragments.main
 
 import android.content.Intent
 import android.os.Bundle
@@ -14,10 +14,11 @@ import androidx.lifecycle.Observer
 import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.activities.*
 import cenec.mealvity.mealvity.classes.constants.Constants
+import cenec.mealvity.mealvity.classes.models.UserModel
 import cenec.mealvity.mealvity.classes.user.User
+import cenec.mealvity.mealvity.classes.viewmodels.UserViewModel
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
-import java.util.*
 
 /**
  * A simple [Fragment] subclass.
@@ -34,10 +35,13 @@ class ProfileTabFragment : Fragment() {
     private lateinit var cvNotifications: CardView
     private lateinit var cvHelp: CardView
     private lateinit var currentUser: User
+    private lateinit var userViewModel: UserViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        currentUser=Constants.currentUser!!
+        currentUser=UserModel.getInstance().getCurrentUser()
+        userViewModel=(activity as FragmentContainerActivity).getUserViewModel()
+        // TODO To get user provider use -> Toast.makeText(context, mFirebaseAuth.currentUser!!.getIdToken(false).result!!.signInProvider, Toast.LENGTH_SHORT).show()
         fragmentView=LayoutInflater.from(context).inflate(R.layout.fragment_profile_tab, null)
 
         val profilePhoto=mFirebaseAuth.currentUser!!.photoUrl
@@ -92,7 +96,7 @@ class ProfileTabFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        currentUser.getUserLiveData().observe(viewLifecycleOwner, object : Observer<User>{
+        userViewModel.getUserLiveData().observe(viewLifecycleOwner, object : Observer<User>{
             override fun onChanged(updatedUser: User?) {
                 if (updatedUser!=null) {
                     etProfileName.text = updatedUser.fullName

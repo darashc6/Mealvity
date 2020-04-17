@@ -9,12 +9,15 @@ import android.util.Log
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.classes.constants.Constants
 import cenec.mealvity.mealvity.classes.dialogs.CancelSavedChangesDialog
 import cenec.mealvity.mealvity.classes.dialogs.InsertPasswordDialog
+import cenec.mealvity.mealvity.classes.models.UserModel
 import cenec.mealvity.mealvity.classes.user.User
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
@@ -28,10 +31,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDialogListener, InsertPasswordDialog.InsertPasswordDialogListener {
     private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+    private val userLoggedIn by lazy { UserModel.getInstance().getCurrentUser() }
     private lateinit var mGoogleSignInClient: GoogleSignInClient
     private val etFullName by lazy { findViewById<EditText>(R.id.editText_full_name) }
     private val etPhoneNumber by lazy { findViewById<EditText>(R.id.editText_phone_number) }
     private val etEmail by lazy { findViewById<EditText>(R.id.editText_email) }
+    private val tvSaveChanges by lazy { findViewById<TextView>(R.id.textview_save_changes) }
+    private val pbSaveChanges by lazy { findViewById<ProgressBar>(R.id.progressBar_save_changes) }
     private lateinit var oldUser: User
     private var valuesChanged = false
     private var emailValueChanged = false
@@ -39,18 +45,18 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
-        oldUser=Constants.currentUser!!.copy()
+        oldUser=userLoggedIn.copy()
 
         var toolbar=findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        val fullName = Constants.currentUser!!.fullName
-        val email = Constants.currentUser!!.email
-        val phoneNumber = Constants.currentUser!!.phoneNumber
-        etFullName.setText(Constants.currentUser!!.fullName)
-        etPhoneNumber.setText(Constants.currentUser!!.phoneNumber)
-        etEmail.setText(Constants.currentUser!!.email)
+        val fullName = userLoggedIn.fullName
+        val email = userLoggedIn.email
+        val phoneNumber = userLoggedIn.phoneNumber
+        etFullName.setText(userLoggedIn.fullName)
+        etPhoneNumber.setText(userLoggedIn.phoneNumber)
+        etEmail.setText(userLoggedIn.email)
 
         etFullName.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(s: Editable?) {
@@ -67,7 +73,7 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
 
         })
 
-        if (Constants.currentUser!!.email!!.contains("@gmail", true)) {
+        if (userLoggedIn.email!!.contains("@gmail", true)) {
             etEmail.isFocusable=false
             etEmail.isEnabled=false
             etEmail.isCursorVisible=false
@@ -109,14 +115,15 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
 
     fun saveChanges(view: View) {
         if (valuesChanged) {
-            Constants.currentUser!!.fullName = etFullName.text.toString()
-            Constants.currentUser!!.phoneNumber = etPhoneNumber.text.toString()
-            Constants.currentUser!!.email = etEmail.text.toString()
-            Constants.currentUser!!.updateUserLiveData()
+            tvSaveChanges.visibility=View.GONE
+            pbSaveChanges.visibility=View.VISIBLE
+            userLoggedIn.fullName = etFullName.text.toString()
+            userLoggedIn.phoneNumber = etPhoneNumber.text.toString()
+            userLoggedIn.email = etEmail.text.toString()
             if (emailValueChanged) {
                 reAuthenticateUser()
             } else {
-                updateUserInDatabase(Constants.currentUser!!)
+                updateUserInDatabase(userLoggedIn)
             }
         } else {
             // TODO Do nothing
@@ -136,8 +143,11 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
                 Constants.FIRESTORE_KEY_DATABASE_USERS_EMAIL, userToUpdate.email!!
             )
             .addOnCompleteListener{task ->
+                tvSaveChanges.visibility=View.VISIBLE
+                pbSaveChanges.visibility=View.GONE
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Changes saved!", Toast.LENGTH_SHORT).show()
+                    UserModel.getInstance().setCurrentUser(userToUpdate)
                     finish()
                 } else {
                     Toast.makeText(this@EditProfileActivity, "Error saving changes. Please try again later", Toast.LENGTH_LONG).show()
@@ -193,7 +203,7 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
         userSignedIn.reauthenticate(userCredential)
             .addOnCompleteListener{task ->
                 if (task.isSuccessful) {
-                    updateEmail(userSignedIn, Constants.currentUser!!.email!!)
+                    updateEmail(userSignedIn, userLoggedIn.email!!)
                 } else {
                     Toast.makeText(this, task.exception!!.toString(), Toast.LENGTH_SHORT).show()
                 }
@@ -204,7 +214,7 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
         mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(email).delete()
             .addOnCompleteListener{ task ->
                 if (task.isSuccessful) {
-                    addUpdatedUserToDatabase(Constants.currentUser!!)
+                    addUpdatedUserToDatabase(userLoggedIn)
                 } else {
                     Toast.makeText(this, task.exception!!.toString(), Toast.LENGTH_SHORT).show()
                 }
@@ -223,6 +233,8 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
 
         mFirebaseFirestore.collection(Constants.FIRESTORE_KEY_DATABASE_USERS).document(updatedUser.email!!).set(user)
             .addOnCompleteListener{ task ->
+                tvSaveChanges.visibility=View.VISIBLE
+                pbSaveChanges.visibility=View.GONE
                 if (task.isSuccessful) {
                     Toast.makeText(this@EditProfileActivity, "Changes saved!", Toast.LENGTH_SHORT).show()
                     finish()

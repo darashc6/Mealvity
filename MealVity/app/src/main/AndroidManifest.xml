@@ -9,11 +9,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="cenec.mealvity.mealvity.activities.HelpActivity" android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity"/>
-        <activity android:name="cenec.mealvity.mealvity.activities.NotificationsActivity" android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity"/>
-        <activity android:name="cenec.mealvity.mealvity.activities.UserAddressesActivity" android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity"/>
-        <activity android:name="cenec.mealvity.mealvity.activities.ChangePasswordActivity" android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity"/>
-        <activity android:name="cenec.mealvity.mealvity.activities.EditProfileActivity" android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity"/>
+        <activity android:name="cenec.mealvity.mealvity.activities.SaveAddressActivity"></activity>
+        <activity
+            android:name="cenec.mealvity.mealvity.activities.HelpActivity"
+            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
+        <activity
+            android:name="cenec.mealvity.mealvity.activities.NotificationsActivity"
+            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
+        <activity
+            android:name="cenec.mealvity.mealvity.activities.UserAddressesActivity"
+            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
+        <activity
+            android:name="cenec.mealvity.mealvity.activities.ChangePasswordActivity"
+            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
+        <activity
+            android:name="cenec.mealvity.mealvity.activities.EditProfileActivity"
+            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
         <activity android:name="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
         <activity android:name="cenec.mealvity.mealvity.activities.LoadingActivity" />
         <activity android:name="cenec.mealvity.mealvity.activities.ResetPasswordActivity" />

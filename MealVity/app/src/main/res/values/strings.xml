@@ -59,4 +59,19 @@
     <string name="insert_password_dialog_negative_button">CANCEL</string>
     <string name="text_save_new_password_button">SAVE NEW PASSWORD</string>
 
+    <string name="text_empty_address_list">Looks like you don\'t have any addresses saved. You can save one by pressing the \'+\' button.</string>
+    <string name="text_hint_street_name">Street name*</string>
+    <string name="text_hint_street_number">Nº*</string>
+    <string name="text_hint_door_info">Floor number and door</string>
+    <string name="text_hint_address_extras">Extras (Doorbell, Apartment name, etc)</string>
+    <string name="text_hint_town">Town*</string>
+    <string name="text_hint_postal_code">Postal code*</string>
+    <string name="text_hint_address_title">Address title*</string>
+    <string name="text_button_save_address">SAVE ADDRESS</string>
+    <string name="item_list_address_title">Title</string>
+    <string name="item_list_street_name">Street name and number</string>
+    <string name="item_list_door">Door</string>
+    <string name="item_list_extras">Extras</string>
+    <string name="item_list_town_and_pc">Town and PC</string>
+
 </resources>
