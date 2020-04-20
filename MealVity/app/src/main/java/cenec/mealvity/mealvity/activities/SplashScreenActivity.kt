@@ -7,7 +7,11 @@ import android.os.Handler
 import android.widget.ImageView
 import androidx.core.app.ActivityOptionsCompat
 import cenec.darash.mealvity.R
+import com.google.firebase.auth.FirebaseAuth
 
+/**
+ * Splash Screen of the application
+ */
 class SplashScreenActivity : AppCompatActivity() {
     private val imageLogo by lazy { findViewById<ImageView>(R.id.mealvity_logo) }
 
@@ -20,9 +24,16 @@ class SplashScreenActivity : AppCompatActivity() {
 
         val handler=Handler()
         handler.postDelayed({
-            val intentMain=Intent(this, MainActivity::class.java)
-            val opt = ActivityOptionsCompat.makeSceneTransitionAnimation(this@SplashScreenActivity, imageLogo, imageLogo.transitionName)
-            startActivity(intentMain, opt.toBundle())
+            val firebaseUser = FirebaseAuth.getInstance().currentUser
+
+            if (firebaseUser!=null) {
+                val intentLoading=Intent(this, LoadingActivity::class.java)
+                startActivity(intentLoading)
+            } else {
+                val intentMain=Intent(this, MainActivity::class.java)
+                val opt = ActivityOptionsCompat.makeSceneTransitionAnimation(this@SplashScreenActivity, imageLogo, imageLogo.transitionName)
+                startActivity(intentMain, opt.toBundle())
+            }
         }, 1750)
     }
 }

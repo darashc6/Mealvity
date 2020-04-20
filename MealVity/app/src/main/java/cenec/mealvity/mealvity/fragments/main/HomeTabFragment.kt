@@ -10,7 +10,7 @@ import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.classes.user.User
 
 /**
- * A simple [Fragment] subclass.
+ * Fragment of the Home Tab
  */
 class HomeTabFragment : Fragment() {
 

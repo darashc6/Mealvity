@@ -16,19 +16,24 @@ import cenec.mealvity.mealvity.fragments.main.ProfileTabFragment
 import com.gauravk.bubblenavigation.BubbleNavigationLinearView
 import com.gauravk.bubblenavigation.listener.BubbleNavigationChangeListener
 
+/**
+ * Activity containing the main fragments of the application (Home, Orders, Profile)
+ */
 class FragmentContainerActivity : AppCompatActivity() {
-    private val vpFragment by lazy { findViewById<ViewPager>(R.id.view_pager) }
-    private val navigation by lazy { findViewById<BubbleNavigationLinearView>(R.id.navigation_menu) }
-    private lateinit var userViewModel: UserViewModel
+    private val vpFragment by lazy { findViewById<ViewPager>(R.id.view_pager) } // ViewPager of the fragment
+    private val navigation by lazy { findViewById<BubbleNavigationLinearView>(R.id.navigation_menu) } // Navigation menu
+    private lateinit var userViewModel: UserViewModel // ViewModel of the User class
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_fragment_container)
 
+        // ViewModel is used to update user's data in the UI
         userViewModel=ViewModelProvider(this).get(UserViewModel::class.java)
         userViewModel.setUserLiveData(UserSingleton.getInstance().getCurrentUser())
 
-        UserSingleton.getInstance().setUserModelListener(object : UserSingleton.UserModelListener{
+        // Each time the user's data is updated, we send that data to the ViewModel, so that we can observe the changes in the UI
+        UserSingleton.getInstance().setUserModelListener(object : UserSingleton.UserSingletonListener{
             override fun onUserUpdate(updatedUser: User) {
                 userViewModel.setUserLiveData(updatedUser)
             }
@@ -36,6 +41,7 @@ class FragmentContainerActivity : AppCompatActivity() {
         })
 
         setupViewPager()
+        // Every time we change the fragment, we set the navigation to it's correct position
         vpFragment.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
             override fun onPageScrollStateChanged(state: Int) {
 
@@ -63,6 +69,9 @@ class FragmentContainerActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Function used to setup the viewPager for the Fragments
+     */
     private fun setupViewPager() {
         val fragmentAdapter=FragmentAdapter(supportFragmentManager)
         val homeTab= HomeTabFragment()
@@ -79,6 +88,9 @@ class FragmentContainerActivity : AppCompatActivity() {
         finishAffinity()
     }
 
+    /**
+     * Returns the User's ViewModel
+     */
     fun getUserViewModel(): UserViewModel {
         return userViewModel
     }

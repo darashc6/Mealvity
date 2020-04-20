@@ -12,20 +12,23 @@ import cenec.mealvity.mealvity.classes.user.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * Activity simulating the loading time between one activity and the other
+ */
 class LoadingActivity : AppCompatActivity() {
-    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
-    private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() } // Instance of Firebase Firestore
+    private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() } // Instance of Firebase Auth
+    private var userLoggedIn: User? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loading)
 
+        // We search for the user currently logged in via Firebase Auth
         mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).document(mFirebaseAuth.currentUser!!.uid).get()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    val userLoggedIn=task.result!!.toObject(User::class.java)!!
-                    UserSingleton.getInstance().setCurrentUser(userLoggedIn)
-                    Toast.makeText(this, "Welcome to MealVity, ${userLoggedIn.fullName}!", Toast.LENGTH_LONG).show()
+                    userLoggedIn=task.result!!.toObject(User::class.java)
                 } else {
                     Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
                 }
@@ -33,9 +36,20 @@ class LoadingActivity : AppCompatActivity() {
 
         val handler=Handler()
         handler.postDelayed(Runnable {
-            val intentHomePage=Intent(this, FragmentContainerActivity::class.java)
-            intentHomePage.flags=Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intentHomePage)
+            // If the user exists, userLoggedIn won't be null, and the app will move to the next activity
+            if (userLoggedIn!=null) {
+                UserSingleton.getInstance().setCurrentUser(userLoggedIn!!)
+                Toast.makeText(this, "Welcome to MealVity, ${userLoggedIn!!.fullName}!", Toast.LENGTH_LONG).show()
+
+                val intentHomePage=Intent(this, FragmentContainerActivity::class.java)
+                intentHomePage.flags=Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intentHomePage)
+            } else {
+                Toast.makeText(this, "Error trying to log in. Please try again later.", Toast.LENGTH_SHORT).show()
+                val intentMainActivity=Intent(this, MainActivity::class.java)
+                intentMainActivity.flags=Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intentMainActivity)
+            }
         }, 2000)
     }
 

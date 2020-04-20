@@ -8,6 +8,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.cardview.widget.CardView
 import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.classes.constants.Database
 import cenec.mealvity.mealvity.classes.user.Address
@@ -19,27 +20,46 @@ import com.google.firebase.auth.FirebaseAuthWeakPasswordException
 import com.google.firebase.firestore.FirebaseFirestore
 
 
+/**
+ * Activity where the user creates a new account using email and password
+ */
 class SignUpActivity : AppCompatActivity() {
-    private val etFullName by lazy { findViewById<EditText>(R.id.editText_full_name) }
-    private val etEmail by lazy { findViewById<EditText>(R.id.editText_email) }
-    private val etPassword by lazy { findViewById<EditText>(R.id.editText_password) }
-    private val etRepeatPassword by lazy { findViewById<EditText>(R.id.editText_password_repeat) }
-    private val etPhoneNumber by lazy { findViewById<EditText>(R.id.editText_phone_number) }
-    private val pbSignUp by lazy { findViewById<ProgressBar>(R.id.progressBar_sign_up) }
-    private val tvSignUp by lazy { findViewById<TextView>(R.id.textview_sign_up) }
-    private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() }
-    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+    private val etFullName by lazy { findViewById<EditText>(R.id.editText_full_name) } // EditText for the user's full name
+    private val etEmail by lazy { findViewById<EditText>(R.id.editText_email) } // EditText for the user's email
+    private val etPassword by lazy { findViewById<EditText>(R.id.editText_password) } // EditText for the user's password
+    private val etRepeatPassword by lazy { findViewById<EditText>(R.id.editText_password_repeat) } // EditText for introducing the password again
+    private val etPhoneNumber by lazy { findViewById<EditText>(R.id.editText_phone_number) }  // EditText for the user's phone number
+    private val pbSignUp by lazy { findViewById<ProgressBar>(R.id.progressBar_sign_up) } // ProgressBar for the button (which is a CardView)
+    private val tvSignUp by lazy { findViewById<TextView>(R.id.textview_sign_up) } // TextView for the button (which is a CardView)
+    private val bSignUp by lazy { findViewById<CardView>(R.id.button_new_account) } // Button for creating the new account
+    private val bSignIn by lazy { findViewById<CardView>(R.id.button_log_in) } // Button for signing in
+    private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() } // Instance of Authentication for Firebase
+    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() } // Instance of Firesotre database
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sign_up)
+
+        bSignUp.setOnClickListener {
+            newAccount()
+        }
+
+        bSignIn.setOnClickListener {
+            gotoSignInActivity()
+        }
     }
 
-    fun gotoSignInActivity(view: View) {
+    /**
+     * Redirects to the signing in activity
+     */
+    private fun gotoSignInActivity() {
         startActivity(Intent(this, SignInActivity::class.java))
     }
 
-    fun newAccount(view: View) {
+    /**
+     * Creates a new account and stores the user in the database
+     */
+    private fun newAccount() {
         val fullName = etFullName.text.toString()
         val email = etEmail.text.toString()
         val password = etPassword.text.toString()

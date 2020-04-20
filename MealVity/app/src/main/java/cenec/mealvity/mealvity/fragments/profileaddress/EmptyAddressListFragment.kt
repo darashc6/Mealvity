@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import cenec.darash.mealvity.R
 
 /**
- * A simple [Fragment] subclass.
+ * Fragment containing an emty list of addresses
  */
 class EmptyAddressListFragment : Fragment() {
 

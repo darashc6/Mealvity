@@ -14,13 +14,16 @@ import cenec.mealvity.mealvity.fragments.profileaddress.AddressListFragment
 import cenec.mealvity.mealvity.fragments.profileaddress.EmptyAddressListFragment
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
+/**
+ * Activity containing the fragments related to the user's address list
+ */
 class UserAddressesActivity : AppCompatActivity() {
-    private val fabAddAddress by lazy { findViewById<FloatingActionButton>(R.id.fab_add_address) }
-    private val fragmentWithEmptyList by lazy { EmptyAddressListFragment() }
-    private val fragmentWithList by lazy { AddressListFragment() }
-    private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() }
-    private lateinit var userViewModel: UserViewModel
-    private var showingAddressList = false
+    private val fabAddAddress by lazy { findViewById<FloatingActionButton>(R.id.fab_add_address) } // Button to add a new address
+    private val fragmentWithEmptyList by lazy { EmptyAddressListFragment() } // Instance of fragment with no address in list
+    private val fragmentWithList by lazy { AddressListFragment() } // Instance of fragment containing the user's address list
+    private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() } // Instance of the user currently logged in
+    private lateinit var userViewModel: UserViewModel // ViewModel of the User
+    private var showingAddressList = false // True if showing the fragment containing the user's address list, false if otherwise
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,10 +33,11 @@ class UserAddressesActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
+        // ViewModel is used to update user's data in the UI
         userViewModel=ViewModelProvider(this).get(UserViewModel::class.java)
-        userViewModel.setUserLiveData(UserSingleton.getInstance().getCurrentUser())
+        userViewModel.setUserLiveData(userLoggedIn)
 
-        if (userLoggedIn.addresses.isEmpty()) {
+        if (userLoggedIn.addresses.isEmpty()) { // If the user doesn't have any addresses in his list, it will show a fragment with no list
             supportFragmentManager.beginTransaction()
                 .add(R.id.layout_fragment, fragmentWithEmptyList)
                 .commit()
@@ -48,10 +52,11 @@ class UserAddressesActivity : AppCompatActivity() {
             startActivity(intentAddAddress)
         }
 
-        UserSingleton.getInstance().setUserModelListener(object : UserSingleton.UserModelListener {
+        // Each time the user's data is updated, we send that data to the ViewModel, so that we can observe the changes in the UI
+        UserSingleton.getInstance().setUserModelListener(object : UserSingleton.UserSingletonListener {
             override fun onUserUpdate(updatedUser: User) {
                 userViewModel.setUserLiveData(updatedUser)
-                if (userViewModel.getUserLiveData().value!!.addresses.isNotEmpty()) {
+                if (updatedUser.addresses.isNotEmpty()) {
                     if (!showingAddressList) {
                         supportFragmentManager.beginTransaction()
                             .replace(R.id.layout_fragment, fragmentWithList)
@@ -69,10 +74,17 @@ class UserAddressesActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Return's the User ViewModel
+     * This is used in AddressListFragment
+     */
     fun getUserViewModel(): UserViewModel {
         return userViewModel
     }
 
+    /**
+     * Overrides the home button displayed in the toolbar
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> finish()

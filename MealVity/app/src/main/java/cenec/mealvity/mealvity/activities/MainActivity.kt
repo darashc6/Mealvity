@@ -8,6 +8,8 @@ import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.animation.AnimationUtils
+import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.classes.constants.Database
@@ -25,44 +27,69 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * Main activity of the app, where the user can sign in or sign up
+ */
 class MainActivity : AppCompatActivity() {
-    private lateinit var googleSignInClient: GoogleSignInClient
-    private val RC_GOOGLE_SIGN_IN = 123
-    private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() }
-    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+    private lateinit var googleSignInClient: GoogleSignInClient // Client used for interacting with the Google Sign In API
+    private val RC_GOOGLE_SIGN_IN = 123 // Request code for signing in with Google
+    private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() } // Instance of Firebase Authentication
+    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() } // Instance of Firebase Firestore
+    private val bSignInEmail by lazy { findViewById<Button>(R.id.button_email) } // Button for signing in with email/password
+    private val bSignInGoogle by lazy { findViewById<Button>(R.id.button_google) } // Button for signing in with Google
+    private val bSignUp by lazy { findViewById<TextView>(R.id.button_sign_up) } // Button for signing up
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        window.sharedElementEnterTransition.duration=1000
-        val slideAnimation=Slide(Gravity.BOTTOM)
-        slideAnimation.excludeTarget(android.R.id.statusBarBackground, true)
-        slideAnimation.excludeTarget(android.R.id.navigationBarBackground, true)
-        slideAnimation.duration=1250
-        slideAnimation.interpolator=AnimationUtils.loadInterpolator(this, android.R.interpolator.linear_out_slow_in)
-        window.enterTransition=slideAnimation
+        transitionFromSplashScreen()
 
         val gso=GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()
             .build()
         googleSignInClient=GoogleSignIn.getClient(this, gso)
+
+        bSignInEmail.setOnClickListener {
+            emailSignIn()
+        }
+
+        bSignUp.setOnClickListener{
+            createNewAccount()
+        }
+
+        bSignInGoogle.setOnClickListener {
+            googleSignIn()
+        }
     }
 
-    fun emailSignIn(view: View) {
+    /**
+     * Launches the activity to sign in using email and password
+     */
+    private fun emailSignIn() {
         startActivity(Intent(this, SignInActivity::class.java))
     }
 
-    fun createNewAccount(view: View) {
+    /**
+     * Launches the activity to create a new account
+     */
+    private fun createNewAccount() {
         startActivity(Intent(this, SignUpActivity::class.java))
     }
 
-    fun googleSignIn(view: View) {
+    /**
+     * Function launching the intent for signing in with google
+     */
+    private fun googleSignIn() {
         val intentGoogleSignIn=googleSignInClient.signInIntent
         startActivityForResult(intentGoogleSignIn, RC_GOOGLE_SIGN_IN)
     }
 
+    /**
+     * Function fetching the data from the intent.
+     * From there, it will try to authenticate
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -80,6 +107,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Function for authenticating using a Google account
+     * @param googleAccount The google account to authenticate
+     */
     private fun firebaseAuthWithGoogle(googleAccount: GoogleSignInAccount) {
         val credential=GoogleAuthProvider.getCredential(googleAccount.idToken, null)
         mFirebaseAuth.signInWithCredential(credential)
@@ -92,10 +123,16 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Function checking whether the recently signed in user exists in Firestore
+     * @param currentUser Signed in Firebase User
+     */
     private fun checkUserInDatabase(currentUser: FirebaseUser) {
         mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).document(currentUser.uid).get()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    // If the user exists, it will go to the loading activity
+                    // If not, it will first add the user to the Firestore and then it will proceed
                     val result = task.result!!.toObject(User::class.java)
                     if (result==null) {
                         addUserToDatabase(currentUser)
@@ -108,7 +145,12 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Adds the new user to the Firesotre database
+     * @param currentUser The new user
+     */
     private fun addUserToDatabase(currentUser: FirebaseUser) {
+        // To add an object to Firestore, we can add it as a hashmap value, since it uses a key-value pairing
         val newUser = hashMapOf(
             Database.FIRESTORE_KEY_DATABASE_USERS_FULL_NAME to currentUser.displayName,
             Database.FIRESTORE_KEY_DATABASE_USERS_PHONE_NUMBER to "",
@@ -119,6 +161,7 @@ class MainActivity : AppCompatActivity() {
         mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).document(currentUser.uid).set(newUser)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    // Once the user has been added, it will proceed to the loading activity
                     goToLoadingActivity()
                 } else {
                     Toast.makeText(this@MainActivity, "Error, please try again later", Toast.LENGTH_LONG).show()
@@ -127,19 +170,31 @@ class MainActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Launches the loading activity
+     */
     private fun goToLoadingActivity() {
         val loadingActivity=Intent(this@MainActivity, LoadingActivity::class.java)
         startActivity(loadingActivity)
     }
 
-    override fun onStart() {
-        super.onStart()
-        if (mFirebaseAuth.currentUser!=null) {
-            val intentLoading=Intent(this, LoadingActivity::class.java)
-            startActivity(intentLoading)
-        }
+    /**
+     * Implements a trasition coming from the splash screen activity
+     */
+    private fun transitionFromSplashScreen() {
+        window.sharedElementEnterTransition.duration=1000
+        val slideAnimation=Slide(Gravity.BOTTOM)
+        slideAnimation.excludeTarget(android.R.id.statusBarBackground, true)
+        slideAnimation.excludeTarget(android.R.id.navigationBarBackground, true)
+        slideAnimation.duration=1250
+        slideAnimation.interpolator=AnimationUtils.loadInterpolator(this, android.R.interpolator.linear_out_slow_in)
+        window.enterTransition=slideAnimation
     }
 
+    /**
+     * Overrides the default onBackPressed method
+     * when we press back, we close the activity
+     */
     override fun onBackPressed() {
         finishAffinity()
     }

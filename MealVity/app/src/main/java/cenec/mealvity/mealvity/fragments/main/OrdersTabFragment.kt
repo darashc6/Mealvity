@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import cenec.darash.mealvity.R
 
 /**
- * A simple [Fragment] subclass.
+ * Fragment of the Orders Tab
  */
 class OrdersTabFragment : Fragment() {
 

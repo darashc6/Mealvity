@@ -19,28 +19,28 @@ import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 
 /**
- * A simple [Fragment] subclass.
+ * Frgament of the profile tab
  */
 class ProfileTabFragment : Fragment() {
-    private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() }
-    private lateinit var fragmentView: View
-    private lateinit var etProfileName: TextView
-    private lateinit var etProfileEmail: TextView
-    private lateinit var ivProfilePhoto: ImageView
-    private lateinit var cvAccountInfo: CardView
-    private lateinit var cvChangePassword: CardView
-    private lateinit var cvUserAddresses: CardView
-    private lateinit var cvNotifications: CardView
-    private lateinit var cvHelp: CardView
-    private lateinit var currentUser: User
-    private lateinit var userViewModel: UserViewModel
+    private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() } // Instance of Authetication of Firebase
+    private lateinit var fragmentView: View // View of the fragment
+    private lateinit var tvProfileName: TextView // TextView of the profile name
+    private lateinit var tvProfileEmail: TextView // TextView of the profile email
+    private lateinit var ivProfilePhoto: ImageView // ImageView of the profile photo
+    private lateinit var cvAccountInfo: CardView // Button for showoing the account info
+    private lateinit var cvChangePassword: CardView // Button for changing the password
+    private lateinit var cvUserAddresses: CardView // Button for showing the address list of the user
+    private lateinit var cvNotifications: CardView // Button for showing the notification preferences
+    private lateinit var cvHelp: CardView // Button for showing an app guide for the user
+    private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() } // Instance of the user currently logged in
+    private lateinit var userViewModel: UserViewModel // ViewModel of the User class
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        currentUser=UserSingleton.getInstance().getCurrentUser()
-        val isUserAccountGoogle=FirebaseAuth.getInstance().currentUser!!.
+        val isUserAccountGoogle=mFirebaseAuth.currentUser!!.
             getIdToken(false).result!!.signInProvider.equals("google.com", true)
         userViewModel=(activity as FragmentContainerActivity).getUserViewModel()
+        // the layout of the fragment will depend on whether the user has logged in via Google or E-Mail/Password
         fragmentView = if (!isUserAccountGoogle) {
             LayoutInflater.from(context).inflate(R.layout.fragment_profile_tab, null)
         } else {
@@ -48,8 +48,8 @@ class ProfileTabFragment : Fragment() {
         }
 
         val profilePhoto=mFirebaseAuth.currentUser!!.photoUrl
-        etProfileEmail=fragmentView.findViewById(R.id.textview_profile_email)
-        etProfileName=fragmentView.findViewById(R.id.textview_profile_name)
+        tvProfileEmail=fragmentView.findViewById(R.id.textview_profile_email)
+        tvProfileName=fragmentView.findViewById(R.id.textview_profile_name)
         ivProfilePhoto=fragmentView.findViewById(R.id.profile_logo)
 
         cvAccountInfo=fragmentView.findViewById(R.id.cardview_account_info)
@@ -57,8 +57,8 @@ class ProfileTabFragment : Fragment() {
         cvNotifications=fragmentView.findViewById(R.id.cardView_notifiacions)
         cvHelp=fragmentView.findViewById(R.id.cardView_help)
 
-        etProfileEmail.text=currentUser.email
-        etProfileName.text=currentUser.fullName
+        tvProfileEmail.text=userLoggedIn.email
+        tvProfileName.text=userLoggedIn.fullName
         if (profilePhoto!=null) {
             Glide.with(this).load(profilePhoto).into(ivProfilePhoto)
         }
@@ -67,6 +67,7 @@ class ProfileTabFragment : Fragment() {
             newActivity(EditProfileActivity::class.java)
         }
 
+        //  If user is logged in using Google, he won't be able to change his password
         if (!isUserAccountGoogle) {
             cvChangePassword=fragmentView.findViewById(R.id.cardView_change_password)
             cvChangePassword.setOnClickListener{
@@ -99,15 +100,18 @@ class ProfileTabFragment : Fragment() {
         userViewModel.getUserLiveData().observe(viewLifecycleOwner, object : Observer<User>{
             override fun onChanged(updatedUser: User?) {
                 if (updatedUser!=null) {
-                    etProfileName.text = updatedUser.fullName
-                    etProfileEmail.text = updatedUser.email
+                    tvProfileName.text = updatedUser.fullName
+                    tvProfileEmail.text = updatedUser.email
                 }
             }
 
         })
     }
 
-
+    /**
+     * Launches a new activity to the class specified by parameter
+     * @param className Class of the activity
+     */
     private fun newActivity(className: Class<*>) {
         val intentNewActivity=Intent(context, className)
         startActivity(intentNewActivity)

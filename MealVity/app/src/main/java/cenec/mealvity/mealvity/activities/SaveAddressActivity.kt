@@ -8,6 +8,7 @@ import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import cenec.darash.mealvity.R
+import cenec.mealvity.mealvity.classes.constants.BundleKeys
 import cenec.mealvity.mealvity.classes.constants.Database
 import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.Address
@@ -15,20 +16,23 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
+/**
+ * Activity where the user can add a new address or modify an existing one
+ */
 class SaveAddressActivity : AppCompatActivity() {
-    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
-    private val etAddressTitle by lazy { findViewById<TextInputEditText>(R.id.editText_address_title) }
-    private val etStreetName by lazy { findViewById<TextInputEditText>(R.id.editText_street_name) }
-    private val etStreetNumber by lazy { findViewById<TextInputEditText>(R.id.editText_street_number) }
-    private val etDoorInfo by lazy { findViewById<TextInputEditText>(R.id.editText_door_info) }
-    private val etAddressExtras by lazy { findViewById<TextInputEditText>(R.id.editText_address_extras) }
-    private val etTown by lazy { findViewById<TextInputEditText>(R.id.editText_town) }
-    private val etPostalCode by lazy { findViewById<TextInputEditText>(R.id.editText_postal_code) }
-    private val bSaveAddress by lazy { findViewById<CardView>(R.id.button_save_address) }
-    private val tvCardView by lazy { findViewById<TextView>(R.id.textview_save_address) }
-    private val pbCardView by lazy { findViewById<ProgressBar>(R.id.progressBar_save_address) }
-    private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() }
-    private var isModifyingAddress = false
+    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() } // Instance of the Firestore database
+    private val etAddressTitle by lazy { findViewById<TextInputEditText>(R.id.editText_address_title) } // EditText for the Address title
+    private val etStreetName by lazy { findViewById<TextInputEditText>(R.id.editText_street_name) } // EditText for the street name
+    private val etStreetNumber by lazy { findViewById<TextInputEditText>(R.id.editText_street_number) } // EditText for the street number
+    private val etDoorInfo by lazy { findViewById<TextInputEditText>(R.id.editText_door_info) } // EditText for the door info (floor number, door, etc)
+    private val etAddressExtras by lazy { findViewById<TextInputEditText>(R.id.editText_address_extras) } // EditText for the Address extras (Apartment, doorbell)
+    private val etTown by lazy { findViewById<TextInputEditText>(R.id.editText_town) } // EditText for  the town
+    private val etPostalCode by lazy { findViewById<TextInputEditText>(R.id.editText_postal_code) } // EditText for the postal code
+    private val bSaveAddress by lazy { findViewById<CardView>(R.id.button_save_address) } // Button to save or modify the address
+    private val tvCardView by lazy { findViewById<TextView>(R.id.textview_save_address) } // TextView of the button (which is a CardView)
+    private val pbCardView by lazy { findViewById<ProgressBar>(R.id.progressBar_save_address) } // ProgressBar of the button (which is a CardView)
+    private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() } // Instance of the user currently logged in
+    private var isModifyingAddress = false // True if the user user is modifying an existing address, false if otherwise
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,8 +42,8 @@ class SaveAddressActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
 
-        if (intent.extras != null) {
-            val addressToModify = userLoggedIn.addresses[intent.extras!!.getInt("position_list")]
+        if (intent.extras != null) { // If the extras return a non-null Bundle, this means the user is modifying an already existing address
+            val addressToModify = userLoggedIn.addresses[intent.extras!!.getInt(BundleKeys.ADDRESS_LIST_POSITION)]
 
             etAddressTitle.setText(addressToModify.title)
             etStreetName.setText(addressToModify.name)
@@ -106,6 +110,9 @@ class SaveAddressActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Function where the user's address list is updated in the database
+     */
     private fun updateAddressListToDatabase() {
         val firebaseUser = FirebaseAuth.getInstance().currentUser
         mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS)

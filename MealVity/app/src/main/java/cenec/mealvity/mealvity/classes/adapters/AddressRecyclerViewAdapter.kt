@@ -1,6 +1,5 @@
 package cenec.mealvity.mealvity.classes.adapters
 
-import android.opengl.Visibility
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,33 +9,44 @@ import cenec.mealvity.mealvity.classes.user.Address
 import io.sulek.ssml.OnSwipeListener
 import kotlinx.android.synthetic.main.item_list_address.view.*
 
-class AddressRecyclerViewAdapter(private var addressList: ArrayList<Address>): RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+/**
+ * RecyclerView adapter binding the address data
+ */
+class AddressRecyclerViewAdapter(private var addressList: ArrayList<Address>): RecyclerView.Adapter<AddressRecyclerViewAdapter.AddressViewHolder>() {
     private lateinit var rvListener: AddressRecyclerViewListener
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddressViewHolder {
         return AddressViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_list_address, parent, false))
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder) {
-            is AddressViewHolder -> {
-                holder.bind(addressList[position], rvListener)
-            }
-        }
+    override fun onBindViewHolder(holder: AddressViewHolder, position: Int) {
+        holder.bind(addressList[position], rvListener)
     }
 
     override fun getItemCount(): Int {
         return addressList.size
     }
 
+    /**
+     * Sets the new address list to bind
+     * @param newAddressList new address list
+     */
     fun setAddressList(newAddressList: ArrayList<Address>) {
         addressList = newAddressList
     }
 
+    /**
+     * Sets the listener for the RecyclerView
+     * @param listener listener for the RecyclerView
+     */
     fun setOnAddressRecyclerViewListener(listener: AddressRecyclerViewListener) {
         rvListener = listener
     }
 
+    /**
+     * Object containing the item's view
+     * @param itemView View where we bind the data
+     */
     inner class AddressViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private val addressTitle = itemView.textView_address_title
         private val streetInfo = itemView.textView_address_street
@@ -46,6 +56,11 @@ class AddressRecyclerViewAdapter(private var addressList: ArrayList<Address>): R
         private val bEditAddress = itemView.edit_address_button
         private val bDeleteAddress = itemView.delete_address_button
 
+        /**
+         * Binds the address data to the itemView
+         * @param address Address containing all the data
+         * @param listener Listener for the RecyclerView
+         */
         fun bind(address: Address, listener: AddressRecyclerViewListener) {
             addressTitle.text = address.title
             streetInfo.text = "${address.name}, ${address.number}"
@@ -79,8 +94,20 @@ class AddressRecyclerViewAdapter(private var addressList: ArrayList<Address>): R
         }
     }
 
+    /**
+     * Interface for the RecyclerView
+     */
     interface AddressRecyclerViewListener {
+        /**
+         * Deletes the address from the list
+         * @param position Index of the list
+         */
         fun onAddressDelete(position: Int)
+
+        /**
+         * Edits an address from the list
+         * @param position Index of the list
+         */
         fun onAddressEdit(position: Int)
     }
 }

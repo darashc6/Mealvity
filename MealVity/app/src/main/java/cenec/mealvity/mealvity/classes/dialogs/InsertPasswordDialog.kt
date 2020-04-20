@@ -7,15 +7,20 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.EditText
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import cenec.darash.mealvity.R
 import java.lang.ClassCastException
 
+/**
+ * Dialog where the user inserts his password for re-authetication
+ * @param appContext Application context
+ */
 class InsertPasswordDialog(private var appContext: Context): DialogFragment() {
-    private lateinit var dialogView: View
-    private lateinit var etPassword: TextView
-    private lateinit var listener: InsertPasswordDialogListener
+    private lateinit var dialogView: View // Custom layout for the dialog
+    private lateinit var etPassword: EditText // EditText where the user inserts his password
+    private lateinit var listener: InsertPasswordDialogListener // Dialog's listener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +59,14 @@ class InsertPasswordDialog(private var appContext: Context): DialogFragment() {
         }
     }
 
+    /**
+     * Interface for the dialog
+     */
     interface InsertPasswordDialogListener{
+        /**
+         * Gets the user password
+         * @param password Password inserted by the user
+         */
         fun getInputPassword(password: String)
     }
 }

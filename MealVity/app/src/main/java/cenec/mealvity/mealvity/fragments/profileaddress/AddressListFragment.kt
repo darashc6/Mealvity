@@ -14,6 +14,7 @@ import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.activities.SaveAddressActivity
 import cenec.mealvity.mealvity.activities.UserAddressesActivity
 import cenec.mealvity.mealvity.classes.adapters.AddressRecyclerViewAdapter
+import cenec.mealvity.mealvity.classes.constants.BundleKeys
 import cenec.mealvity.mealvity.classes.constants.Database
 import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.User
@@ -24,7 +25,7 @@ import io.sulek.ssml.SSMLLinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_address_list.view.*
 
 /**
- * A simple [Fragment] subclass.
+ * Fragment containing a list of all the addresses saved by the user
  */
 class AddressListFragment : Fragment() {
     private lateinit var fragmentView: View
@@ -48,9 +49,13 @@ class AddressListFragment : Fragment() {
         return fragmentView
     }
 
+    /**
+     * Sets up the RecyclerView
+     * @param context Application context
+     */
     private fun setupRecyclerView(context: Context) {
         rvAddressList.layoutManager=SSMLLinearLayoutManager(context)
-        rvAdapter=AddressRecyclerViewAdapter(UserSingleton.getInstance().getCurrentUser().addresses!!)
+        rvAdapter=AddressRecyclerViewAdapter(UserSingleton.getInstance().getCurrentUser().addresses)
         rvAdapter.setOnAddressRecyclerViewListener(object : AddressRecyclerViewAdapter.AddressRecyclerViewListener{
             override fun onAddressDelete(position: Int) {
                 deleteAddressFromDatabase(position)
@@ -59,7 +64,7 @@ class AddressListFragment : Fragment() {
             override fun onAddressEdit(position: Int) {
                 val intentEditAddress = Intent(context, SaveAddressActivity::class.java)
                 val bun = Bundle()
-                bun.putInt("position_list", position)
+                bun.putInt(BundleKeys.ADDRESS_LIST_POSITION, position)
                 intentEditAddress.putExtras(bun)
                 startActivity(intentEditAddress)
             }
@@ -79,6 +84,10 @@ class AddressListFragment : Fragment() {
         })
     }
 
+    /**
+     * Deletes an address from the user's list given the list's position
+     * @param position Index of the list
+     */
     private fun deleteAddressFromDatabase(position: Int) {
         val mFirebaseFirestore = FirebaseFirestore.getInstance()
         val firebaseUser = FirebaseAuth.getInstance().currentUser
