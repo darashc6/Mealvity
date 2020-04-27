@@ -9,7 +9,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="cenec.mealvity.mealvity.activities.SaveAddressActivity"></activity>
+        <activity android:name="cenec.mealvity.mealvity.activities.ShowRestaurantListing"></activity>
+        <activity android:name="cenec.mealvity.mealvity.activities.SaveAddressActivity" />
         <activity
             android:name="cenec.mealvity.mealvity.activities.HelpActivity"
             android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
