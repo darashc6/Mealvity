@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+    
+    <androidx.cardview.widget.CardView
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        app:cardBackgroundColor="@color/colorAccentDark"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="5dp"
+        android:layout_margin="15dp"
+        >
+        
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+
+
+            <ImageView
+                android:id="@+id/image_view_cuisine"
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_gravity="center"
+                android:layout_margin="10dp"
+                android:src="@drawable/indian"
+                />
+
+            <TextView
+                android:id="@+id/text_cuisine_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Indian"
+                android:textAlignment="center"
+                android:textSize="22sp"
+                android:fontFamily="@font/fonarto_regular"
+                android:textColor="@color/black"
+                />
+
+        </LinearLayout>
+        
+        
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

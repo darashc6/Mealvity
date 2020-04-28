@@ -22,4 +22,16 @@ interface YelpFusionApi {
         @Query("limit") limit: Int = 50,
         @Query("categories") categories: String = "restaurants"
     ): Call<RestaurantList>
+
+    /**
+     * Returns a list of restaurants with the specified category and address
+     */
+    @GET("businesses/search")
+    @Headers("Authorization: Bearer ${ApiAccess.API_KEY_YELP_FUSION_API}")
+    fun getRestaurantListByCategory(
+        @Query("location") location: String,
+        @Query("categories") categories: String,
+        @Query("radius") radius: Int = 1500,
+        @Query("limit") limit: Int = 50
+    ): Call<RestaurantList>
 }

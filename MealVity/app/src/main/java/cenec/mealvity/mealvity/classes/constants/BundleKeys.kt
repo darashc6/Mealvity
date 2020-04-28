@@ -5,4 +5,6 @@ package cenec.mealvity.mealvity.classes.constants
  */
 object BundleKeys {
     const val ADDRESS_LIST_POSITION = "address_position_list"
+    const val ADDRESS_SEARCH = "address_search"
+    const val RESTAURANT_CATEGORY = "category"
 }
