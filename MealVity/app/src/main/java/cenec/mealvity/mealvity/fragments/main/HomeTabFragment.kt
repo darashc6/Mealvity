@@ -6,14 +6,21 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.FragmentHomeTabBinding
+import cenec.mealvity.mealvity.activities.AutocompleteStreetActivity
 import cenec.mealvity.mealvity.activities.ShowRestaurantListing
 import cenec.mealvity.mealvity.classes.adapters.CuisineRecyclerViewAdapter
+import cenec.mealvity.mealvity.classes.config.SharedPreferencesConfig
 import cenec.mealvity.mealvity.classes.constants.BundleKeys
 import cenec.mealvity.mealvity.classes.restaurant.Categories
 import cenec.mealvity.mealvity.classes.restaurant.Cuisine
+import cenec.mealvity.mealvity.classes.singleton.StreetSingleton
 import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import java.util.*
 import kotlin.collections.ArrayList
@@ -22,28 +29,39 @@ import kotlin.collections.ArrayList
  * Fragment of the Home Tab
  */
 class HomeTabFragment : Fragment() {
-    private var _binding: FragmentHomeTabBinding? = null
-    private val binding get() = _binding
+    private lateinit var fragmentView: View
+    private lateinit var rvCuisines: RecyclerView
+    private lateinit var tvUser: TextView
+    private lateinit var etAddress: EditText
+    private lateinit var bSearch: Button
     private lateinit var fakeList: ArrayList<Cuisine>
     private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-    }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentHomeTabBinding.inflate(layoutInflater)
+        fragmentView = layoutInflater.inflate(R.layout.fragment_home_tab, null)
+        rvCuisines = fragmentView.findViewById(R.id.recycler_view_cuisines_list)
+        tvUser = fragmentView.findViewById(R.id.text_view_user)
+        etAddress = fragmentView.findViewById(R.id.editText_address)
+        bSearch = fragmentView.findViewById(R.id.search_restaurant_listings)
 
-        binding!!.textViewUser.text = "Hi, ${UserSingleton.getInstance().getCurrentUser().fullName}!"
+        tvUser.text = "Hi, ${UserSingleton.getInstance().getCurrentUser().fullName}!"
 
-        binding!!.searchRestaurantListings.setOnClickListener {
-            val address = binding!!.editTextAddress.text.toString()
+        etAddress.background = null
+
+        etAddress.setText(SharedPreferencesConfig(context!!).getDefaultStreet())
+
+        etAddress.setOnClickListener {
+            val intentAutocompleteStreet = Intent(context, AutocompleteStreetActivity::class.java)
+            startActivity(intentAutocompleteStreet)
+        }
+
+        bSearch.setOnClickListener {
+            val address = etAddress.text.toString()
             if (address.isEmpty()) {
-                binding!!.editTextAddress.error = getString(R.string.text_field_empty)
-                binding!!.editTextAddress.requestFocus()
+                etAddress.error = getString(R.string.text_field_empty)
+                etAddress.requestFocus()
             } else {
                 val intentGetBusinessListings = Intent(context, ShowRestaurantListing::class.java)
                 val bun = Bundle()
@@ -56,12 +74,22 @@ class HomeTabFragment : Fragment() {
         setupFakeList()
         setupRecyclerView()
 
-        return binding!!.root
+        StreetSingleton.setStreetSingletonListener(object : StreetSingleton.StreetSingletonListener{
+            override fun onStreetSelectedListener(streetSelected: String) {
+                etAddress.setText(streetSelected)
+                val sharedPrefs = SharedPreferencesConfig(context!!)
+                sharedPrefs.saveDefaultStreet(streetSelected)
+            }
+
+        })
+
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return fragmentView
     }
 
     private fun setupFakeList() {
@@ -81,10 +109,10 @@ class HomeTabFragment : Fragment() {
     private fun setupRecyclerView() {
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         layoutManager.stackFromEnd = false
-        binding!!.recyclerViewCategoriesList.layoutManager = layoutManager
+        rvCuisines.layoutManager = layoutManager
 
         val adapter = CuisineRecyclerViewAdapter(fakeList)
-        adapter.setCategoryRecyclerViewListener(object : CuisineRecyclerViewAdapter.CategoryRecyclerViewListener{
+        adapter.setCategoryRecyclerViewListener(object : CuisineRecyclerViewAdapter.CuisineRecyclerViewListener{
             override fun onClick(position: Int) {
                 val category = fakeList[position].name.toLowerCase(Locale.ROOT)
                 val address = "${userLoggedIn.addresses[0].name}, ${userLoggedIn.addresses[0].number}"
@@ -98,7 +126,7 @@ class HomeTabFragment : Fragment() {
             }
 
         })
-        binding!!.recyclerViewCategoriesList.adapter = adapter
+        rvCuisines.adapter = adapter
     }
 
 }

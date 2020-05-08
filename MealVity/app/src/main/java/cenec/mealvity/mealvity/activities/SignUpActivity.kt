@@ -32,7 +32,7 @@ class SignUpActivity : AppCompatActivity() {
     private val pbSignUp by lazy { findViewById<ProgressBar>(R.id.progressBar_sign_up) } // ProgressBar for the button (which is a CardView)
     private val tvSignUp by lazy { findViewById<TextView>(R.id.textview_sign_up) } // TextView for the button (which is a CardView)
     private val bSignUp by lazy { findViewById<CardView>(R.id.button_new_account) } // Button for creating the new account
-    private val bSignIn by lazy { findViewById<CardView>(R.id.button_log_in) } // Button for signing in
+    private val bSignIn by lazy { findViewById<TextView>(R.id.button_sign_in) } // Button for signing in
     private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() } // Instance of Authentication for Firebase
     private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() } // Instance of Firesotre database
 
