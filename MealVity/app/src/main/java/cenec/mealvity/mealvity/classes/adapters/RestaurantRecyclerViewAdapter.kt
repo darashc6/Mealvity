@@ -24,6 +24,10 @@ class RestaurantRecyclerViewAdapter(private var listRestaurant: ArrayList<Restau
         return listRestaurant.size
     }
 
+    fun setRestaurantList(newList: ArrayList<Restaurant>) {
+        listRestaurant = newList
+    }
+
     class RestaurantViewHolder(binding: ItemListRestaurantBinding): RecyclerView.ViewHolder(binding.root) {
         private val _binding = binding
 
@@ -36,11 +40,7 @@ class RestaurantRecyclerViewAdapter(private var listRestaurant: ArrayList<Restau
             }
             _binding.restaurantName.text = restaurant.name
             _binding.restaurantCategory.text = restaurant.displayCategories()
-            if (!restaurant.price.isNullOrEmpty()) {
-                _binding.restaurantPriceRange.text = "Price range: ${restaurant.price}"
-            } else {
-                _binding.restaurantPriceRange.text = "Price range: €€ - €€€"
-            }
+            _binding.restaurantPriceRange.text = "Price range: ${restaurant.price}"
             _binding.restaurantAddress.text = restaurant.location.address
             _binding.restaurantPhone.text = restaurant.phone
             _binding.restaurantDistance.text = "${floor(restaurant.distance).toInt().toString()} m"

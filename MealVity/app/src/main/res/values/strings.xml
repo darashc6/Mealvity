@@ -89,5 +89,13 @@
     <string name="text_welcome">What\'s on your mind today?</string>
     <string name="text_search_nearby_restaurants">Search nearby restaurants</string>
     <string name="text_hint_full_address">Enter your full address here</string>
+    <string name="text_menu_sort_by">Sort by</string>
+    <string name="text_menu_filters">Filters</string>
+    <string name="text_sort_list_rating">Rating</string>
+    <string name="text_sort_list_distance">Distance</string>
+    <string name="text_sort_list_economic_price">Price: € to €€€€</string>
+    <string name="text_sort_luxurious_price">Price: €€€€ to €</string>
+    <string name="text_button_sort_list">Sort</string>
+    <string name="text_sort_list_best_match">Best match</string>
 
 </resources>

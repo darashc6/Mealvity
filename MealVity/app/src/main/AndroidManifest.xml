@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name="cenec.mealvity.mealvity.activities.AutocompleteStreetActivity"/>
-        <activity android:name="cenec.mealvity.mealvity.activities.ShowRestaurantListing" />
+        <activity android:name="cenec.mealvity.mealvity.activities.ShowRestaurantListingActivity" />
         <activity android:name="cenec.mealvity.mealvity.activities.SaveAddressActivity" />
         <activity
             android:name="cenec.mealvity.mealvity.activities.HelpActivity"

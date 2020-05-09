@@ -12,13 +12,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cenec.darash.mealvity.R
-import cenec.darash.mealvity.databinding.FragmentHomeTabBinding
 import cenec.mealvity.mealvity.activities.AutocompleteStreetActivity
-import cenec.mealvity.mealvity.activities.ShowRestaurantListing
+import cenec.mealvity.mealvity.activities.ShowRestaurantListingActivity
 import cenec.mealvity.mealvity.classes.adapters.CuisineRecyclerViewAdapter
 import cenec.mealvity.mealvity.classes.config.SharedPreferencesConfig
 import cenec.mealvity.mealvity.classes.constants.BundleKeys
-import cenec.mealvity.mealvity.classes.restaurant.Categories
 import cenec.mealvity.mealvity.classes.restaurant.Cuisine
 import cenec.mealvity.mealvity.classes.singleton.StreetSingleton
 import cenec.mealvity.mealvity.classes.singleton.UserSingleton
@@ -40,7 +38,7 @@ class HomeTabFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        fragmentView = layoutInflater.inflate(R.layout.fragment_home_tab, null)
+        fragmentView = LayoutInflater.from(context).inflate(R.layout.fragment_home_tab, null)
         rvCuisines = fragmentView.findViewById(R.id.recycler_view_cuisines_list)
         tvUser = fragmentView.findViewById(R.id.text_view_user)
         etAddress = fragmentView.findViewById(R.id.editText_address)
@@ -63,7 +61,7 @@ class HomeTabFragment : Fragment() {
                 etAddress.error = getString(R.string.text_field_empty)
                 etAddress.requestFocus()
             } else {
-                val intentGetBusinessListings = Intent(context, ShowRestaurantListing::class.java)
+                val intentGetBusinessListings = Intent(context, ShowRestaurantListingActivity::class.java)
                 val bun = Bundle()
                 bun.putString(BundleKeys.ADDRESS_SEARCH, address)
                 intentGetBusinessListings.putExtras(bun)
@@ -117,7 +115,7 @@ class HomeTabFragment : Fragment() {
                 val category = fakeList[position].name.toLowerCase(Locale.ROOT)
                 val address = "${userLoggedIn.addresses[0].name}, ${userLoggedIn.addresses[0].number}"
 
-                val intentGetBusinessListing = Intent(context, ShowRestaurantListing::class.java)
+                val intentGetBusinessListing = Intent(context, ShowRestaurantListingActivity::class.java)
                 val bun = Bundle()
                 bun.putString(BundleKeys.RESTAURANT_CATEGORY, category)
                 bun.putString(BundleKeys.ADDRESS_SEARCH, address)
