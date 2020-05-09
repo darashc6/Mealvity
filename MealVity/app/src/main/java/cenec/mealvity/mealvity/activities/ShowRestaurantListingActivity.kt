@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.classes.adapters.LayoutZoom
 import cenec.mealvity.mealvity.classes.adapters.RestaurantRecyclerViewAdapter
+import cenec.mealvity.mealvity.classes.bottomsheet.FilterListBottomSheet
 import cenec.mealvity.mealvity.classes.bottomsheet.SortListByBottomSheet
 import cenec.mealvity.mealvity.classes.constants.ApiAccess
 import cenec.mealvity.mealvity.classes.constants.BundleKeys
@@ -25,7 +26,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet.SortListByBottomSheetListener {
+class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet.SortListByBottomSheetListener, FilterListBottomSheet.FilterListBottomSheetListener {
     private val yelpBuilder = CustomRetrofitBuilder.createRetrofitBuilder(ApiAccess.URL_YELP_FUSION_API)
     private val yelpFusionApi = yelpBuilder.create(YelpFusionApi::class.java)
     private val rvRestaurantList by lazy { findViewById<RecyclerView>(R.id.recycler_view_restaurant_list) }
@@ -119,6 +120,34 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
         })
     }
 
+    private fun getRestaurantListingByCustomParameters(customParametersMap: HashMap<String, String>) {
+        val call = yelpFusionApi.getRestaurantListByCustomParameters(address, customParametersMap)
+
+        call.enqueue(object : Callback<RestaurantList> {
+            override fun onFailure(call: Call<RestaurantList>, t: Throwable) {
+                Toast.makeText(this@ShowRestaurantListingActivity, "onFailure", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onResponse(
+                call: Call<RestaurantList>,
+                response: Response<RestaurantList>
+            ) {
+                if (response.isSuccessful) {
+                    val list = response.body()
+                    list?.let {
+                        rl.listRestaurant = it.filterList()
+                        toolbar.title = "${rl.listRestaurant.size} results"
+                        rvAdapter.setRestaurantList(rl.listRestaurant)
+                        rvAdapter.notifyDataSetChanged()
+                    }
+                } else {
+                    Toast.makeText(this@ShowRestaurantListingActivity, response.code().toString(), Toast.LENGTH_SHORT).show()
+                }
+            }
+
+        })
+    }
+
     private fun setupRecyclerView(list: ArrayList<Restaurant>) {
         pbLoading.visibility = View.GONE
         rvRestaurantList.visibility = View.VISIBLE
@@ -147,7 +176,8 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
                 sortByBottomSheet.show(supportFragmentManager, "")
             }
             resources.getString(R.string.text_menu_filters) -> {
-                // Show bottom sheet
+                val filtersBottomSheet = FilterListBottomSheet(this)
+                filtersBottomSheet.show(supportFragmentManager, "")
             }
         }
 
@@ -185,5 +215,9 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
             }
             sortListOptionSelected = newOptionSelected
         }
+    }
+
+    override fun onApplyFiltersClick(customParameters: HashMap<String, String>) {
+        getRestaurantListingByCustomParameters(customParameters)
     }
 }

@@ -6,6 +6,7 @@ import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Query
+import retrofit2.http.QueryMap
 
 interface YelpFusionApi {
 
@@ -32,6 +33,15 @@ interface YelpFusionApi {
         @Query("location") location: String,
         @Query("categories") categories: String,
         @Query("radius") radius: Int = 1500,
+        @Query("limit") limit: Int = 50
+    ): Call<RestaurantList>
+
+    @GET("businesses/search")
+    @Headers("Authorization: Bearer ${ApiAccess.API_KEY_YELP_FUSION_API}")
+    fun getRestaurantListByCustomParameters(
+        @Query("location") location: String,
+        @QueryMap extras: HashMap<String, String>,
+        @Query("categories") categories: String = "restaurants",
         @Query("limit") limit: Int = 50
     ): Call<RestaurantList>
 }
