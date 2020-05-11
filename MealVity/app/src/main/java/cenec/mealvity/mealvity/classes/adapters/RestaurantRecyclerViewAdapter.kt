@@ -5,10 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import cenec.darash.mealvity.databinding.ItemListRestaurantBinding
 import cenec.mealvity.mealvity.classes.restaurant.Restaurant
+import cenec.mealvity.mealvity.classes.restaurant.RestaurantList
 import com.bumptech.glide.Glide
 import kotlin.math.floor
 
-class RestaurantRecyclerViewAdapter(private var listRestaurant: ArrayList<Restaurant>): RecyclerView.Adapter<RestaurantRecyclerViewAdapter.RestaurantViewHolder>() {
+class RestaurantRecyclerViewAdapter(private var restaurantList: RestaurantList): RecyclerView.Adapter<RestaurantRecyclerViewAdapter.RestaurantViewHolder>() {
     private lateinit var binding: ItemListRestaurantBinding
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RestaurantViewHolder {
@@ -17,15 +18,15 @@ class RestaurantRecyclerViewAdapter(private var listRestaurant: ArrayList<Restau
     }
 
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
-        holder.bind(listRestaurant[position])
+        holder.bind(restaurantList.results[position])
     }
 
     override fun getItemCount(): Int {
-        return listRestaurant.size
+        return restaurantList.results.size
     }
 
-    fun setRestaurantList(newList: ArrayList<Restaurant>) {
-        listRestaurant = newList
+    fun setRestaurantList(newRestaurantList: RestaurantList) {
+        restaurantList = newRestaurantList
     }
 
     class RestaurantViewHolder(binding: ItemListRestaurantBinding): RecyclerView.ViewHolder(binding.root) {

@@ -106,6 +106,7 @@
     <string name="text_filter_distance">Distance</string>
     <string name="text_open_restaurants">Open restaurants</string>
     <string name="checkbox_search_open_restaurants">Search for open restaurants</string>
+    <string name="text_button_clear_filters">Clear Filters</string>
 
     <string-array name="array_distances">
         <item>1 km</item>

@@ -87,7 +87,7 @@ class SortListByBottomSheet(private var appContext: Context, private var sortLis
         }
 
         binding!!.buttonSortList.setOnClickListener {
-            bsListener.onSortListClick(sortListOptSelected)
+            bsListener.onSortList(sortListOptSelected)
             dismiss()
         }
     }
@@ -108,7 +108,7 @@ class SortListByBottomSheet(private var appContext: Context, private var sortLis
     }
 
     interface SortListByBottomSheetListener {
-        fun onSortListClick(newOptionSelected: Int)
+        fun onSortList(newOptionSelected: Int)
     }
 
 }

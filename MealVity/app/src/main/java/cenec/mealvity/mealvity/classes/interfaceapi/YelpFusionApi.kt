@@ -32,7 +32,7 @@ interface YelpFusionApi {
     fun getRestaurantListByCategory(
         @Query("location") location: String,
         @Query("categories") categories: String,
-        @Query("radius") radius: Int = 1500,
+        @Query("radius") radius: Int = 1000,
         @Query("limit") limit: Int = 50
     ): Call<RestaurantList>
 

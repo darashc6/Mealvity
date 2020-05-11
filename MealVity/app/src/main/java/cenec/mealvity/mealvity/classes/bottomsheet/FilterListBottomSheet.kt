@@ -17,7 +17,7 @@ import com.warkiz.widget.OnSeekChangeListener
 import com.warkiz.widget.SeekParams
 import java.lang.ClassCastException
 
-class FilterListBottomSheet(private var appContext: Context): BottomSheetDialogFragment() {
+class FilterListBottomSheet(private var appContext: Context, private var mapCustomParameters: HashMap<String, String>) : BottomSheetDialogFragment() {
     private var _binding: BottomSheetFilterListBinding? = null
     private val binding get() = _binding
     private lateinit var bsListener: FilterListBottomSheetListener
@@ -54,35 +54,62 @@ class FilterListBottomSheet(private var appContext: Context): BottomSheetDialogF
     private fun expandBottomSheetOnShow(dialog: Dialog) {
         dialog.setOnShowListener {
             val dialogBottomSheet = it as BottomSheetDialog
-            val internalDialog = dialogBottomSheet.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
-            BottomSheetBehavior.from(internalDialog as View).state = BottomSheetBehavior.STATE_EXPANDED
+            val internalDialog =
+                dialogBottomSheet.findViewById<View>(com.google.android.material.R.id.design_bottom_sheet)
+            BottomSheetBehavior.from(internalDialog as View).state =
+                BottomSheetBehavior.STATE_EXPANDED
+        }
+    }
+
+    private fun applyCustomParametersToView() {
+        if (mapCustomParameters.containsKey("price")) {
+            val listPriceRanges = mapCustomParameters["price"]!!.split(",")
+            for (price in listPriceRanges) {
+                when (price) {
+                    "1" -> binding!!.checkBoxPrice1.isChecked = true
+                    "2" -> binding!!.checkBoxPrice2.isChecked = true
+                    "3" -> binding!!.checkBoxPrice3.isChecked = true
+                    "4" -> binding!!.checkBoxPrice4.isChecked = true
+                }
+            }
+        }
+
+        if (mapCustomParameters.containsKey("radius")) {
+            radiusLimit = Integer.parseInt(mapCustomParameters["radius"]!!)
+            when (radiusLimit) {
+                1000 -> binding!!.distanceSeekbar.setProgress(0f)
+                2000 -> binding!!.distanceSeekbar.setProgress(25f)
+                5000 -> binding!!.distanceSeekbar.setProgress(50f)
+                8000 -> binding!!.distanceSeekbar.setProgress(75f)
+                10000 -> binding!!.distanceSeekbar.setProgress(100f)
+            }
+        }
+
+        if (mapCustomParameters.containsKey("openNow")) {
+            binding!!.checkBoxRestaurantsOpen.isChecked = true
         }
     }
 
     private fun setupViews() {
-        binding!!.checkBoxPrice1.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener{
-            override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-                if (isChecked) rangePriceSelected.add(1) else rangePriceSelected.remove(1)
-            }
-        })
+        if (mapCustomParameters.isNotEmpty()) {
+            applyCustomParametersToView()
+        }
 
-        binding!!.checkBoxPrice2.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener{
-            override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-                if (isChecked) rangePriceSelected.add(2) else rangePriceSelected.remove(2)
-            }
-        })
+        binding!!.checkBoxPrice1.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) rangePriceSelected.add(1) else rangePriceSelected.remove(1)
+        }
 
-        binding!!.checkBoxPrice3.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener{
-            override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-                if (isChecked) rangePriceSelected.add(3) else rangePriceSelected.remove(3)
-            }
-        })
+        binding!!.checkBoxPrice2.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) rangePriceSelected.add(2) else rangePriceSelected.remove(2)
+        }
 
-        binding!!.checkBoxPrice4.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener{
-            override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-                if (isChecked) rangePriceSelected.add(4) else rangePriceSelected.remove(4)
-            }
-        })
+        binding!!.checkBoxPrice3.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) rangePriceSelected.add(3) else rangePriceSelected.remove(3)
+        }
+
+        binding!!.checkBoxPrice4.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) rangePriceSelected.add(4) else rangePriceSelected.remove(4)
+        }
 
         binding!!.distanceSeekbar.customTickTexts(appContext.resources.getStringArray(R.array.array_distances))
         binding!!.distanceSeekbar.onSeekChangeListener = object : OnSeekChangeListener {
@@ -114,6 +141,11 @@ class FilterListBottomSheet(private var appContext: Context): BottomSheetDialogF
             bsListener.onApplyFiltersClick(getCustomParamenters())
             dismiss()
         }
+
+        binding!!.buttonClearFilters.setOnClickListener {
+            bsListener.onClearFiltersClick()
+            dismiss()
+        }
     }
 
     private fun getCustomParamenters(): HashMap<String, String> {
@@ -133,10 +165,11 @@ class FilterListBottomSheet(private var appContext: Context): BottomSheetDialogF
             priceRanges += "${price},"
         }
 
-        return priceRanges.substring(0, priceRanges.length-1)
+        return priceRanges.substring(0, priceRanges.length - 1)
     }
 
     interface FilterListBottomSheetListener {
         fun onApplyFiltersClick(customParameters: HashMap<String, String>)
+        fun onClearFiltersClick()
     }
 }

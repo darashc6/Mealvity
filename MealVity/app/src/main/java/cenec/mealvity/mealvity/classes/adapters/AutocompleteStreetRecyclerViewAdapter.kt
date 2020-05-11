@@ -9,7 +9,7 @@ import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.classes.autocompleteaddress.StreetList
 import cenec.mealvity.mealvity.classes.autocompleteaddress.StreetName
 
-class AutocompleteStreetRecyclerViewAdapter(var list: StreetList): RecyclerView.Adapter<AutocompleteStreetRecyclerViewAdapter.AutocompleteStreetViewHolder>() {
+class AutocompleteStreetRecyclerViewAdapter(private var streetList: StreetList): RecyclerView.Adapter<AutocompleteStreetRecyclerViewAdapter.AutocompleteStreetViewHolder>() {
     private lateinit var rvListener: AutocompleteStreetRecyclerViewListener
 
     override fun onCreateViewHolder(
@@ -20,15 +20,19 @@ class AutocompleteStreetRecyclerViewAdapter(var list: StreetList): RecyclerView.
     }
 
     override fun onBindViewHolder(holder: AutocompleteStreetViewHolder, position: Int) {
-        holder.bind(list.streetList[position], rvListener)
+        holder.bind(streetList.results[position], rvListener)
     }
 
     override fun getItemCount(): Int {
-        return list.streetList.size
+        return streetList.results.size
     }
 
     fun setAutocompleteStreetRecyclerViewListener(listener: AutocompleteStreetRecyclerViewListener) {
         rvListener = listener
+    }
+
+    fun setStreetList (newStreetList: StreetList) {
+        streetList = newStreetList
     }
 
     class AutocompleteStreetViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {

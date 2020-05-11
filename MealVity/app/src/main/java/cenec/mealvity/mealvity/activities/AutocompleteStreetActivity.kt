@@ -29,6 +29,7 @@ class AutocompleteStreetActivity : AppCompatActivity(), InsertStreetNumberDialog
     private lateinit var api: HereApi
     private lateinit var streetSelected: String
     private lateinit var rvAdapter: AutocompleteStreetRecyclerViewAdapter
+    private var streetList = StreetList(arrayListOf())
     private val hereRetrofitBuilder by lazy { CustomRetrofitBuilder.createRetrofitBuilder(ApiAccess.URL_HERE_API) }
     private val customSearchBar by lazy { findViewById<View>(R.id.custom_search_bar) }
     private val streetRecyclerView by lazy { findViewById<RecyclerView>(R.id.recycler_view_street_list) }
@@ -66,7 +67,8 @@ class AutocompleteStreetActivity : AppCompatActivity(), InsertStreetNumberDialog
                             if (response.isSuccessful) {
                                 val list = response.body()
                                 list?.let {
-                                    rvAdapter.list = it
+                                    streetList = it
+                                    rvAdapter.setStreetList(streetList)
                                     rvAdapter.notifyDataSetChanged()
                                 }
                             } else {
@@ -96,7 +98,7 @@ class AutocompleteStreetActivity : AppCompatActivity(), InsertStreetNumberDialog
         rvAdapter = AutocompleteStreetRecyclerViewAdapter(StreetList(arrayListOf()))
         rvAdapter.setAutocompleteStreetRecyclerViewListener(object : AutocompleteStreetRecyclerViewAdapter.AutocompleteStreetRecyclerViewListener {
             override fun onClick(position: Int) {
-                streetSelected = rvAdapter.list.streetList[position].streetName
+                streetSelected = streetList.results[position].streetName
                 val streetNumberDialog = InsertStreetNumberDialog(this@AutocompleteStreetActivity)
                 streetNumberDialog.show(supportFragmentManager, "")
             }

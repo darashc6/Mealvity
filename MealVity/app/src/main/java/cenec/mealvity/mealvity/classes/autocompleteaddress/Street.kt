@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 class StreetList (
     @SerializedName("items")
-    var streetList: ArrayList<StreetName>
+    var results: ArrayList<StreetName>
 )
 
 data class StreetName (

@@ -6,13 +6,13 @@ import kotlin.collections.ArrayList
 
 data class RestaurantList(
     @SerializedName("businesses")
-    var listRestaurant: ArrayList<Restaurant>
+    var results: ArrayList<Restaurant>
 ) {
 
-    fun filterList(): ArrayList<Restaurant> {
+    fun filterList(): RestaurantList {
         val auxList = arrayListOf<Restaurant>()
 
-        for (listing in listRestaurant) {
+        for (listing in results) {
             if (listing.isInfoComplete()) {
                 auxList.add(listing)
                 if (listing.price.isNullOrEmpty()) {
@@ -20,42 +20,42 @@ data class RestaurantList(
                 }
             }
         }
-        listRestaurant.clear()
-        listRestaurant.addAll(auxList)
+        results.clear()
+        results.addAll(auxList)
 
-        return listRestaurant
+        return RestaurantList(results)
     }
 
-    fun filterListByBestMatch(): ArrayList<Restaurant> {
-        return listRestaurant
+    fun filterListByBestMatch(): RestaurantList {
+        return this
     }
 
-    fun filterListByRatings(): ArrayList<Restaurant> {
+    fun filterListByRatings(): RestaurantList {
         val sortListRatings = arrayListOf<Restaurant>()
-        sortListRatings.addAll(listRestaurant)
+        sortListRatings.addAll(results)
         Collections.sort(sortListRatings, SortRestaurantListByRating())
-        return sortListRatings
+        return RestaurantList(sortListRatings)
     }
 
-    fun filterListByDistance(): ArrayList<Restaurant> {
+    fun filterListByDistance(): RestaurantList {
         val sortListDistance = arrayListOf<Restaurant>()
-        sortListDistance.addAll(listRestaurant)
+        sortListDistance.addAll(results)
         Collections.sort(sortListDistance, SortRestaurantListByDistance())
-        return sortListDistance
+        return RestaurantList(sortListDistance)
     }
 
-    fun filterListByEconomicPrice(): ArrayList<Restaurant> {
+    fun filterListByEconomicPrice(): RestaurantList {
         val sortListEconomicPrice = arrayListOf<Restaurant>()
-        sortListEconomicPrice.addAll(listRestaurant)
+        sortListEconomicPrice.addAll(results)
         Collections.sort(sortListEconomicPrice, SortRestaurantListByEconomicPrice())
-        return sortListEconomicPrice
+        return RestaurantList(sortListEconomicPrice)
     }
 
-    fun filterListByLuxuriousPrice(): ArrayList<Restaurant> {
+    fun filterListByLuxuriousPrice(): RestaurantList {
         val sortListLuxuriousPrice = arrayListOf<Restaurant>()
-        sortListLuxuriousPrice.addAll(listRestaurant)
+        sortListLuxuriousPrice.addAll(results)
         Collections.sort(sortListLuxuriousPrice, SortRestaurantListByLuxuriousPrice())
-        return sortListLuxuriousPrice
+        return RestaurantList(sortListLuxuriousPrice)
     }
 
 }

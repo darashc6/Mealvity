@@ -32,11 +32,12 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
     private val rvRestaurantList by lazy { findViewById<RecyclerView>(R.id.recycler_view_restaurant_list) }
     private val pbLoading by lazy { findViewById<ProgressBar>(R.id.loading_progress_bar) }
     private val toolbar by lazy { findViewById<Toolbar>(R.id.toolbar) }
+    private var restaurantList = RestaurantList(arrayListOf())
     private lateinit var address: String
-    private lateinit var rl: RestaurantList
     private lateinit var rvAdapter: RestaurantRecyclerViewAdapter
     private var category: String? = null
     private var sortListOptionSelected = 0
+    private val mapCustomParameters by lazy { hashMapOf<String, String>() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +46,7 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
         setupToolbar()
         checkBundleExtras()
         getRestaurantListings()
+        setupRecyclerView()
     }
 
     private fun setupToolbar() {
@@ -81,10 +83,12 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
             ) {
                 if (response.isSuccessful) {
                     val list = response.body()
+                    pbLoading.visibility = View.GONE
+                    rvRestaurantList.visibility = View.VISIBLE
                     list?.let {
-                        rl = it
-                        rl.listRestaurant = it.filterList()
-                        setupRecyclerView(rl.listRestaurant)
+                        restaurantList = it.filterList()
+                        toolbar.title = "${restaurantList.results.size} results"
+                        onSortList(sortListOptionSelected)
                     }
                 } else {
                     Toast.makeText(this@ShowRestaurantListingActivity, response.code().toString(), Toast.LENGTH_SHORT).show()
@@ -108,9 +112,12 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
             ) {
                 if (response.isSuccessful) {
                     val list = response.body()
+                    pbLoading.visibility = View.GONE
+                    rvRestaurantList.visibility = View.VISIBLE
                     list?.let {
-                        it.listRestaurant = it.filterList()
-                        setupRecyclerView(it.listRestaurant)
+                        restaurantList = it.filterList()
+                        toolbar.title = "${restaurantList.results.size} results"
+                        onSortList(sortListOptionSelected)
                     }
                 } else {
                     Toast.makeText(this@ShowRestaurantListingActivity, response.code().toString(), Toast.LENGTH_SHORT).show()
@@ -134,11 +141,12 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
             ) {
                 if (response.isSuccessful) {
                     val list = response.body()
+                    pbLoading.visibility = View.GONE
+                    rvRestaurantList.visibility = View.VISIBLE
                     list?.let {
-                        rl.listRestaurant = it.filterList()
-                        toolbar.title = "${rl.listRestaurant.size} results"
-                        rvAdapter.setRestaurantList(rl.listRestaurant)
-                        rvAdapter.notifyDataSetChanged()
+                        restaurantList = it.filterList()
+                        toolbar.title = "${restaurantList.results.size} results"
+                        onSortList(sortListOptionSelected)
                     }
                 } else {
                     Toast.makeText(this@ShowRestaurantListingActivity, response.code().toString(), Toast.LENGTH_SHORT).show()
@@ -148,11 +156,7 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
         })
     }
 
-    private fun setupRecyclerView(list: ArrayList<Restaurant>) {
-        pbLoading.visibility = View.GONE
-        rvRestaurantList.visibility = View.VISIBLE
-        toolbar.title = "${list.size} results"
-        toolbar.subtitle = resources.getString(R.string.text_sort_list_best_match)
+    private fun setupRecyclerView() {
         val layoutZoom = LayoutZoom(this, LinearLayoutManager.HORIZONTAL, false)
         layoutZoom.stackFromEnd = false
         rvRestaurantList.layoutManager = layoutZoom
@@ -160,7 +164,7 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
         val snapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(rvRestaurantList)
 
-        rvAdapter = RestaurantRecyclerViewAdapter(list)
+        rvAdapter = RestaurantRecyclerViewAdapter(restaurantList)
         rvRestaurantList.adapter = rvAdapter
     }
 
@@ -176,7 +180,7 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
                 sortByBottomSheet.show(supportFragmentManager, "")
             }
             resources.getString(R.string.text_menu_filters) -> {
-                val filtersBottomSheet = FilterListBottomSheet(this)
+                val filtersBottomSheet = FilterListBottomSheet(this, mapCustomParameters)
                 filtersBottomSheet.show(supportFragmentManager, "")
             }
         }
@@ -184,40 +188,48 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
         return true
     }
 
-    override fun onSortListClick(newOptionSelected: Int) {
-        if (sortListOptionSelected != newOptionSelected) {
-            when (newOptionSelected) {
-                0 -> {
-                    rvAdapter.setRestaurantList(rl.filterListByBestMatch())
-                    rvAdapter.notifyDataSetChanged()
-                    toolbar.subtitle = resources.getString(R.string.text_sort_list_best_match)
-                }
-                1 -> {
-                    rvAdapter.setRestaurantList(rl.filterListByRatings())
-                    rvAdapter.notifyDataSetChanged()
-                    toolbar.subtitle = resources.getString(R.string.text_sort_list_rating)
-                }
-                2 -> {
-                    rvAdapter.setRestaurantList(rl.filterListByDistance())
-                    rvAdapter.notifyDataSetChanged()
-                    toolbar.subtitle = resources.getString(R.string.text_sort_list_distance)
-                }
-                3 -> {
-                    rvAdapter.setRestaurantList(rl.filterListByEconomicPrice())
-                    rvAdapter.notifyDataSetChanged()
-                    toolbar.subtitle = resources.getString(R.string.text_sort_list_economic_price)
-                }
-                4 -> {
-                    rvAdapter.setRestaurantList(rl.filterListByLuxuriousPrice())
-                    rvAdapter.notifyDataSetChanged()
-                    toolbar.subtitle = resources.getString(R.string.text_sort_luxurious_price)
-                }
+    override fun onSortList(newOptionSelected: Int) {
+        when (newOptionSelected) {
+            0 -> {
+                rvAdapter.setRestaurantList(restaurantList.filterListByBestMatch())
+                rvAdapter.notifyDataSetChanged()
+                toolbar.subtitle = resources.getString(R.string.text_sort_list_best_match)
             }
-            sortListOptionSelected = newOptionSelected
+            1 -> {
+                rvAdapter.setRestaurantList(restaurantList.filterListByRatings())
+                rvAdapter.notifyDataSetChanged()
+                toolbar.subtitle = resources.getString(R.string.text_sort_list_rating)
+            }
+            2 -> {
+                rvAdapter.setRestaurantList(restaurantList.filterListByDistance())
+                rvAdapter.notifyDataSetChanged()
+                toolbar.subtitle = resources.getString(R.string.text_sort_list_distance)
+            }
+            3 -> {
+                rvAdapter.setRestaurantList(restaurantList.filterListByEconomicPrice())
+                rvAdapter.notifyDataSetChanged()
+                toolbar.subtitle = resources.getString(R.string.text_sort_list_economic_price)
+            }
+            4 -> {
+                rvAdapter.setRestaurantList(restaurantList.filterListByLuxuriousPrice())
+                rvAdapter.notifyDataSetChanged()
+                toolbar.subtitle = resources.getString(R.string.text_sort_luxurious_price)
+            }
         }
+        sortListOptionSelected = newOptionSelected
     }
 
     override fun onApplyFiltersClick(customParameters: HashMap<String, String>) {
-        getRestaurantListingByCustomParameters(customParameters)
+        pbLoading.visibility = View.VISIBLE
+        rvRestaurantList.visibility = View.GONE
+        mapCustomParameters.putAll(customParameters)
+        getRestaurantListingByCustomParameters(mapCustomParameters)
+    }
+
+    override fun onClearFiltersClick() {
+        pbLoading.visibility = View.VISIBLE
+        rvRestaurantList.visibility = View.GONE
+        mapCustomParameters.clear()
+        getRestaurantListings()
     }
 }
