@@ -74,12 +74,9 @@ class FragmentContainerActivity : AppCompatActivity() {
      */
     private fun setupViewPager() {
         val fragmentAdapter=FragmentAdapter(supportFragmentManager)
-        val homeTab= HomeTabFragment()
-        val ordersTab= OrdersTabFragment()
-        val profileTab= ProfileTabFragment()
-        fragmentAdapter.addFragment(homeTab)
-        fragmentAdapter.addFragment(ordersTab)
-        fragmentAdapter.addFragment(profileTab)
+        fragmentAdapter.addFragment(HomeTabFragment())
+        fragmentAdapter.addFragment(OrdersTabFragment())
+        fragmentAdapter.addFragment(ProfileTabFragment())
 
         vpFragment.adapter=fragmentAdapter
     }

@@ -29,15 +29,35 @@ class UserAddressesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_user_addresses)
 
-        val toolbar=findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        setupToolbar()
+        setupViewModel()
+        setupInitialFragment()
+        setupViews()
+    }
 
-        // ViewModel is used to update user's data in the UI
+    /**
+     * Sets up the toolbar of the activity
+     */
+    private fun setupToolbar() {
+        setSupportActionBar(findViewById(R.id.toolbar))
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    }
+
+    /**
+     * Sets up the ViewModel for the activity
+     * A ViewModel is used to update user's data in the UI
+     */
+    private fun setupViewModel() {
         userViewModel=ViewModelProvider(this).get(UserViewModel::class.java)
         userViewModel.setUserLiveData(userLoggedIn)
+    }
 
-        if (userLoggedIn.addresses.isEmpty()) { // If the user doesn't have any addresses in his list, it will show a fragment with no list
+    /**
+     * Sets up the initial fragment of the activity
+     * If the user doesn't have any addresses in his list, it will show a fragment with no list
+     */
+    private fun setupInitialFragment() {
+        if (userLoggedIn.addresses.isEmpty()) {
             supportFragmentManager.beginTransaction()
                 .add(R.id.layout_fragment, fragmentWithEmptyList)
                 .commit()
@@ -46,7 +66,12 @@ class UserAddressesActivity : AppCompatActivity() {
                 .add(R.id.layout_fragment, fragmentWithList)
                 .commit()
         }
+    }
 
+    /**
+     * Sets up the views in the activity
+     */
+    private fun setupViews() {
         fabAddAddress.setOnClickListener {
             val intentAddAddress=Intent(this, SaveAddressActivity::class.java)
             startActivity(intentAddAddress)

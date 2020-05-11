@@ -9,8 +9,11 @@ import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.classes.autocompleteaddress.StreetList
 import cenec.mealvity.mealvity.classes.autocompleteaddress.StreetName
 
+/**
+ * RecyclerView binding the StreetList data
+ */
 class AutocompleteStreetRecyclerViewAdapter(private var streetList: StreetList): RecyclerView.Adapter<AutocompleteStreetRecyclerViewAdapter.AutocompleteStreetViewHolder>() {
-    private lateinit var rvListener: AutocompleteStreetRecyclerViewListener
+    private lateinit var rvListener: AutocompleteStreetRecyclerViewListener // Listener for the recyclerView
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -27,10 +30,18 @@ class AutocompleteStreetRecyclerViewAdapter(private var streetList: StreetList):
         return streetList.results.size
     }
 
+    /**
+     * Sets the listener for the RecyclerView
+     * @param listener Listener for the RecyclerView
+     */
     fun setAutocompleteStreetRecyclerViewListener(listener: AutocompleteStreetRecyclerViewListener) {
         rvListener = listener
     }
 
+    /**
+     * Sets the new StreetList data
+     * @param newStreetList New StreetList list
+     */
     fun setStreetList (newStreetList: StreetList) {
         streetList = newStreetList
     }
@@ -38,6 +49,11 @@ class AutocompleteStreetRecyclerViewAdapter(private var streetList: StreetList):
     class AutocompleteStreetViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private val streetName = itemView.findViewById<TextView>(R.id.text_view_street_name)
 
+        /**
+         * Binds the street data to the itemView
+         * @param name Street Name
+         * @param listener Listener for the RecyclerView
+         */
         fun bind (name: StreetName, listener: AutocompleteStreetRecyclerViewListener) {
             streetName.text = name.streetName
             itemView.setOnClickListener {
@@ -46,7 +62,14 @@ class AutocompleteStreetRecyclerViewAdapter(private var streetList: StreetList):
         }
     }
 
+    /**
+     * Interface for the RecyclerView
+     */
     interface AutocompleteStreetRecyclerViewListener {
+        /**
+         * Click for the itemView
+         * @param position Index of the list
+         */
         fun onClick(position: Int)
     }
 }

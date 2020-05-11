@@ -3,11 +3,13 @@ package cenec.mealvity.mealvity.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import cenec.darash.mealvity.R
+import cenec.darash.mealvity.databinding.ActivitySaveAddressBinding
 import cenec.mealvity.mealvity.classes.constants.BundleKeys
 import cenec.mealvity.mealvity.classes.constants.Database
 import cenec.mealvity.mealvity.classes.singleton.UserSingleton
@@ -21,74 +23,84 @@ import com.google.firebase.firestore.FirebaseFirestore
  */
 class SaveAddressActivity : AppCompatActivity() {
     private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() } // Instance of the Firestore database
-    private val etAddressTitle by lazy { findViewById<TextInputEditText>(R.id.editText_address_title) } // EditText for the Address title
-    private val etStreetName by lazy { findViewById<TextInputEditText>(R.id.editText_street_name) } // EditText for the street name
-    private val etStreetNumber by lazy { findViewById<TextInputEditText>(R.id.editText_street_number) } // EditText for the street number
-    private val etDoorInfo by lazy { findViewById<TextInputEditText>(R.id.editText_door_info) } // EditText for the door info (floor number, door, etc)
-    private val etAddressExtras by lazy { findViewById<TextInputEditText>(R.id.editText_address_extras) } // EditText for the Address extras (Apartment, doorbell)
-    private val etTown by lazy { findViewById<TextInputEditText>(R.id.editText_town) } // EditText for  the town
-    private val etPostalCode by lazy { findViewById<TextInputEditText>(R.id.editText_postal_code) } // EditText for the postal code
-    private val bSaveAddress by lazy { findViewById<CardView>(R.id.button_save_address) } // Button to save or modify the address
-    private val tvCardView by lazy { findViewById<TextView>(R.id.textview_save_address) } // TextView of the button (which is a CardView)
-    private val pbCardView by lazy { findViewById<ProgressBar>(R.id.progressBar_save_address) } // ProgressBar of the button (which is a CardView)
     private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() } // Instance of the user currently logged in
     private var isModifyingAddress = false // True if the user user is modifying an existing address, false if otherwise
+    private lateinit var binding: ActivitySaveAddressBinding // View binding of the activity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_save_address)
+        binding = ActivitySaveAddressBinding.inflate(LayoutInflater.from(this))
+        setContentView(binding.root)
 
-        val toolbar=findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+        checkIntentExtras()
+        setupToolbar()
+        setupViews()
+    }
 
+    /**
+     * Checks if the activity is receiving anything from the parent activity's bundle (using Intent Extras)
+     */
+    private fun checkIntentExtras() {
         if (intent.extras != null) { // If the extras return a non-null Bundle, this means the user is modifying an already existing address
             val addressToModify = userLoggedIn.addresses[intent.extras!!.getInt(BundleKeys.ADDRESS_LIST_POSITION)]
 
-            etAddressTitle.setText(addressToModify.title)
-            etStreetName.setText(addressToModify.name)
-            etStreetNumber.setText(addressToModify.number)
-            etDoorInfo.setText(addressToModify.door)
-            etAddressExtras.setText(addressToModify.extras)
-            etTown.setText(addressToModify.town)
-            etPostalCode.setText(addressToModify.postalCode)
+            binding.editTextAddressTitle.setText(addressToModify.title)
+            binding.editTextStreetName.setText(addressToModify.name)
+            binding.editTextStreetNumber.setText(addressToModify.number)
+            binding.editTextDoorInfo.setText(addressToModify.door)
+            binding.editTextAddressExtras.setText(addressToModify.extras)
+            binding.editTextTown.setText(addressToModify.town)
+            binding.editTextPostalCode.setText(addressToModify.postalCode)
 
             isModifyingAddress = true
         }
+    }
 
-        bSaveAddress.setOnClickListener {
-            val addressTitle = etAddressTitle.text.toString()
-            val streetName = etStreetName.text.toString()
-            val streetNumber = etStreetNumber.text.toString()
-            var doorInfo = etDoorInfo.text.toString()
-            var addressExtras = etAddressExtras.text.toString()
-            val town = etTown.text.toString()
-            val postalCode = etPostalCode.text.toString()
+    /**
+     * Sets up the activity's toolbar
+     */
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    }
+
+    /**
+     * Sets up the views in the activity
+     */
+    private fun setupViews() {
+        binding.buttonSaveAddress.setOnClickListener {
+            val addressTitle = binding.editTextAddressTitle.text.toString()
+            val streetName = binding.editTextStreetName.text.toString()
+            val streetNumber = binding.editTextStreetNumber.text.toString()
+            var doorInfo = binding.editTextDoorInfo.text.toString()
+            var addressExtras = binding.editTextAddressExtras.text.toString()
+            val town = binding.editTextTown.text.toString()
+            val postalCode = binding.editTextPostalCode.text.toString()
 
             when {
                 addressTitle.isEmpty() -> {
-                    etAddressTitle.error=getString(R.string.text_field_empty)
-                    etAddressTitle.requestFocus()
+                    binding.editTextAddressTitle.error=getString(R.string.text_field_empty)
+                    binding.editTextAddressTitle.requestFocus()
                 }
                 streetName.isEmpty() -> {
-                    etStreetName.error=getString(R.string.text_field_empty)
-                    etStreetName.requestFocus()
+                    binding.editTextStreetName.error=getString(R.string.text_field_empty)
+                    binding.editTextStreetName.requestFocus()
                 }
                 streetNumber.isEmpty() -> {
-                    etStreetNumber.error=getString(R.string.text_field_empty)
-                    etStreetNumber.requestFocus()
+                    binding.editTextStreetNumber.error=getString(R.string.text_field_empty)
+                    binding.editTextStreetNumber.requestFocus()
                 }
                 town.isEmpty() -> {
-                    etTown.error=getString(R.string.text_field_empty)
-                    etTown.requestFocus()
+                    binding.editTextTown.error=getString(R.string.text_field_empty)
+                    binding.editTextTown.requestFocus()
                 }
                 postalCode.isEmpty() -> {
-                    etPostalCode.error=getString(R.string.text_field_empty)
-                    etPostalCode.requestFocus()
+                    binding.editTextPostalCode.error=getString(R.string.text_field_empty)
+                    binding.editTextPostalCode.requestFocus()
                 }
                 else -> {
-                    tvCardView.visibility=View.GONE
-                    pbCardView.visibility=View.VISIBLE
+                    binding.textviewSaveAddress.visibility=View.GONE
+                    binding.progressBarSaveAddress.visibility=View.VISIBLE
                     if (doorInfo.isEmpty()) {
                         doorInfo = ""
                     }
@@ -119,8 +131,8 @@ class SaveAddressActivity : AppCompatActivity() {
             .document(firebaseUser!!.uid)
             .update(Database.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES, userLoggedIn.addresses)
             .addOnCompleteListener { task ->
-                pbCardView.visibility=View.GONE
-                tvCardView.visibility=View.VISIBLE
+                binding.textviewSaveAddress.visibility=View.VISIBLE
+                binding.progressBarSaveAddress.visibility=View.GONE
                 if (task.isSuccessful) {
                     UserSingleton.getInstance().setCurrentUser(userLoggedIn)
                     Toast.makeText(this, "Address saved", Toast.LENGTH_SHORT).show()

@@ -2,6 +2,7 @@ package cenec.mealvity.mealvity.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -10,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import cenec.darash.mealvity.R
+import cenec.darash.mealvity.databinding.ActivityChangePasswordBinding
 import com.google.firebase.auth.*
 
 /**
@@ -18,21 +20,30 @@ import com.google.firebase.auth.*
  */
 class ChangePasswordActivity : AppCompatActivity() {
     private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() } // Instance of Firebase Authentication
-    private val etOldPassword by lazy { findViewById<EditText>(R.id.editText_old_password) } // EditText for the old password
-    private val etNewPassword by lazy { findViewById<EditText>(R.id.editText_new_password) } // EditText for the new password
-    private val etRepeatNewPassword by lazy { findViewById<EditText>(R.id.editText_repeat_new_password) } // EditText to repeat the new password
-    private val bChangePassword by lazy { findViewById<CardView>(R.id.button_change_password) } // Button used for saving changes
-    private val tvChangePassword by lazy { findViewById<TextView>(R.id.textView_change_password) } // TextView of the button (which is a Cardview)
-    private val progressBar by lazy { findViewById<ProgressBar>(R.id.progressBar_change_password) } // Progress Bar of the button (which is a Cardview)
+    private lateinit var binding: ActivityChangePasswordBinding // View binding of the activity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_change_password)
+        binding = ActivityChangePasswordBinding.inflate(LayoutInflater.from(this))
+        setContentView(binding.root)
 
-        setSupportActionBar(findViewById(R.id.toolbar))
+        setupToolbar()
+        setupViews()
+    }
+
+    /**
+     * Sets up the toolbar of the activity
+     */
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    }
 
-        bChangePassword.setOnClickListener {
+    /**
+     * Sets up the views in the activity
+     */
+    private fun setupViews() {
+        binding.buttonChangePassword.setOnClickListener {
             saveNewPassword()
         }
     }
@@ -41,34 +52,34 @@ class ChangePasswordActivity : AppCompatActivity() {
      * Function where the new password will be saved & stored in the authentication part of Firebase
      */
     private fun saveNewPassword() {
-        val oldPassword = etOldPassword.text.toString()
-        val newPassword = etNewPassword.text.toString()
-        val repeatNewPassword = etRepeatNewPassword.text.toString()
+        val oldPassword = binding.editTextOldPassword.text.toString()
+        val newPassword = binding.editTextNewPassword.text.toString()
+        val repeatNewPassword = binding.editTextRepeatNewPassword.text.toString()
 
         when {
             oldPassword.isEmpty() -> {
-                etOldPassword.error=getString(R.string.text_field_empty)
-                etOldPassword.requestFocus()
+                binding.editTextOldPassword.error=getString(R.string.text_field_empty)
+                binding.editTextOldPassword.requestFocus()
             }
             newPassword.isEmpty() -> {
-                etNewPassword.error=getString(R.string.text_field_empty)
-                etNewPassword.requestFocus()
+                binding.editTextNewPassword.error=getString(R.string.text_field_empty)
+                binding.editTextNewPassword.requestFocus()
             }
             repeatNewPassword.isEmpty() -> {
-                etRepeatNewPassword.error=getString(R.string.text_field_empty)
-                etNewPassword.requestFocus()
+                binding.editTextRepeatNewPassword.error=getString(R.string.text_field_empty)
+                binding.editTextRepeatNewPassword.requestFocus()
             }
             newPassword != repeatNewPassword -> {
-                etRepeatNewPassword.error=getString(R.string.text_password_not_equal)
-                etRepeatNewPassword.requestFocus()
+                binding.editTextRepeatNewPassword.error=getString(R.string.text_password_not_equal)
+                binding.editTextRepeatNewPassword.requestFocus()
             }
             oldPassword == newPassword -> {
-                etNewPassword.error=getString(R.string.text_old_new_password_equal)
-                etNewPassword.requestFocus()
+                binding.editTextNewPassword.error=getString(R.string.text_old_new_password_equal)
+                binding.editTextNewPassword.requestFocus()
             }
             else -> {
-                progressBar.visibility=View.VISIBLE
-                tvChangePassword.visibility=View.GONE
+                binding.progressBarChangePassword.visibility=View.VISIBLE
+                binding.textViewChangePassword.visibility=View.GONE
                 val userSignedIn = mFirebaseAuth.currentUser
                 val credential = EmailAuthProvider.getCredential(userSignedIn!!.email!!, oldPassword)
 
@@ -77,35 +88,44 @@ class ChangePasswordActivity : AppCompatActivity() {
                     .addOnCompleteListener{task ->
                         // If re-authentication is succesfull, the password will be changed in the Firebase
                         if (task.isSuccessful) {
-                            userSignedIn.updatePassword(newPassword)
-                                .addOnCompleteListener{ taskChangePassword ->
-                                    progressBar.visibility=View.GONE
-                                    tvChangePassword.visibility=View.VISIBLE
-                                    if (taskChangePassword.isSuccessful) {
-                                        Toast.makeText(this@ChangePasswordActivity, "Password changed", Toast.LENGTH_SHORT).show()
-                                        finish()
-                                    } else {
-                                        try {
-                                            throw taskChangePassword.exception!!
-                                        } catch (weakPasswordExcetion: FirebaseAuthWeakPasswordException) {
-                                            etNewPassword.error=getString(R.string.text_weak_password)
-                                            etNewPassword.requestFocus()
-                                        }
-                                    }
-                                }
+                            updatePassword(newPassword)
                         } else {
                             // If re-athentication is unsuccessfull, this means that the user has introduced the wrong password
-                            progressBar.visibility=View.GONE
-                            tvChangePassword.visibility=View.VISIBLE
+                            binding.progressBarChangePassword.visibility=View.GONE
+                            binding.textViewChangePassword.visibility=View.VISIBLE
                             try {
                                 throw task.exception!!
                             } catch (invalidCredentialsException: FirebaseAuthInvalidCredentialsException) {
-                                etOldPassword.error=getString(R.string.text_invalid_password)
-                                etOldPassword.requestFocus()
+                                binding.editTextOldPassword.error=getString(R.string.text_invalid_password)
+                                binding.editTextOldPassword.requestFocus()
                             }
                         }
                     }
             }
         }
+    }
+
+    /**
+     * Function where the new password inserted is updated in the Firebase Authentication
+     * @param newPassword New password to update
+     */
+    private fun updatePassword(newPassword: String) {
+        val currentUser = mFirebaseAuth.currentUser
+        currentUser!!.updatePassword(newPassword)
+            .addOnCompleteListener{ taskChangePassword ->
+                binding.progressBarChangePassword.visibility=View.GONE
+                binding.textViewChangePassword.visibility=View.VISIBLE
+                if (taskChangePassword.isSuccessful) {
+                    Toast.makeText(this@ChangePasswordActivity, "Password changed", Toast.LENGTH_SHORT).show()
+                    finish()
+                } else {
+                    try {
+                        throw taskChangePassword.exception!!
+                    } catch (weakPasswordExcetion: FirebaseAuthWeakPasswordException) {
+                        binding.editTextNewPassword.error=getString(R.string.text_weak_password)
+                        binding.editTextNewPassword.requestFocus()
+                    }
+                }
+            }
     }
 }

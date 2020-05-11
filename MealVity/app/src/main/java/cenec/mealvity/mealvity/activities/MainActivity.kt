@@ -44,7 +44,13 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         transitionFromSplashScreen()
+        setupViews()
+    }
 
+    /**
+     * Sets up views for the activity
+     */
+    private fun setupViews() {
         val gso=GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))
             .requestEmail()

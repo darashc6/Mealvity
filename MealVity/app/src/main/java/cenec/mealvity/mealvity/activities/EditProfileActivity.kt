@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.EditText
@@ -15,6 +16,7 @@ import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.cardview.widget.CardView
 import cenec.darash.mealvity.R
+import cenec.darash.mealvity.databinding.ActivityEditProfileBinding
 import cenec.mealvity.mealvity.classes.constants.Database
 import cenec.mealvity.mealvity.classes.dialogs.CancelSavedChangesDialog
 import cenec.mealvity.mealvity.classes.dialogs.InsertPasswordDialog
@@ -40,37 +42,43 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
     private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() } // Instance of Firebase Firestore
     private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() } // The user currently logged in (returns an User)
     private lateinit var mGoogleSignInClient: GoogleSignInClient // Client interacting with the Google Sign In API
-    private val etFullName by lazy { findViewById<EditText>(R.id.editText_full_name) } // EditText for the user's full name
-    private val etPhoneNumber by lazy { findViewById<EditText>(R.id.editText_phone_number) } // EditText for the user's phone number
-    private val etEmail by lazy { findViewById<EditText>(R.id.editText_email) } // EditText for the use'rs email
-    private val tvSaveChanges by lazy { findViewById<TextView>(R.id.textview_save_changes) } // TextView of the button (which is a CardView)
-    private val pbSaveChanges by lazy { findViewById<ProgressBar>(R.id.progressBar_save_changes) } // ProgressBar of the button (which is a CardView)
-    private val bSaveChanges by lazy { findViewById<CardView>(R.id.button_save_changes) } // Button used for saving changes
-    private val bLogOut by lazy { findViewById<CardView>(R.id.button_log_out) } // Button used for logging out of the app
-    private lateinit var oldUser: User // Copy of the User before saving his changes
     private var valuesChanged = false // True if the EditTexts have been modified, false if otherwise
     private var emailValueChanged = false // True if the email has been modified, false if otherwise
+    private lateinit var binding: ActivityEditProfileBinding // View binding of the activity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_edit_profile)
-        oldUser=userLoggedIn.copy()
+        binding = ActivityEditProfileBinding.inflate(LayoutInflater.from(this))
+        setContentView(binding.root)
 
-        var toolbar=findViewById<Toolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
+        setupToolbar()
+        setupViews()
+    }
+
+    /**
+     * Sets up the toolbar of the activity
+     */
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
+    }
 
-        val fullName = userLoggedIn.fullName
-        val email = userLoggedIn.email
-        val phoneNumber = userLoggedIn.phoneNumber
-        etFullName.setText(userLoggedIn.fullName)
-        etPhoneNumber.setText(userLoggedIn.phoneNumber)
-        etEmail.setText(userLoggedIn.email)
+    /**
+     * Sets up the views of the activity
+     */
+    private fun setupViews() {
+        val oldFullName = userLoggedIn.fullName
+        val oldPhoneNumber = userLoggedIn.phoneNumber
+        val oldEmail = userLoggedIn.email
+
+        binding.editTextFullName.setText(userLoggedIn.fullName)
+        binding.editTextPhoneNumber.setText(userLoggedIn.phoneNumber)
+        binding.editTextEmail.setText(userLoggedIn.email)
 
         // As soon as there is any change in the EditText, valuesChanged will be true
-        etFullName.addTextChangedListener(object : TextWatcher{
+        binding.editTextFullName.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(s: Editable?) {
-                valuesChanged = fullName != etFullName.text.toString()
+                valuesChanged = oldFullName != binding.editTextFullName.text.toString()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -85,16 +93,16 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
 
         // If user has created an account using Google, he won't be a ble to modify his email
         if (mFirebaseAuth.currentUser!!.getIdToken(false).result!!.signInProvider.equals("google.com")) {
-            etEmail.isFocusable=false
-            etEmail.isEnabled=false
-            etEmail.isCursorVisible=false
-            etEmail.keyListener=null
-            etEmail.background=null
+            binding.editTextEmail.isFocusable=false
+            binding.editTextEmail.isEnabled=false
+            binding.editTextEmail.isCursorVisible=false
+            binding.editTextEmail.keyListener=null
+            binding.editTextEmail.background=null
         } else {
             // As soon as there is any change in the EditText, valuesChanged (and emailValueChanged in the case) will be true
-            etEmail.addTextChangedListener(object : TextWatcher{
+            binding.editTextEmail.addTextChangedListener(object : TextWatcher{
                 override fun afterTextChanged(s: Editable?) {
-                    valuesChanged = email != etEmail.text.toString()
+                    valuesChanged = oldEmail != binding.editTextEmail.text.toString()
                     emailValueChanged = valuesChanged
                 }
 
@@ -110,9 +118,9 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
         }
 
         // As soon as there is any change in the EditText, valuesChanged will be true
-        etPhoneNumber.addTextChangedListener(object : TextWatcher{
+        binding.editTextPhoneNumber.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(s: Editable?) {
-                valuesChanged = phoneNumber != etPhoneNumber.text.toString()
+                valuesChanged = oldPhoneNumber != binding.editTextPhoneNumber.text.toString()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -125,11 +133,11 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
 
         })
 
-        bSaveChanges.setOnClickListener {
+        binding.buttonSaveChanges.setOnClickListener {
             saveChanges()
         }
 
-        bLogOut.setOnClickListener {
+        binding.buttonLogOut.setOnClickListener {
             logOut()
         }
     }
@@ -139,15 +147,15 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
      */
     private fun saveChanges() {
         if (valuesChanged) {
-            tvSaveChanges.visibility=View.GONE
-            pbSaveChanges.visibility=View.VISIBLE
+            binding.textviewSaveChanges.visibility=View.GONE
+            binding.progressBarSaveChanges.visibility=View.VISIBLE
             // If the email has been changed, re-authentication of the user is needed.
             // For that to happen, we will ask the user to provide his password
             if (emailValueChanged) {
                 reAuthenticateUser()
             } else {
-                userLoggedIn.fullName = etFullName.text.toString()
-                userLoggedIn.phoneNumber = etPhoneNumber.text.toString()
+                userLoggedIn.fullName = binding.editTextFullName.text.toString()
+                userLoggedIn.phoneNumber = binding.editTextPhoneNumber.text.toString()
                 updateUserInDatabase(userLoggedIn)
             }
         } else {
@@ -167,14 +175,15 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
     /**
      * Function where the email will be updated and stored in the authentication part of Firebase
      * This means that authentication was successfull and the change was able to happen
+     * @param email updated Email
      */
-    private fun updateEmail(fUser: FirebaseUser, email: String){
-        fUser.updateEmail(email)
+    private fun updateEmail(email: String){
+        mFirebaseAuth.currentUser!!.updateEmail(email)
             .addOnCompleteListener{ task ->
                 if (task.isSuccessful) {
-                    userLoggedIn.fullName = etFullName.text.toString()
-                    userLoggedIn.phoneNumber = etPhoneNumber.text.toString()
-                    userLoggedIn.email = etEmail.text.toString()
+                    userLoggedIn.fullName = binding.editTextFullName.text.toString()
+                    userLoggedIn.phoneNumber = binding.editTextPhoneNumber.text.toString()
+                    userLoggedIn.email = binding.editTextEmail.text.toString()
                     updateUserInDatabase(userLoggedIn)
                 } else {
                     Toast.makeText(this, task.exception!!.toString(), Toast.LENGTH_SHORT).show()
@@ -194,8 +203,8 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
                 Database.FIRESTORE_KEY_DATABASE_USERS_EMAIL, userToUpdate.email!!
             )
             .addOnCompleteListener{task ->
-                tvSaveChanges.visibility=View.VISIBLE
-                pbSaveChanges.visibility=View.GONE
+                binding.textviewSaveChanges.visibility=View.VISIBLE
+                binding.progressBarSaveChanges.visibility=View.GONE
                 if (task.isSuccessful) {
                     Toast.makeText(this, "Changes saved!", Toast.LENGTH_SHORT).show()
                     UserSingleton.getInstance().setCurrentUser(userToUpdate)
@@ -261,6 +270,7 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
     /**
      * Function implemented using the listener in InsertPasswordDialog
      * It will ask for the user's password to re-authenticate
+     * @param password Password from the EditText
      */
     override fun getInputPassword(password: String) {
         val userSignedIn = mFirebaseAuth.currentUser
@@ -269,7 +279,7 @@ class EditProfileActivity : AppCompatActivity(), CancelSavedChangesDialog.CscDia
         userSignedIn.reauthenticate(userCredential)
             .addOnCompleteListener{task ->
                 if (task.isSuccessful) {
-                    updateEmail(userSignedIn, userLoggedIn.email!!)
+                    updateEmail(userLoggedIn.email!!)
                 } else {
                     Toast.makeText(this, task.exception!!.toString(), Toast.LENGTH_SHORT).show()
                 }

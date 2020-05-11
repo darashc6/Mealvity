@@ -30,7 +30,7 @@
             android:inputType="text"
             android:layout_gravity="center_vertical"
             android:hint="@string/text_hint_full_address"
-            android:backgroundTint="@color/colorAccentDark"
+            android:backgroundTint="@color/colorPrimary"
             />
 
     </LinearLayout>

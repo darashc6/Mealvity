@@ -2,6 +2,7 @@ package cenec.mealvity.mealvity.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.EditText
 import android.widget.ProgressBar
@@ -10,41 +11,40 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import cenec.darash.mealvity.R
+import cenec.darash.mealvity.databinding.ActivitySignUpBinding
 import cenec.mealvity.mealvity.classes.constants.Database
 import cenec.mealvity.mealvity.classes.user.Address
 import cenec.mealvity.mealvity.classes.user.Orders
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
-import com.google.firebase.auth.FirebaseAuthUserCollisionException
-import com.google.firebase.auth.FirebaseAuthWeakPasswordException
+import com.google.firebase.auth.*
 import com.google.firebase.firestore.FirebaseFirestore
+import java.io.Serializable
 
 
 /**
  * Activity where the user creates a new account using email and password
  */
 class SignUpActivity : AppCompatActivity() {
-    private val etFullName by lazy { findViewById<EditText>(R.id.editText_full_name) } // EditText for the user's full name
-    private val etEmail by lazy { findViewById<EditText>(R.id.editText_email) } // EditText for the user's email
-    private val etPassword by lazy { findViewById<EditText>(R.id.editText_password) } // EditText for the user's password
-    private val etRepeatPassword by lazy { findViewById<EditText>(R.id.editText_password_repeat) } // EditText for introducing the password again
-    private val etPhoneNumber by lazy { findViewById<EditText>(R.id.editText_phone_number) }  // EditText for the user's phone number
-    private val pbSignUp by lazy { findViewById<ProgressBar>(R.id.progressBar_sign_up) } // ProgressBar for the button (which is a CardView)
-    private val tvSignUp by lazy { findViewById<TextView>(R.id.textview_sign_up) } // TextView for the button (which is a CardView)
-    private val bSignUp by lazy { findViewById<CardView>(R.id.button_new_account) } // Button for creating the new account
-    private val bSignIn by lazy { findViewById<TextView>(R.id.button_sign_in) } // Button for signing in
     private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() } // Instance of Authentication for Firebase
     private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() } // Instance of Firesotre database
+    private lateinit var binding: ActivitySignUpBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_sign_up)
+        binding = ActivitySignUpBinding.inflate(LayoutInflater.from(this))
+        setContentView(binding.root)
 
-        bSignUp.setOnClickListener {
+        setupViews()
+    }
+
+    /**
+     * Sets up the views in the activity
+     */
+    private fun setupViews() {
+        binding.buttonNewAccount.setOnClickListener {
             newAccount()
         }
 
-        bSignIn.setOnClickListener {
+        binding.buttonSignIn.setOnClickListener {
             gotoSignInActivity()
         }
     }
@@ -60,43 +60,43 @@ class SignUpActivity : AppCompatActivity() {
      * Creates a new account and stores the user in the database
      */
     private fun newAccount() {
-        val fullName = etFullName.text.toString()
-        val email = etEmail.text.toString()
-        val password = etPassword.text.toString()
-        val passwordRepeat = etRepeatPassword.text.toString()
-        val phoneNumber = etPhoneNumber.text.toString()
+        val fullName = binding.editTextFullName.text.toString()
+        val email = binding.editTextEmail.text.toString()
+        val password = binding.editTextPassword.text.toString()
+        val passwordRepeat = binding.editTextPasswordRepeat.text.toString()
+        val phoneNumber = binding.editTextPhoneNumber.text.toString()
         when {
             fullName.isEmpty() -> {
-                etFullName.error = getString(R.string.text_field_empty)
-                etFullName.requestFocus()
+                binding.editTextFullName.error = getString(R.string.text_field_empty)
+                binding.editTextFullName.requestFocus()
             }
             email.isEmpty() -> {
-                etEmail.error = getString(R.string.text_field_empty)
-                etEmail.requestFocus()
+                binding.editTextEmail.error = getString(R.string.text_field_empty)
+                binding.editTextEmail.requestFocus()
             }
             password.isEmpty() -> {
-                etPassword.error = getString(R.string.text_field_empty)
-                etPassword.requestFocus()
+                binding.editTextPassword.error = getString(R.string.text_field_empty)
+                binding.editTextPassword.requestFocus()
             }
             passwordRepeat.isEmpty() -> {
-                etRepeatPassword.error = getString(R.string.text_field_empty)
-                etRepeatPassword.requestFocus()
+                binding.editTextPasswordRepeat.error = getString(R.string.text_field_empty)
+                binding.editTextPasswordRepeat.requestFocus()
             }
             phoneNumber.isEmpty() -> {
-                etPhoneNumber.error = getString(R.string.text_field_empty)
-                etPhoneNumber.requestFocus()
+                binding.editTextPhoneNumber.error = getString(R.string.text_field_empty)
+                binding.editTextPhoneNumber.requestFocus()
             }
             password != passwordRepeat -> {
-                etRepeatPassword.error = getString(R.string.text_password_not_equal)
-                etRepeatPassword.requestFocus()
+                binding.editTextPasswordRepeat.error = getString(R.string.text_password_not_equal)
+                binding.editTextPasswordRepeat.requestFocus()
             }
             else -> {
-                pbSignUp.visibility=View.VISIBLE
-                tvSignUp.visibility=View.GONE
+                binding.progressBarSignUp.visibility=View.VISIBLE
+                binding.textviewSignUp.visibility=View.GONE
                 mFirebaseAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
-                        pbSignUp.visibility=View.GONE
-                        tvSignUp.visibility=View.VISIBLE
+                        binding.progressBarSignUp.visibility=View.GONE
+                        binding.textviewSignUp.visibility=View.VISIBLE
                         if (task.isSuccessful) {
                             val firebaseUser = mFirebaseAuth.currentUser
                             val newUser = hashMapOf(
@@ -107,32 +107,41 @@ class SignUpActivity : AppCompatActivity() {
                                 Database.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES to arrayListOf<Address>()
                             )
 
-                            mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).
-                                document(firebaseUser!!.uid).set(newUser)
-                                .addOnCompleteListener { databaseTask ->
-                                    if (databaseTask.isSuccessful) {
-                                        val intentLoading=Intent(this@SignUpActivity, LoadingActivity::class.java)
-                                        startActivity(intentLoading)
-                                    } else {
-                                        Toast.makeText(this, task.exception.toString(), Toast.LENGTH_SHORT).show()
-                                    }
-                                }
+                            addNewUserToDatabase(firebaseUser!!, newUser)
                         } else {
                             try {
                                 throw task.exception!!
                             } catch (passwordException: FirebaseAuthWeakPasswordException) {
-                                etPassword.error=getString(R.string.text_weak_password)
-                                etPassword.requestFocus()
+                                binding.editTextPassword.error=getString(R.string.text_weak_password)
+                                binding.editTextPassword.requestFocus()
                             } catch (emailException: FirebaseAuthInvalidCredentialsException) {
-                                etEmail.error=getString(R.string.text_email_invalid)
-                                etEmail.requestFocus()
+                                binding.editTextEmail.error=getString(R.string.text_email_invalid)
+                                binding.editTextEmail.requestFocus()
                             } catch (existingUserException: FirebaseAuthUserCollisionException) {
-                                etEmail.error=getString(R.string.text_user_already_exists)
-                                etEmail.requestFocus()
+                                binding.editTextEmail.error=getString(R.string.text_user_already_exists)
+                                binding.editTextEmail.requestFocus()
                             }
                         }
                     }
             }
         }
+    }
+
+    /**
+     * Adds the new user to the database
+     * @param fUser New Firebase User
+     * @param newUser Map containing the user's necessary details to add to the database
+     */
+    private fun addNewUserToDatabase(fUser: FirebaseUser, newUser: HashMap<String, Serializable>) {
+        mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).
+        document(fUser.uid).set(newUser)
+            .addOnCompleteListener { databaseTask ->
+                if (databaseTask.isSuccessful) {
+                    val intentLoading=Intent(this@SignUpActivity, LoadingActivity::class.java)
+                    startActivity(intentLoading)
+                } else {
+                    Toast.makeText(this, databaseTask.exception.toString(), Toast.LENGTH_SHORT).show()
+                }
+            }
     }
 }
