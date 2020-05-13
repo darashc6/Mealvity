@@ -5,18 +5,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import cenec.darash.mealvity.R
+import cenec.darash.mealvity.databinding.ItemListAddressBinding
 import cenec.mealvity.mealvity.classes.user.Address
 import io.sulek.ssml.OnSwipeListener
 import kotlinx.android.synthetic.main.item_list_address.view.*
 
 /**
  * RecyclerView adapter binding the address data
+ * @param addressList List of Address
  */
 class AddressRecyclerViewAdapter(private var addressList: ArrayList<Address>): RecyclerView.Adapter<AddressRecyclerViewAdapter.AddressViewHolder>() {
-    private lateinit var rvListener: AddressRecyclerViewListener
+    private lateinit var rvListener: AddressRecyclerViewListener // Listener for the RecyclerView
+    private lateinit var _binding: ItemListAddressBinding // View binding of the layout used for this RecyclerView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddressViewHolder {
-        return AddressViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_list_address, parent, false))
+        _binding = ItemListAddressBinding.inflate(LayoutInflater.from(parent.context))
+        return AddressViewHolder(_binding)
     }
 
     override fun onBindViewHolder(holder: AddressViewHolder, position: Int) {
@@ -26,6 +30,7 @@ class AddressRecyclerViewAdapter(private var addressList: ArrayList<Address>): R
     override fun getItemCount(): Int {
         return addressList.size
     }
+
 
     /**
      * Sets the new address list to bind
@@ -43,18 +48,9 @@ class AddressRecyclerViewAdapter(private var addressList: ArrayList<Address>): R
         rvListener = listener
     }
 
-    /**
-     * Object containing the item's view
-     * @param itemView View where we bind the data
-     */
-    inner class AddressViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        private val addressTitle = itemView.textView_address_title
-        private val streetInfo = itemView.textView_address_street
-        private val doorInfo = itemView.textView_address_door
-        private val addressExtras = itemView.textView_address_extras
-        private val town = itemView.textView_address_town
-        private val bEditAddress = itemView.edit_address_button
-        private val bDeleteAddress = itemView.delete_address_button
+
+    class AddressViewHolder(_binding: ItemListAddressBinding): RecyclerView.ViewHolder(_binding.root) {
+        private val binding = _binding
 
         /**
          * Binds the address data to the itemView
@@ -62,19 +58,19 @@ class AddressRecyclerViewAdapter(private var addressList: ArrayList<Address>): R
          * @param listener Listener for the RecyclerView
          */
         fun bind(address: Address, listener: AddressRecyclerViewListener) {
-            addressTitle.text = address.title
-            streetInfo.text = "${address.name}, ${address.number}"
+            binding.textViewAddressTitle.text = address.title
+            binding.textViewAddressStreet.text = "${address.name}, ${address.number}"
             if (address.door.equals("")) {
-                doorInfo.visibility=View.GONE
+                binding.textViewAddressDoor.visibility=View.GONE
             } else {
-                doorInfo.text = address.door
+                binding.textViewAddressDoor.text = address.door
             }
             if (address.extras.equals("")) {
-                addressExtras.visibility=View.GONE
+                binding.textViewAddressExtras.visibility=View.GONE
             } else {
-                addressExtras.text = address.extras
+                binding.textViewAddressExtras.text = address.extras
             }
-            town.text = "${address.town}, ${address.postalCode}"
+            binding.textViewAddressTown.text = "${address.town}, ${address.postalCode}"
 
             itemView.swipe_container.setOnSwipeListener(object : OnSwipeListener {
                 override fun onSwipe(isExpanded: Boolean) {
@@ -82,11 +78,11 @@ class AddressRecyclerViewAdapter(private var addressList: ArrayList<Address>): R
                 }
             })
 
-            bEditAddress.setOnClickListener {
+            binding.editAddressButton.setOnClickListener {
                 listener.onAddressEdit(layoutPosition)
             }
 
-            bDeleteAddress.setOnClickListener {
+            binding.deleteAddressButton.setOnClickListener {
                 listener.onAddressDelete(layoutPosition)
             }
 

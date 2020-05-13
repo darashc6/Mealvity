@@ -5,6 +5,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
 
+/**
+ * Class extending LinearLayoutManager
+ * Used for customizing horizontal scroll
+ */
 class LayoutZoom: LinearLayoutManager {
     private val mShrinkAmount = 0.15f
     private val mShrinkDistance = 0.9f
@@ -17,7 +21,7 @@ class LayoutZoom: LinearLayoutManager {
         recycler: RecyclerView.Recycler?,
         state: RecyclerView.State?
     ): Int {
-        if (orientation == LinearLayoutManager.HORIZONTAL) {
+        if (orientation == HORIZONTAL) {
             val scrolled = super.scrollHorizontallyBy(dx, recycler, state)
 
             val midpoint = width/2f

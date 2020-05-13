@@ -99,9 +99,9 @@ class ProfileTabFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         userViewModel.getUserLiveData().observe(viewLifecycleOwner, object : Observer<User>{
             override fun onChanged(updatedUser: User?) {
-                if (updatedUser!=null) {
-                    tvProfileName.text = updatedUser.fullName
-                    tvProfileEmail.text = updatedUser.email
+                updatedUser?.let {
+                    tvProfileName.text = it.fullName
+                    tvProfileEmail.text = it.email
                 }
             }
 

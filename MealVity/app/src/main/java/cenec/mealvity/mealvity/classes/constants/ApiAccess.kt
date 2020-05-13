@@ -1,7 +1,9 @@
 package cenec.mealvity.mealvity.classes.constants
 
+/**
+ * Class containing the API's URL used in the app
+ */
 object ApiAccess {
     const val URL_YELP_FUSION_API = "https://api.yelp.com/v3/"
-    const val API_KEY_YELP_FUSION_API = "FXShpb7qM3mOuSeapOdzfjteJgEWNAE47onesKNfsj41KTgpFN9F31MYrwXJKIXW4OaZodmvxe-waIIf6diK0brE8ZddH-4NnX_dz7PWrxTJHWhVkleOC5ke2YuhXnYx"
     const val URL_HERE_API = "https://geocode.search.hereapi.com/v1/"
 }

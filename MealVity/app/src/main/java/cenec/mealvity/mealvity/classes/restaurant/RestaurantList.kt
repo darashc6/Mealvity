@@ -4,12 +4,20 @@ import com.google.gson.annotations.SerializedName
 import java.util.*
 import kotlin.collections.ArrayList
 
+/**
+ * Class containing a list of Restaurant data
+ * @param results List of Restaurant
+ */
 data class RestaurantList(
     @SerializedName("businesses")
     var results: ArrayList<Restaurant>
 ) {
 
-    fun filterList(): RestaurantList {
+    /**
+     * Returns a RestaurantList with the Restaurant' full data
+     * @return RestaurantList with Restaurant's full info
+     */
+    fun getListWithFullInfo(): RestaurantList {
         val auxList = arrayListOf<Restaurant>()
 
         for (listing in results) {
@@ -26,10 +34,18 @@ data class RestaurantList(
         return RestaurantList(results)
     }
 
+    /**
+     * Returns the original RestaurantList when first searched
+     * @return Original RestaurantList
+     */
     fun filterListByBestMatch(): RestaurantList {
         return this
     }
 
+    /**
+     * Returns a RestaurantList sorted by best Ratings
+     * @return RestaurantList sorted by ratings
+     */
     fun filterListByRatings(): RestaurantList {
         val sortListRatings = arrayListOf<Restaurant>()
         sortListRatings.addAll(results)
@@ -37,6 +53,10 @@ data class RestaurantList(
         return RestaurantList(sortListRatings)
     }
 
+    /**
+     * Returns a RestaurantList sorted by nearest distance
+     * @return RestaurantList sorted by distance
+     */
     fun filterListByDistance(): RestaurantList {
         val sortListDistance = arrayListOf<Restaurant>()
         sortListDistance.addAll(results)
@@ -44,6 +64,10 @@ data class RestaurantList(
         return RestaurantList(sortListDistance)
     }
 
+    /**
+     * Returns a RestaurantList sorted by cheapest price
+     * @return RestaurantList sorted by cheapest price
+     */
     fun filterListByEconomicPrice(): RestaurantList {
         val sortListEconomicPrice = arrayListOf<Restaurant>()
         sortListEconomicPrice.addAll(results)
@@ -51,6 +75,10 @@ data class RestaurantList(
         return RestaurantList(sortListEconomicPrice)
     }
 
+    /**
+     * Returns a RestaurantList sorted by most expensive price
+     * @return RestaurantList sorted by most expensive price
+     */
     fun filterListByLuxuriousPrice(): RestaurantList {
         val sortListLuxuriousPrice = arrayListOf<Restaurant>()
         sortListLuxuriousPrice.addAll(results)

@@ -10,7 +10,8 @@ import cenec.mealvity.mealvity.classes.autocompleteaddress.StreetList
 import cenec.mealvity.mealvity.classes.autocompleteaddress.StreetName
 
 /**
- * RecyclerView binding the StreetList data
+ * RecyclerView adapter binding the StreetList data
+ * @param streetList List of Street
  */
 class AutocompleteStreetRecyclerViewAdapter(private var streetList: StreetList): RecyclerView.Adapter<AutocompleteStreetRecyclerViewAdapter.AutocompleteStreetViewHolder>() {
     private lateinit var rvListener: AutocompleteStreetRecyclerViewListener // Listener for the recyclerView
@@ -46,6 +47,10 @@ class AutocompleteStreetRecyclerViewAdapter(private var streetList: StreetList):
         streetList = newStreetList
     }
 
+    /**
+     * Object containing the item's view
+     * @param itemView View where we bind the data
+     */
     class AutocompleteStreetViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private val streetName = itemView.findViewById<TextView>(R.id.text_view_street_name)
 

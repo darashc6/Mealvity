@@ -9,12 +9,16 @@ import cenec.mealvity.mealvity.classes.restaurant.RestaurantList
 import com.bumptech.glide.Glide
 import kotlin.math.floor
 
+/**
+ * RecyclerView adapter binding the RestaurantList data
+ * @param restaurantList List of Restaurant
+ */
 class RestaurantRecyclerViewAdapter(private var restaurantList: RestaurantList): RecyclerView.Adapter<RestaurantRecyclerViewAdapter.RestaurantViewHolder>() {
-    private lateinit var binding: ItemListRestaurantBinding
+    private lateinit var _binding: ItemListRestaurantBinding // Binding of the layout used for this RecyclerView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RestaurantViewHolder {
-        binding = ItemListRestaurantBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return RestaurantViewHolder(binding)
+        _binding = ItemListRestaurantBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return RestaurantViewHolder(_binding)
     }
 
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
@@ -25,27 +29,35 @@ class RestaurantRecyclerViewAdapter(private var restaurantList: RestaurantList):
         return restaurantList.results.size
     }
 
+    /**
+     * Sets a new list of Restaurant
+     * @param newRestaurantList New list
+     */
     fun setRestaurantList(newRestaurantList: RestaurantList) {
         restaurantList = newRestaurantList
     }
 
-    class RestaurantViewHolder(binding: ItemListRestaurantBinding): RecyclerView.ViewHolder(binding.root) {
-        private val _binding = binding
+    class RestaurantViewHolder(_binding: ItemListRestaurantBinding): RecyclerView.ViewHolder(_binding.root) {
+        private val binding = _binding
 
+        /**
+         * Binds the Restaurant data to the itemView
+         * @param restaurant Restaurant containing all its data
+         */
         fun bind(restaurant: Restaurant) {
             if (!restaurant.image_url.isNullOrEmpty()) {
-                Glide.with(_binding.root)
+                Glide.with(binding.root)
                     .load(restaurant.image_url)
                     .centerCrop()
-                    .into(_binding.imageViewRestaurant)
+                    .into(binding.imageViewRestaurant)
             }
-            _binding.restaurantName.text = restaurant.name
-            _binding.restaurantCategory.text = restaurant.displayCategories()
-            _binding.restaurantPriceRange.text = "Price range: ${restaurant.price}"
-            _binding.restaurantAddress.text = restaurant.location.address
-            _binding.restaurantPhone.text = restaurant.phone
-            _binding.restaurantDistance.text = "${floor(restaurant.distance).toInt().toString()} m"
-            _binding.restaurantRatings.rating = restaurant.rating
+            binding.restaurantName.text = restaurant.name
+            binding.restaurantCategory.text = restaurant.displayCategories()
+            binding.restaurantPriceRange.text = "Price range: ${restaurant.price}"
+            binding.restaurantAddress.text = restaurant.location.address
+            binding.restaurantPhone.text = restaurant.phone
+            binding.restaurantDistance.text = "${floor(restaurant.distance).toInt()} m"
+            binding.restaurantRatings.rating = restaurant.rating
         }
     }
 }

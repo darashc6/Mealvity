@@ -1,5 +1,8 @@
 package cenec.mealvity.mealvity.classes.restaurant
 
+/**
+ * Class used for sorting a list of restaurants by the best rating
+ */
 class SortRestaurantListByRating: Comparator<Restaurant> {
     override fun compare(res1: Restaurant?, res2: Restaurant?): Int {
         return when {
@@ -10,6 +13,9 @@ class SortRestaurantListByRating: Comparator<Restaurant> {
     }
 }
 
+/**
+ * Class used for sorting a list of restaurants by the nearest distance
+ */
 class SortRestaurantListByDistance: Comparator<Restaurant> {
     override fun compare(res1: Restaurant?, res2: Restaurant?): Int {
         return when {
@@ -20,12 +26,18 @@ class SortRestaurantListByDistance: Comparator<Restaurant> {
     }
 }
 
+/**
+ * Class used for sorting a list of restaurants by the cheapest price
+ */
 class SortRestaurantListByEconomicPrice: Comparator<Restaurant> {
     override fun compare(res1: Restaurant?, res2: Restaurant?): Int {
         return res1!!.price.compareTo(res2!!.price)
     }
 }
 
+/**
+ * Class used for sorting a list of restaurants by the most expensive prive
+ */
 class SortRestaurantListByLuxuriousPrice: Comparator<Restaurant> {
     override fun compare(res1: Restaurant?, res2: Restaurant?): Int {
         return -(res1!!.price.compareTo(res2!!.price))

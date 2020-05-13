@@ -10,9 +10,14 @@ import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.classes.restaurant.Categories
 import cenec.mealvity.mealvity.classes.restaurant.Cuisine
 import com.bumptech.glide.Glide
+import kotlinx.android.synthetic.main.item_list_category.view.*
 
+/**
+ * RecyclerView adapter binding the Cuisine data
+ * @param list List of Cuisine
+ */
 class CuisineRecyclerViewAdapter(var list: ArrayList<Cuisine>): RecyclerView.Adapter<CuisineRecyclerViewAdapter.CuisineViewHolder>() {
-    private lateinit var mListener: CuisineRecyclerViewListener
+    private lateinit var mListener: CuisineRecyclerViewListener // Listener for the RecyclerView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CuisineViewHolder {
         return CuisineViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_list_category, parent, false))
@@ -26,14 +31,23 @@ class CuisineRecyclerViewAdapter(var list: ArrayList<Cuisine>): RecyclerView.Ada
         return list.size
     }
 
+    /**
+     * Sets the listener for the RecyclerView
+     * @param listener listener for the RecyclerView
+     */
     fun setCategoryRecyclerViewListener(listener: CuisineRecyclerViewListener) {
         mListener = listener
     }
 
     class CuisineViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        private val nameCuisine = itemView.findViewById<TextView>(R.id.text_cuisine_name)
-        private val imageCuisine = itemView.findViewById<ImageView>(R.id.image_view_cuisine)
+        private val nameCuisine = itemView.text_cuisine_name
+        private val imageCuisine = itemView.image_view_cuisine
 
+        /**
+         * Binds the address data to the itemView
+         * @param cuisine Cuisine containing all the data
+         * @param listener Listener for the RecyclerView
+         */
         fun bind(cuisine: Cuisine, listener: CuisineRecyclerViewListener) {
             nameCuisine.text = cuisine.name
             Glide.with(itemView)
@@ -45,7 +59,14 @@ class CuisineRecyclerViewAdapter(var list: ArrayList<Cuisine>): RecyclerView.Ada
         }
     }
 
+    /**
+     * Interface for the RecyclerView
+     */
     interface CuisineRecyclerViewListener {
+        /**
+         * OnClick for the itemView
+         * @param position Index of the list
+         */
         fun onClick(position: Int)
     }
 }

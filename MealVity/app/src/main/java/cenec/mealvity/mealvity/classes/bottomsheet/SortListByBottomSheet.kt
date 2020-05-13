@@ -13,10 +13,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.lang.ClassCastException
 
+/**
+ * Bottom Sheet used for sorting the RestaurantList
+ * @param appContext Application context
+ * @param sortListOptSelected Option selected for sorting the list (0 - Best match, 1 - Ratings, 2 - Distance, 3 - Price (€ - €€€€), 4 - Price (€€€€ - €))
+ */
 class SortListByBottomSheet(private var appContext: Context, private var sortListOptSelected: Int): BottomSheetDialogFragment() {
-    private var _binding: BottomSheetSortListByBinding? = null
-    private val binding get() = _binding
-    private lateinit var bsListener: SortListByBottomSheetListener
+    private var _binding: BottomSheetSortListByBinding? = null // View binding for the layout used for this Bottom Sheet
+    private val binding get() = _binding // Non-nullable version of the view binding variable above
+    private lateinit var bsListener: SortListByBottomSheetListener // Listener for the Bottom Sheet
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -39,6 +44,15 @@ class SortListByBottomSheet(private var appContext: Context, private var sortLis
         return binding!!.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    /**
+     * Shows an expanded version of the Bottom Sheet
+     * @param dialog The BottomSheetDialog shown
+     */
     private fun expandBottomSheetOnShow(dialog: Dialog) {
         dialog.setOnShowListener {
             val dialogBottomSheet = it as BottomSheetDialog
@@ -47,7 +61,10 @@ class SortListByBottomSheet(private var appContext: Context, private var sortLis
         }
     }
 
-    private fun setupViews() {
+    /**
+     * Sets the background color of the CardView when the Bottom Sheet is first shown, depending on the option selected
+     */
+    private fun initialOptionSelected() {
         when (sortListOptSelected) {
             0 -> binding!!.cardViewSortBestMatch.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
             1 -> binding!!.cardViewSortRating.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
@@ -55,6 +72,13 @@ class SortListByBottomSheet(private var appContext: Context, private var sortLis
             3 -> binding!!.cardViewSortEconomicPrice.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
             4 -> binding!!.cardViewSortLuxuriousPrice.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
         }
+    }
+
+    /**
+     * Sets up the views for this Bottom Sheet
+     */
+    private fun setupViews() {
+        initialOptionSelected()
 
         binding!!.cardViewSortBestMatch.setOnClickListener {
             resetCardViews()
@@ -92,11 +116,9 @@ class SortListByBottomSheet(private var appContext: Context, private var sortLis
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
+    /**
+     * Resets the background color of the CardView, depending on the option selected
+     */
     private fun resetCardViews() {
         when (sortListOptSelected) {
             0 -> binding!!.cardViewSortBestMatch.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDark))
@@ -107,7 +129,14 @@ class SortListByBottomSheet(private var appContext: Context, private var sortLis
         }
     }
 
+    /**
+     * Interface for the Bottom Sheet
+     */
     interface SortListByBottomSheetListener {
+        /**
+         * Sorts the RestaurantList depending on the option selected
+         * @param newOptionSelected New option selected
+         */
         fun onSortList(newOptionSelected: Int)
     }
 

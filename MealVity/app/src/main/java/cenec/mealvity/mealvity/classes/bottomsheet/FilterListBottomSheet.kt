@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.BottomSheetFilterListBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -17,13 +16,28 @@ import com.warkiz.widget.OnSeekChangeListener
 import com.warkiz.widget.SeekParams
 import java.lang.ClassCastException
 
+/**
+ * Bottom Sheet used for applyting filters to the RestaurantList
+ * @param appContext Application context
+ * @param mapCustomParameters HashMap of custom parameters, used when querying to the API
+ */
 class FilterListBottomSheet(private var appContext: Context, private var mapCustomParameters: HashMap<String, String>) : BottomSheetDialogFragment() {
-    private var _binding: BottomSheetFilterListBinding? = null
-    private val binding get() = _binding
-    private lateinit var bsListener: FilterListBottomSheetListener
-    private var rangePriceSelected = arrayListOf<Int>()
-    private var radiusLimit = 1000
-    private var showOpenRestaurants = false
+
+    /**
+     * Parameter names
+     */
+    companion object {
+        private const val PARAMETER_PRICE_RANGES = "price"
+        private const val PARAMETER_RADIUS_LIMIT = "radius"
+        private const val PARAMETER_OPEN_RESTAURANTS = "openNow"
+    }
+
+    private var _binding: BottomSheetFilterListBinding? = null // View binding for the layout used for this Bottom Sheet
+    private val binding get() = _binding // Non-nullable version the view binding variable above
+    private lateinit var bsListener: FilterListBottomSheetListener // Listener for the Bottom Sheet
+    private var rangePriceSelected = arrayListOf<Int>() // List of price ranges selected
+    private var radiusLimit = 1000 // Radius limit of the search
+    private var showOpenRestaurants = false // True if user wants to see only those restaurants that are open, false if otherwise
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -51,6 +65,10 @@ class FilterListBottomSheet(private var appContext: Context, private var mapCust
         _binding = null
     }
 
+    /**
+     * Shows an expanded version of the Bottom Sheet
+     * @param dialog The BottomSheetDialog shown
+     */
     private fun expandBottomSheetOnShow(dialog: Dialog) {
         dialog.setOnShowListener {
             val dialogBottomSheet = it as BottomSheetDialog
@@ -61,9 +79,13 @@ class FilterListBottomSheet(private var appContext: Context, private var mapCust
         }
     }
 
+    /**
+     * Applies the custom parameters to the view
+     * Checks the Checkboxes necessary, puts the seekbar in the correct position
+     */
     private fun applyCustomParametersToView() {
-        if (mapCustomParameters.containsKey("price")) {
-            val listPriceRanges = mapCustomParameters["price"]!!.split(",")
+        if (mapCustomParameters.containsKey(PARAMETER_PRICE_RANGES)) {
+            val listPriceRanges = mapCustomParameters[PARAMETER_PRICE_RANGES]!!.split(",")
             for (price in listPriceRanges) {
                 when (price) {
                     "1" -> binding!!.checkBoxPrice1.isChecked = true
@@ -74,8 +96,8 @@ class FilterListBottomSheet(private var appContext: Context, private var mapCust
             }
         }
 
-        if (mapCustomParameters.containsKey("radius")) {
-            radiusLimit = Integer.parseInt(mapCustomParameters["radius"]!!)
+        if (mapCustomParameters.containsKey(PARAMETER_RADIUS_LIMIT)) {
+            radiusLimit = Integer.parseInt(mapCustomParameters[PARAMETER_RADIUS_LIMIT]!!)
             when (radiusLimit) {
                 1000 -> binding!!.distanceSeekbar.setProgress(0f)
                 2000 -> binding!!.distanceSeekbar.setProgress(25f)
@@ -85,11 +107,14 @@ class FilterListBottomSheet(private var appContext: Context, private var mapCust
             }
         }
 
-        if (mapCustomParameters.containsKey("openNow")) {
+        if (mapCustomParameters.containsKey(PARAMETER_OPEN_RESTAURANTS)) {
             binding!!.checkBoxRestaurantsOpen.isChecked = true
         }
     }
 
+    /**
+     * Sets up the views in the Bottom Sheet
+     */
     private fun setupViews() {
         if (mapCustomParameters.isNotEmpty()) {
             applyCustomParametersToView()
@@ -148,16 +173,23 @@ class FilterListBottomSheet(private var appContext: Context, private var mapCust
         }
     }
 
+    /**
+     * Returns a HashMap of the parameters applied in the views
+     * @return HashMap with parameters
+     */
     private fun getCustomParamenters(): HashMap<String, String> {
         val paramsMap = hashMapOf<String, String>()
 
-        if (rangePriceSelected.isNotEmpty()) paramsMap["price"] = priceRangeListToString()
-        paramsMap["radius"] = radiusLimit.toString()
-        if (showOpenRestaurants) paramsMap["openNow"] = showOpenRestaurants.toString()
+        if (rangePriceSelected.isNotEmpty()) paramsMap[PARAMETER_PRICE_RANGES] = priceRangeListToString()
+        paramsMap[PARAMETER_RADIUS_LIMIT] = radiusLimit.toString()
+        if (showOpenRestaurants) paramsMap[PARAMETER_OPEN_RESTAURANTS] = showOpenRestaurants.toString()
 
         return paramsMap
     }
 
+    /**
+     * Converts the prices selected from the checkbox to String, for querying purposes
+     */
     private fun priceRangeListToString(): String {
         var priceRanges = ""
 
@@ -168,8 +200,19 @@ class FilterListBottomSheet(private var appContext: Context, private var mapCust
         return priceRanges.substring(0, priceRanges.length - 1)
     }
 
+    /**
+     * Interface for the Bottom Sheet
+     */
     interface FilterListBottomSheetListener {
+        /**
+         * Applies the filters to the search query
+         * @param customParameters HashMap with parameters for the filter
+         */
         fun onApplyFiltersClick(customParameters: HashMap<String, String>)
+
+        /**
+         * Clears the filters previously applied to the search query
+         */
         fun onClearFiltersClick()
     }
 }
