@@ -11,6 +11,7 @@ import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.ActivityAutocompleteStreetBinding
 import cenec.mealvity.mealvity.classes.adapters.AutocompleteStreetRecyclerViewAdapter
 import cenec.mealvity.mealvity.classes.autocompleteaddress.StreetList
+import cenec.mealvity.mealvity.classes.config.SharedPreferencesConfig
 import cenec.mealvity.mealvity.classes.constants.ApiAccess
 import cenec.mealvity.mealvity.classes.interfaceapi.HereApi
 import cenec.mealvity.mealvity.classes.retrofit.CustomRetrofitBuilder
@@ -95,9 +96,11 @@ class AutocompleteStreetActivity : AppCompatActivity() {
 
         rvAdapter = AutocompleteStreetRecyclerViewAdapter(StreetList(arrayListOf()))
         rvAdapter.setAutocompleteStreetRecyclerViewListener(object : AutocompleteStreetRecyclerViewAdapter.AutocompleteStreetRecyclerViewListener {
-            override fun onClick(position: Int) {
+            override fun onClick(streetName: String) {
                 // Every time a user selects a street, it will be saved in the preferences
-                StreetSingleton.setStreet(streetSelected)
+                val prefs = SharedPreferencesConfig(this@AutocompleteStreetActivity)
+                prefs.saveDefaultStreet(streetName)
+                StreetSingleton.setStreet(streetName)
                 finish()
             }
 

@@ -3,6 +3,7 @@ package cenec.mealvity.mealvity.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import cenec.darash.mealvity.R

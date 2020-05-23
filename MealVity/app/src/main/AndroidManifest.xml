@@ -9,7 +9,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="cenec.mealvity.mealvity.activities.AutocompleteStreetActivity"/>
+        <activity android:name="cenec.mealvity.mealvity.activities.ActivitiyInfo"></activity>
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDSbqgaeP6AA_XBb7VGazxKhepTOR6IQ68" />
+
+        <activity android:name="cenec.mealvity.mealvity.activities.RestaurantMoreInfoActivity" />
+        <activity android:name="cenec.mealvity.mealvity.activities.AutocompleteStreetActivity" />
         <activity android:name="cenec.mealvity.mealvity.activities.ShowRestaurantListingActivity" />
         <activity android:name="cenec.mealvity.mealvity.activities.SaveAddressActivity" />
         <activity

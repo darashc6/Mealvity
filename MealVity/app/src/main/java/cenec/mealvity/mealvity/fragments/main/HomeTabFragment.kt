@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cenec.darash.mealvity.R
@@ -75,8 +76,6 @@ class HomeTabFragment : Fragment() {
         StreetSingleton.setStreetSingletonListener(object : StreetSingleton.StreetSingletonListener{
             override fun onStreetSelectedListener(streetSelected: String) {
                 etAddress.setText(streetSelected)
-                val sharedPrefs = SharedPreferencesConfig(context!!)
-                sharedPrefs.saveDefaultStreet(streetSelected)
             }
 
         })

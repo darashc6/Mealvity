@@ -15,6 +15,7 @@ import kotlin.math.floor
  */
 class RestaurantRecyclerViewAdapter(private var restaurantList: RestaurantList): RecyclerView.Adapter<RestaurantRecyclerViewAdapter.RestaurantViewHolder>() {
     private lateinit var _binding: ItemListRestaurantBinding // Binding of the layout used for this RecyclerView
+    private lateinit var rvListener: RestaurantRecyclerViewListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RestaurantViewHolder {
         _binding = ItemListRestaurantBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -22,11 +23,15 @@ class RestaurantRecyclerViewAdapter(private var restaurantList: RestaurantList):
     }
 
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
-        holder.bind(restaurantList.results[position])
+        holder.bind(restaurantList.results[position], rvListener)
     }
 
     override fun getItemCount(): Int {
         return restaurantList.results.size
+    }
+
+    fun setRestaurantRecyclerViewListener(listener: RestaurantRecyclerViewListener) {
+        rvListener = listener
     }
 
     /**
@@ -44,7 +49,7 @@ class RestaurantRecyclerViewAdapter(private var restaurantList: RestaurantList):
          * Binds the Restaurant data to the itemView
          * @param restaurant Restaurant containing all its data
          */
-        fun bind(restaurant: Restaurant) {
+        fun bind(restaurant: Restaurant, listener: RestaurantRecyclerViewListener) {
             if (!restaurant.image_url.isNullOrEmpty()) {
                 Glide.with(binding.root)
                     .load(restaurant.image_url)
@@ -58,6 +63,13 @@ class RestaurantRecyclerViewAdapter(private var restaurantList: RestaurantList):
             binding.restaurantPhone.text = restaurant.phone
             binding.restaurantDistance.text = "${floor(restaurant.distance).toInt()} m"
             binding.restaurantRatings.rating = restaurant.rating
+            binding.restaurantMoreInfo.setOnClickListener {
+                listener.onMoreInfoClick(restaurant.id)
+            }
         }
+    }
+
+    interface RestaurantRecyclerViewListener {
+        fun onMoreInfoClick(restaurantId: String)
     }
 }

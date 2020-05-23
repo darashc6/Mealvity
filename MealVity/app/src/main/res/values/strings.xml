@@ -107,9 +107,12 @@
     <string name="text_open_restaurants">Open restaurants</string>
     <string name="checkbox_search_open_restaurants">Search for open restaurants</string>
     <string name="text_button_clear_filters">Clear Filters</string>
-    
+
     <string name="api_call_onFailure">Failed retrieving info. Please try again later</string>
     <string name="api_call_response_unsuccessful">"Failed retrieving info. Please try again later. Error code: </string>
+    <string name="title_more_info_info">Info</string>
+    <string name="title_more_info_menu">Menu</string>
+    <string name="title_more_info_map">Map</string>
 
     <string-array name="array_distances">
         <item>1 km</item>
@@ -118,5 +121,13 @@
         <item>8 km</item>
         <item>10 km</item>
     </string-array>
+    <string name="title_activity_maps">Map</string>
+    <string name="text_cuisine_list">Cuisines</string>
+    <string name="text_address">Address</string>
+    <string name="text_display_phone">Phone</string>
+    <string name="title_more_info_book_table">Book a table</string>
+    <string name="title_more_info_order">Order</string>
+    <string name="text_opening_hours">Opening hours:</string>
+    <string name="text_timings_not_available">Opening hours: Not available</string>
 
 </resources>

@@ -10,4 +10,5 @@
     <color name="error">#bf1b1b</color>
     <color name="delete_color">#ff4444</color>
     <color name="edit_color">#73EC73</color>
+    <color name="transparent">#00000000</color>
 </resources>

@@ -1,5 +1,6 @@
 package cenec.mealvity.mealvity.classes.restaurant
 
+
 import com.google.gson.annotations.SerializedName
 
 /**

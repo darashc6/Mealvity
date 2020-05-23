@@ -62,7 +62,7 @@ class AutocompleteStreetRecyclerViewAdapter(private var streetList: StreetList):
         fun bind (name: StreetName, listener: AutocompleteStreetRecyclerViewListener) {
             streetName.text = name.streetName
             itemView.setOnClickListener {
-                listener.onClick(layoutPosition)
+                listener.onClick(name.streetName)
             }
         }
     }
@@ -73,8 +73,8 @@ class AutocompleteStreetRecyclerViewAdapter(private var streetList: StreetList):
     interface AutocompleteStreetRecyclerViewListener {
         /**
          * Click for the itemView
-         * @param position Index of the list
+         * @param streetName Street name selected from the list
          */
-        fun onClick(position: Int)
+        fun onClick(streetName: String)
     }
 }

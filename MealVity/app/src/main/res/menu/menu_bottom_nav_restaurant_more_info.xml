@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/more_info_book_table"
+        android:icon="@drawable/calendar_icon"
+        android:title="@string/title_more_info_book_table" />
+
+    <item
+        android:id="@+id/more_info_order"
+        android:icon="@drawable/menu_icon"
+        android:title="@string/title_more_info_order" />
+
+</menu>

@@ -2,11 +2,9 @@ package cenec.mealvity.mealvity.classes.interfaceapi
 
 import cenec.mealvity.mealvity.classes.constants.ApiAccess
 import cenec.mealvity.mealvity.classes.restaurant.RestaurantList
+import cenec.mealvity.mealvity.classes.restaurant.RestaurantMoreInfo
 import retrofit2.Call
-import retrofit2.http.GET
-import retrofit2.http.Headers
-import retrofit2.http.Query
-import retrofit2.http.QueryMap
+import retrofit2.http.*
 
 /**
  * Interface containing functions used with the Yelp Fusion API
@@ -74,4 +72,10 @@ interface YelpFusionApi {
         @Query("categories") categories: String = CATEGORY_TYPE,
         @Query("limit") limit: Int = SEARCH_LIMIT
     ): Call<RestaurantList>
+
+    @GET("businesses/{id}")
+    @Headers("Authorization: Bearer $API_KEY")
+    fun getRestaurantInfoById(
+        @Path("id") restaurantId: String
+    ): Call<RestaurantMoreInfo>
 }

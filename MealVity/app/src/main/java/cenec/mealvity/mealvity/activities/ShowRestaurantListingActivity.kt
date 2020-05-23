@@ -1,5 +1,6 @@
 package cenec.mealvity.mealvity.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -107,7 +108,7 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
                     binding.loadingProgressBar.visibility = View.GONE
                     binding.recyclerViewRestaurantList.visibility = View.VISIBLE
                     list?.let {
-                        restaurantList = it.filterList()
+                        restaurantList = it.getListWithFullInfo()
                         binding.toolbar.title = "${restaurantList.results.size} results"
                         onSortList(sortListOptionSelected)
                     }
@@ -139,7 +140,7 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
                     binding.loadingProgressBar.visibility = View.GONE
                     binding.recyclerViewRestaurantList.visibility = View.VISIBLE
                     list?.let {
-                        restaurantList = it.filterList()
+                        restaurantList = it.getListWithFullInfo()
                         binding.toolbar.title = "${restaurantList.results.size} results"
                         onSortList(sortListOptionSelected)
                     }
@@ -171,7 +172,7 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
                     binding.loadingProgressBar.visibility = View.GONE
                     binding.recyclerViewRestaurantList.visibility = View.VISIBLE
                     list?.let {
-                        restaurantList = it.filterList()
+                        restaurantList = it.getListWithFullInfo()
                         binding.toolbar.title = "${restaurantList.results.size} results"
                         onSortList(sortListOptionSelected)
                     }
@@ -195,6 +196,16 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
         snapHelper.attachToRecyclerView(binding.recyclerViewRestaurantList)
 
         rvAdapter = RestaurantRecyclerViewAdapter(restaurantList)
+        rvAdapter.setRestaurantRecyclerViewListener(object : RestaurantRecyclerViewAdapter.RestaurantRecyclerViewListener{
+            override fun onMoreInfoClick(restaurantId: String) {
+                val intentRestaurantMoreInfo = Intent(this@ShowRestaurantListingActivity, RestaurantMoreInfoActivity::class.java)
+                val bun = Bundle()
+                bun.putString("restaurantId", restaurantId)
+                intentRestaurantMoreInfo.putExtras(bun)
+                startActivity(intentRestaurantMoreInfo)
+            }
+
+        })
         binding.recyclerViewRestaurantList.adapter = rvAdapter
     }
 
