@@ -129,5 +129,6 @@
     <string name="title_more_info_order">Order</string>
     <string name="text_opening_hours">Opening hours:</string>
     <string name="text_timings_not_available">Opening hours: Not available</string>
+    <string name="text_title_toolbar_map">Map</string>
 
 </resources>

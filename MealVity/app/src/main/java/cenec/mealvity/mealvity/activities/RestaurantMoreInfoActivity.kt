@@ -7,20 +7,16 @@ import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.core.view.get
-import androidx.core.view.size
 import androidx.viewpager.widget.ViewPager
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.ActivityRestaurantMoreInfoBinding
 import cenec.mealvity.mealvity.classes.constants.ApiAccess
 import cenec.mealvity.mealvity.classes.fragment.FragmentAdapter
-import cenec.mealvity.mealvity.classes.fragment.FragmentAdapter2
 import cenec.mealvity.mealvity.classes.interfaceapi.YelpFusionApi
 import cenec.mealvity.mealvity.classes.restaurant.RestaurantMoreInfo
 import cenec.mealvity.mealvity.classes.retrofit.CustomRetrofitBuilder
 import cenec.mealvity.mealvity.fragments.restaurantmoreinfo.FragmentBookTable
 import cenec.mealvity.mealvity.fragments.restaurantmoreinfo.FragmentOrder
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
@@ -146,13 +142,16 @@ class RestaurantMoreInfoActivity : AppCompatActivity() {
         } else {
             when (item.title) {
                 getString(R.string.title_more_info_info) -> {
-                    val intentMoreInfo = Intent(this, ActivitiyInfo::class.java)
+                    val intentMoreInfo = Intent(this, InfoActivity::class.java)
                     intentMoreInfo.putExtra("object", convertObjectToStringJson(restaurantMoreInfo!!))
 
                     startActivity(intentMoreInfo)
                 }
                 getString(R.string.title_more_info_map) -> {
+                    val intentMap = Intent(this, MapActivity::class.java)
+                    intentMap.putExtra("object", convertObjectToStringJson(restaurantMoreInfo!!))
 
+                    startActivity(intentMap)
                 }
             }
         }

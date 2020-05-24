@@ -18,7 +18,7 @@ import cenec.mealvity.mealvity.classes.adapters.OpeningHoursRecyclerViewAdapter
 import cenec.mealvity.mealvity.classes.restaurant.RestaurantMoreInfo
 import com.google.gson.Gson
 
-class ActivitiyInfo : AppCompatActivity() {
+class InfoActivity : AppCompatActivity() {
     private lateinit var restaurantInfo: RestaurantMoreInfo
     private lateinit var binding: ActivityInfoBinding
 
@@ -87,7 +87,6 @@ class ActivitiyInfo : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> finish()
-            else -> super.onOptionsItemSelected(item)
         }
 
         return true
