@@ -12,6 +12,7 @@ import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.ActivityRestaurantMoreInfoBinding
 import cenec.mealvity.mealvity.classes.constants.ApiAccess
 import cenec.mealvity.mealvity.classes.fragment.FragmentAdapter
+import cenec.mealvity.mealvity.classes.fragment.FragmentAdapter2
 import cenec.mealvity.mealvity.classes.interfaceapi.YelpFusionApi
 import cenec.mealvity.mealvity.classes.restaurant.RestaurantMoreInfo
 import cenec.mealvity.mealvity.classes.retrofit.CustomRetrofitBuilder
@@ -51,32 +52,11 @@ class RestaurantMoreInfoActivity : AppCompatActivity() {
     }
 
     private fun setupViewPager() {
-        val fragmentAdapter = FragmentAdapter(supportFragmentManager)
-        fragmentAdapter.addFragment(fragmentBookTable)
-        fragmentAdapter.addFragment(fragmentOrder)
+        val fragmentAdapter = FragmentAdapter2(this, listOf(fragmentBookTable, fragmentOrder))
 
         binding.viewPagerFragment.adapter = fragmentAdapter
-        binding.viewPagerFragment.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
-            override fun onPageScrollStateChanged(state: Int) {
+        binding.viewPagerFragment.isUserInputEnabled = false
 
-            }
-
-            override fun onPageScrolled(
-                position: Int,
-                positionOffset: Float,
-                positionOffsetPixels: Int
-            ) {
-            }
-
-            override fun onPageSelected(position: Int) {
-                if (position == 0) {
-                    binding.bottomNavView.menu.findItem(R.id.more_info_book_table).isChecked = true
-                } else {
-                    binding.bottomNavView.menu.findItem(R.id.more_info_order).isChecked = true
-                }
-            }
-
-        })
     }
 
     private fun setupNavView() {

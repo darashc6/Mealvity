@@ -86,7 +86,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/card_view_background_pressed_color"
+                    android:background="@drawable/card_view_book_table_background_state_change"
                     android:orientation="horizontal"
                     >
 
@@ -124,7 +124,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/card_view_background_pressed_color"
+                    android:background="@drawable/card_view_book_table_background_state_change"
                     android:orientation="horizontal"
                     >
 
