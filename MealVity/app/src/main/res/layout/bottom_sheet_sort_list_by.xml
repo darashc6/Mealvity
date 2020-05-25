@@ -54,9 +54,7 @@
     </androidx.cardview.widget.CardView>
 
     <include
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        layout="@layout/view_separator"
+        layout="@layout/view_separator_black"
         />
 
     <androidx.cardview.widget.CardView
@@ -96,9 +94,7 @@
     </androidx.cardview.widget.CardView>
 
     <include
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        layout="@layout/view_separator"
+        layout="@layout/view_separator_black"
         />
 
     <androidx.cardview.widget.CardView
@@ -135,9 +131,7 @@
     </androidx.cardview.widget.CardView>
 
     <include
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        layout="@layout/view_separator"
+        layout="@layout/view_separator_black"
         />
 
     <androidx.cardview.widget.CardView
@@ -175,9 +169,7 @@
     </androidx.cardview.widget.CardView>
 
     <include
-        android:layout_height="wrap_content"
-        android:layout_width="wrap_content"
-        layout="@layout/view_separator"
+        layout="@layout/view_separator_black"
         />
 
     <androidx.cardview.widget.CardView

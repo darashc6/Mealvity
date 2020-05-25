@@ -1,14 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.restaurantmoreinfo.FragmentOrder">
+    android:background="@color/colorPrimary"
+    android:orientation="vertical"
+    tools:context="cenec.mealvity.mealvity.fragments.restaurantmoreinfo.FragmentOrder">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        layout="@layout/card_view_order_cart"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_view_menu"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        />
 
-</FrameLayout>
+</LinearLayout>

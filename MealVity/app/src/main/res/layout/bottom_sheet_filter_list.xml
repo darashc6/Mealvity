@@ -47,10 +47,7 @@
                 android:textSize="25sp"/>
 
             <include
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginBottom="5dp"
-                layout="@layout/view_separator"
+                layout="@layout/view_separator_black"
                 />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -154,10 +151,7 @@
                 android:textSize="25sp"/>
 
             <include
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginBottom="5dp"
-                layout="@layout/view_separator"
+                layout="@layout/view_separator_black"
                 />
 
             <com.warkiz.widget.IndicatorSeekBar
@@ -208,10 +202,7 @@
                 android:textSize="25sp"/>
 
             <include
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content"
-                android:layout_marginBottom="5dp"
-                layout="@layout/view_separator"
+                layout="@layout/view_separator_black"
                 />
 
             <CheckBox

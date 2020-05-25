@@ -7,11 +7,4 @@
         android:title="@string/title_more_info_info"
         app:showAsAction="always"
         />
-
-    <item
-        android:id="@+id/more_info_map"
-        android:icon="@drawable/map_marker_icon"
-        android:title="@string/title_more_info_map"
-        app:showAsAction="always"
-        />
 </menu>

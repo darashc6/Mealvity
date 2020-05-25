@@ -39,6 +39,7 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
     private var _binding: FragmentBookTableBinding? = null
     private val binding get() = _binding
     private lateinit var viewModel: BookTableViewModel
+    private lateinit var cvBookTable: CardView
     private lateinit var restaurantMoreInfo: RestaurantMoreInfo
     private lateinit var googleMap: GoogleMap
     private lateinit var mapFragment: SupportMapFragment
@@ -47,7 +48,7 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentBookTableBinding.inflate(layoutInflater)
+        _binding = FragmentBookTableBinding.inflate(inflater, container, false)
         return binding!!.root
     }
 
@@ -85,85 +86,48 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
     }
 
     private fun setupViews() {
-        val cvBookTable = binding!!.root.findViewById<CardView>(R.id.cardview_restaurant_book_table)
+        cvBookTable = binding!!.root.findViewById(R.id.cardview_restaurant_book_table)
+        cvBookTable.findViewById<TextView>(R.id.text_view_restaurant_name).text = restaurantMoreInfo.name
         val cvDatePicker = cvBookTable.findViewById<CardView>(R.id.cardView_date_picker)
         val cvHourPicker = cvBookTable.findViewById<CardView>(R.id.cardView_hour_picker)
         val bAddGuest = cvBookTable.findViewById<ImageView>(R.id.button_add_guest)
         val bRemoveGuest = cvBookTable.findViewById<ImageView>(R.id.button_remove_guest)
+        val bGoogleMaps = cvBookTable.findViewById<CardView>(R.id.button_google_maps)
+        val bVisitYelp = cvBookTable.findViewById<CardView>(R.id.button_browse_yelp)
+        val bBookTable = cvBookTable.findViewById<CardView>(R.id.button_book_table)
 
         cvBookTable.setOnClickListener {
             // Do nothing
         }
 
         cvDatePicker.setOnClickListener {
-            val datePickerDialog = DatePickerDialog(context!!, R.style.DateTimePickerDialog)
-            datePickerDialog.setOnDateSetListener(object : DatePickerDialog.OnDateSetListener{
-                override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-                    val dateSelected = "$dayOfMonth/${month+1}/$year"
-                    if (verifyDate(dateSelected)) {
-                        val tvDateSelected = cvDatePicker.findViewById<TextView>(R.id.text_view_date_selected)
-                        viewModel.setReservationDate(dateSelected)
-                        tvDateSelected.text = viewModel.reservationDate
-                    } else {
-                        Toast.makeText(context, "Please select a valid date", Toast.LENGTH_LONG).show()
-                    }
-                }
-
-            })
-            datePickerDialog.show()
+            showDatePickerDialog()
         }
 
         cvHourPicker.setOnClickListener {
-            val timePickerDialog = TimePickerDialog(context!!, R.style.DateTimePickerDialog, object: TimePickerDialog.OnTimeSetListener{
-                override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-                    val hourSelected = "$hourOfDay:$minute"
-                    val tvHourSelected = cvHourPicker.findViewById<TextView>(R.id.text_view_hour_selected)
-
-                    viewModel.setReservationTime(hourSelected)
-                    tvHourSelected.text = viewModel.reservationTime
-                }
-
-            }, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), false)
-            timePickerDialog.show()
+            showTimePickerDialog()
         }
 
         bAddGuest.setOnClickListener {
-            val tvNumberGuest = cvBookTable.findViewById<TextView>(R.id.text_view_number_guest)
-            viewModel.addGuest(tvNumberGuest)
+            viewModel.addGuest()
+            updateNumberGuests()
         }
 
         bRemoveGuest.setOnClickListener {
-            val tvNumberGuest = cvBookTable.findViewById<TextView>(R.id.text_view_number_guest)
-            viewModel.removeGuest(tvNumberGuest)
+            viewModel.removeGuest()
+            updateNumberGuests()
         }
 
-        val tvRestaurantName = cvBookTable.findViewById<TextView>(R.id.text_view_restaurant_name)
-        val bGoogleMaps = cvBookTable.findViewById<CardView>(R.id.button_google_maps)
-        val bVisitYelp = cvBookTable.findViewById<CardView>(R.id.button_browse_yelp)
-        val bBookTable = cvBookTable.findViewById<CardView>(R.id.button_book_table)
-
-        tvRestaurantName.text = restaurantMoreInfo.name
-
         bGoogleMaps.setOnClickListener {
-            val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:${restaurantMoreInfo.coordinates.latitude},${restaurantMoreInfo.coordinates.longitude}?q=${restaurantMoreInfo.name}, ${restaurantMoreInfo.displayFullAddress()}"))
-            mapIntent.setPackage("com.google.android.apps.maps")
-            if (mapIntent.resolveActivity(context!!.packageManager) != null) {
-                startActivity(mapIntent)
-            }
+            openGoogleMapsApp()
         }
 
         bVisitYelp.setOnClickListener {
-            val intentBrowser = Intent(Intent.ACTION_VIEW, Uri.parse(restaurantMoreInfo.yelp_url))
-            try {
-                startActivity(intentBrowser)
-            } catch (ex: ActivityNotFoundException) {
-                Toast.makeText(context, "No application can handle this request. Please install a browser.",  Toast.LENGTH_LONG).show();
-                ex.printStackTrace();
-            }
+            openYelpWebsite()
         }
 
         bBookTable.setOnClickListener {
-            // TODO Book Table
+            verifiyReservation()
         }
     }
 
@@ -209,5 +173,72 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         val dateSelected = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(dateToVerify)
 
         return dateSelected!!.after(currentDate)
+    }
+
+    private fun updateNumberGuests() {
+        val tvNumberGuest = cvBookTable.findViewById<TextView>(R.id.text_view_number_guest)
+        if (viewModel.nGuest == 1) {
+            tvNumberGuest.text = "${viewModel.nGuest} guest"
+        } else {
+            tvNumberGuest.text = "${viewModel.nGuest} guests"
+        }
+    }
+
+    private fun openGoogleMapsApp() {
+        val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:${restaurantMoreInfo.coordinates.latitude},${restaurantMoreInfo.coordinates.longitude}?q=${restaurantMoreInfo.name}, ${restaurantMoreInfo.displayFullAddress()}"))
+        mapIntent.setPackage("com.google.android.apps.maps")
+        if (mapIntent.resolveActivity(context!!.packageManager) != null) {
+            startActivity(mapIntent)
+        }
+    }
+
+    private fun openYelpWebsite(){
+        val intentBrowser = Intent(Intent.ACTION_VIEW, Uri.parse(restaurantMoreInfo.yelp_url))
+        try {
+            startActivity(intentBrowser)
+        } catch (ex: ActivityNotFoundException) {
+            Toast.makeText(context, "No application can handle this request. Please install a browser.",  Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
+
+    private fun showDatePickerDialog() {
+        val datePickerDialog = DatePickerDialog(context!!, R.style.DateTimePickerDialog)
+        datePickerDialog.setOnDateSetListener(object : DatePickerDialog.OnDateSetListener{
+            override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+                val dateSelected = "$dayOfMonth/${month+1}/$year"
+                if (verifyDate(dateSelected)) {
+                    val tvDateSelected = cvBookTable.findViewById<TextView>(R.id.text_view_date_selected)
+                    viewModel.setReservationDate(dateSelected)
+                    tvDateSelected.text = viewModel.reservationDate
+                } else {
+                    Toast.makeText(context, "Please select a valid date", Toast.LENGTH_LONG).show()
+                }
+            }
+
+        })
+        datePickerDialog.show()
+    }
+
+    private fun showTimePickerDialog() {
+        val timePickerDialog = TimePickerDialog(context!!, R.style.DateTimePickerDialog, object: TimePickerDialog.OnTimeSetListener{
+            override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
+                val hourSelected = "$hourOfDay:$minute"
+                val tvHourSelected = cvBookTable.findViewById<TextView>(R.id.text_view_hour_selected)
+
+                viewModel.setReservationTime(hourSelected)
+                tvHourSelected.text = viewModel.reservationTime
+            }
+
+        }, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), false)
+        timePickerDialog.show()
+    }
+
+    private fun verifiyReservation() {
+        if (viewModel.verifyReservation()) {
+            Toast.makeText(context!!, "Reservation done properly", Toast.LENGTH_LONG).show()
+        } else {
+            Toast.makeText(context!!, "Please fill all the necessary details", Toast.LENGTH_LONG).show()
+        }
     }
 }

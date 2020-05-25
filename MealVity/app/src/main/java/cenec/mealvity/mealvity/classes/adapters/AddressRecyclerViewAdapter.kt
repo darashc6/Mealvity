@@ -19,7 +19,7 @@ class AddressRecyclerViewAdapter(private var addressList: ArrayList<Address>): R
     private lateinit var _binding: ItemListAddressBinding // View binding of the layout used for this RecyclerView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddressViewHolder {
-        _binding = ItemListAddressBinding.inflate(LayoutInflater.from(parent.context))
+        _binding = ItemListAddressBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return AddressViewHolder(_binding)
     }
 

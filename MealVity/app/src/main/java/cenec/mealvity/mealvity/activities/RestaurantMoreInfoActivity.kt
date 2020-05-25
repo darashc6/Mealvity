@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.viewpager.widget.ViewPager
 import cenec.darash.mealvity.R
@@ -124,14 +125,7 @@ class RestaurantMoreInfoActivity : AppCompatActivity() {
                 getString(R.string.title_more_info_info) -> {
                     val intentMoreInfo = Intent(this, InfoActivity::class.java)
                     intentMoreInfo.putExtra("object", convertObjectToStringJson(restaurantMoreInfo!!))
-
                     startActivity(intentMoreInfo)
-                }
-                getString(R.string.title_more_info_map) -> {
-                    val intentMap = Intent(this, MapActivity::class.java)
-                    intentMap.putExtra("object", convertObjectToStringJson(restaurantMoreInfo!!))
-
-                    startActivity(intentMap)
                 }
             }
         }

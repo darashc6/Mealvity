@@ -1,6 +1,5 @@
 package cenec.mealvity.mealvity.classes.viewmodels
 
-import android.widget.TextView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -27,27 +26,18 @@ class BookTableViewModel: ViewModel() {
         _reservationTime.value = reservedTime
     }
 
-    fun addGuest(textView: TextView) {
+    fun addGuest() {
         _nGuests.value = _nGuests.value!! + 1
-
-        if (nGuest == 1) {
-            textView.text = "$nGuest guest"
-        } else {
-            textView.text = "$nGuest guests"
-        }
     }
 
-    fun removeGuest(textView: TextView) {
+    fun removeGuest() {
         val oldNGuests = _nGuests.value!!
         if (oldNGuests > 1) {
             _nGuests.value = oldNGuests - 1
         }
+    }
 
-        if (nGuest == 1) {
-            textView.text = "$nGuest guest"
-        } else {
-            textView.text = "$nGuest guests"
-        }
-
+    fun verifyReservation(): Boolean {
+        return !(reservationDate.isEmpty() || reservationTime.isEmpty())
     }
 }

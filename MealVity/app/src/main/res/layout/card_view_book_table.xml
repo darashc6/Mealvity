@@ -33,11 +33,7 @@
                 />
 
             <include
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                layout="@layout/view_separator"
-                android:layout_marginTop="2dp"
-                android:layout_marginBottom="5dp"
+                layout="@layout/view_separator_black"
                 />
 
         </LinearLayout>
@@ -228,11 +224,7 @@
         </LinearLayout>
 
         <include
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            layout="@layout/view_separator"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
+            layout="@layout/view_separator_black"
             />
 
         <LinearLayout
