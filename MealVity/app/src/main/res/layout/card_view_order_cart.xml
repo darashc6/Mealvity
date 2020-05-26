@@ -4,6 +4,7 @@
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:foreground="?android:selectableItemBackground"
     app:cardBackgroundColor="@color/colorAccent"
     app:cardCornerRadius="5dp">
 
@@ -21,6 +22,7 @@
             android:src="@drawable/takeaway_icon"/>
 
         <TextView
+            android:id="@+id/text_view_number_items"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="4"
@@ -43,6 +45,7 @@
             />
 
         <TextView
+            android:id="@+id/text_view_total_price"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="2"

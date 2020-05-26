@@ -10,18 +10,23 @@ import androidx.recyclerview.widget.RecyclerView
 import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.classes.restaurant.menu.Item
 
-class SectionRecyclerViewAdapter(var items: ArrayList<Item>): RecyclerView.Adapter<SectionRecyclerViewAdapter.SectionViewHolder>() {
+class SectionRecyclerViewAdapter(private val items: ArrayList<Item>): RecyclerView.Adapter<SectionRecyclerViewAdapter.SectionViewHolder>() {
+    private lateinit var rvListener: SectionRecyclerViewListener
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SectionViewHolder {
         return SectionViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_list_item, parent, false))
     }
 
     override fun onBindViewHolder(holder: SectionViewHolder, position: Int) {
-        holder.bind(items, position)
+        holder.bind(items, position, rvListener)
     }
 
     override fun getItemCount(): Int {
         return items.size
+    }
+
+    fun setSectionRecyclerViewListener(listener: SectionRecyclerViewListener) {
+        rvListener = listener
     }
 
     class SectionViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
@@ -29,10 +34,18 @@ class SectionRecyclerViewAdapter(var items: ArrayList<Item>): RecyclerView.Adapt
         private val tvItemDescription = itemView.findViewById<TextView>(R.id.text_view_item_description)
         private val tvItemPrice = itemView.findViewById<TextView>(R.id.text_view_item_price)
 
-        fun bind(list: ArrayList<Item>, position: Int) {
+        fun bind(list: ArrayList<Item>, position: Int, listener: SectionRecyclerViewListener) {
             tvItemName.text = list[position].name
             tvItemDescription.text = list[position].description
             tvItemPrice.text = "€${list[position].price}"
+
+            itemView.setOnClickListener {
+                listener.onItemClick(position)
+            }
         }
+    }
+
+    interface SectionRecyclerViewListener {
+        fun onItemClick(itemPosition: Int)
     }
 }

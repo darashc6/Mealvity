@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModel
 
 class BookTableViewModel: ViewModel() {
     private val _reservationDate = MutableLiveData<String>()
-    val reservationDate: String get() = _reservationDate.value!!
+    val reservationDate get() = _reservationDate.value
     private val _reservationTime = MutableLiveData<String>()
-    val reservationTime: String get() = _reservationTime.value!!
+    val reservationTime get() = _reservationTime.value
     private val _nGuests = MutableLiveData<Int>()
-    val nGuest: Int get() = _nGuests.value!!
+    val nGuest get() = _nGuests.value
 
     init {
         _reservationDate.value = ""
@@ -38,6 +38,6 @@ class BookTableViewModel: ViewModel() {
     }
 
     fun verifyReservation(): Boolean {
-        return !(reservationDate.isEmpty() || reservationTime.isEmpty())
+        return !(_reservationDate.value!!.isEmpty() || _reservationTime.value!!.isEmpty())
     }
 }

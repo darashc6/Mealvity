@@ -130,5 +130,8 @@
     <string name="text_opening_hours">Opening hours:</string>
     <string name="text_timings_not_available">Opening hours: Not available</string>
     <string name="text_title_toolbar_map">Map</string>
+    <string name="text_my_order">My Order</string>
+    <string name="text_total_price">Total Price</string>
+    <string name="text_no_items_in_cart">0 items in cart</string>
 
 </resources>
