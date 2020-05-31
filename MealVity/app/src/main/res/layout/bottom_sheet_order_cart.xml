@@ -70,7 +70,7 @@
     </LinearLayout>
 
     <androidx.cardview.widget.CardView
-        android:id="@+id/button_add_item_to_cart"
+        android:id="@+id/button_confirm_order"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_margin="10dp"

@@ -45,7 +45,7 @@ class HomeTabFragment : Fragment() {
         etAddress = fragmentView.findViewById(R.id.editText_address)
         bSearch = fragmentView.findViewById(R.id.search_restaurant_listings)
 
-        tvUser.text = "Hi, ${UserSingleton.getInstance().getCurrentUser().fullName}!"
+        tvUser.text = "Hi, ${userLoggedIn.fullName}!"
 
         etAddress.background = null
 
@@ -111,14 +111,15 @@ class HomeTabFragment : Fragment() {
         val adapter = CuisineRecyclerViewAdapter(fakeList)
         adapter.setCategoryRecyclerViewListener(object : CuisineRecyclerViewAdapter.CuisineRecyclerViewListener{
             override fun onClick(position: Int) {
-                val category = fakeList[position].name.toLowerCase(Locale.ROOT)
-                val address = "${userLoggedIn.addresses[0].name}, ${userLoggedIn.addresses[0].number}"
+                val category = when (position) {
+                    3 -> "indpak"
+                    else -> fakeList[position].name.toLowerCase(Locale.ROOT)
+                }
+                val address = etAddress.text.toString()
 
                 val intentGetBusinessListing = Intent(context, ShowRestaurantListingActivity::class.java)
-                val bun = Bundle()
-                bun.putString(BundleKeys.RESTAURANT_CATEGORY, category)
-                bun.putString(BundleKeys.ADDRESS_SEARCH, address)
-                intentGetBusinessListing.putExtras(bun)
+                intentGetBusinessListing.putExtra(BundleKeys.RESTAURANT_CATEGORY, category)
+                intentGetBusinessListing.putExtra(BundleKeys.ADDRESS_SEARCH, address)
                 startActivity(intentGetBusinessListing)
             }
 

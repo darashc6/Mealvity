@@ -133,5 +133,15 @@
     <string name="text_my_order">My Order</string>
     <string name="text_total_price">Total Price</string>
     <string name="text_no_items_in_cart">0 items in cart</string>
+    <string name="text_base_price">Base price</string>
+    <string name="text_details">Details</string>
+    <string name="text_pick_up">Pick-up</string>
+    <string name="text_delivery">Delivery</string>
+    <string name="text_delivery_pickup">Delivery / Pick-up</string>
+    <string name="text_pickup_time">Pickup time</string>
+    <string name="text_payment_method">Payment method</string>
+    <string name="text_cash">Cash</string>
+    <string name="text_card">Card</string>
+    <string name="text_paypal">Paypal</string>
 
 </resources>

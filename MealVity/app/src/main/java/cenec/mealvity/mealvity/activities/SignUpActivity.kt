@@ -53,7 +53,7 @@ class SignUpActivity : AppCompatActivity() {
      * Redirects to the signing in activity
      */
     private fun gotoSignInActivity() {
-        startActivity(Intent(this, SignInActivity::class.java))
+        startActivity(Intent(this, MainActivity::class.java))
     }
 
     /**
@@ -133,8 +133,8 @@ class SignUpActivity : AppCompatActivity() {
      * @param newUser Map containing the user's necessary details to add to the database
      */
     private fun addNewUserToDatabase(fUser: FirebaseUser, newUser: HashMap<String, Serializable>) {
-        mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).
-        document(fUser.uid).set(newUser)
+        mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS)
+            .document(fUser.uid).set(newUser)
             .addOnCompleteListener { databaseTask ->
                 if (databaseTask.isSuccessful) {
                     val intentLoading=Intent(this@SignUpActivity, LoadingActivity::class.java)

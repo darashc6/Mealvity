@@ -121,12 +121,13 @@ class RestaurantMoreInfoActivity : AppCompatActivity() {
         if (restaurantMoreInfo == null) {
             Toast.makeText(this, "Please wait while we load all the info", Toast.LENGTH_SHORT).show()
         } else {
-            when (item.title) {
-                getString(R.string.title_more_info_info) -> {
+            when (item.itemId) {
+                R.id.more_info_info -> {
                     val intentMoreInfo = Intent(this, InfoActivity::class.java)
                     intentMoreInfo.putExtra("object", convertObjectToStringJson(restaurantMoreInfo!!))
                     startActivity(intentMoreInfo)
                 }
+                android.R.id.home -> finish()
             }
         }
         return true

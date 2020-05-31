@@ -72,6 +72,9 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
         intent.extras?.let {
             address = it.getString(BundleKeys.ADDRESS_SEARCH)!!
             category = it.getString(BundleKeys.RESTAURANT_CATEGORY)
+            if (category == null) {
+                category = "restaurant"
+            }
         }
     }
 
@@ -156,7 +159,7 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
      * Returns a list of restaurants using the custom parameters using the filter option
      */
     private fun getRestaurantListingByCustomParameters(customParametersMap: HashMap<String, String>) {
-        val call = yelpFusionApi.getRestaurantListByCustomParameters(address, customParametersMap)
+        val call = yelpFusionApi.getRestaurantListByCustomParameters(address, customParametersMap, category!!)
 
         call.enqueue(object : Callback<RestaurantList> {
             override fun onFailure(call: Call<RestaurantList>, t: Throwable) {
@@ -221,14 +224,17 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
      * Overrides the functionality of each menu option
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.title) {
-            resources.getString(R.string.text_menu_sort_by) -> {
+        when (item.itemId) {
+            R.id.sort_by-> {
                 val sortByBottomSheet = SortListByBottomSheet(this, sortListOptionSelected)
                 sortByBottomSheet.show(supportFragmentManager, "")
             }
-            resources.getString(R.string.text_menu_filters) -> {
+            R.id.filter_list -> {
                 val filtersBottomSheet = FilterListBottomSheet(this, mapCustomParameters)
                 filtersBottomSheet.show(supportFragmentManager, "")
+            }
+            android.R.id.home -> {
+                finish()
             }
         }
 

@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="cenec.mealvity.mealvity.activities.MapActivity"></activity>
+        <activity android:name="cenec.mealvity.mealvity.activities.PaymentActivity"></activity>
         <activity android:name="cenec.mealvity.mealvity.activities.InfoActivity" />
 
         <meta-data

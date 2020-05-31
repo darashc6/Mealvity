@@ -15,7 +15,7 @@
         android:textColor="@color/black"
         android:fontFamily="@font/fonarto_regular"
         android:gravity="center"
-        android:padding="5dp"
+        android:padding="2dp"
         tools:text="2x"/>
 
     <TextView
@@ -27,7 +27,7 @@
         android:textColor="@color/black"
         android:fontFamily="@font/fonarto_regular"
         android:gravity="center_vertical|start"
-        android:padding="5dp"
+        android:padding="2dp"
         tools:text="Item name"/>
 
     <TextView
@@ -40,7 +40,7 @@
         android:textColor="@color/black"
         android:fontFamily="@font/fonarto_regular"
         android:gravity="center_vertical|end"
-        android:padding="5dp"
+        android:padding="2dp"
         tools:text="Item price"/>
 
 </LinearLayout>

@@ -1,14 +1,15 @@
 package cenec.mealvity.mealvity.fragments.restaurantmoreinfo
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.FragmentOrderBinding
+import cenec.mealvity.mealvity.activities.PaymentActivity
 import cenec.mealvity.mealvity.classes.adapters.MenuRecyclerViewAdapter
 import cenec.mealvity.mealvity.classes.bottomsheet.AddItemToCartBottomSheet
 import cenec.mealvity.mealvity.classes.bottomsheet.OrderCartBottomSheet
@@ -66,6 +67,14 @@ class FragmentOrder : Fragment() {
 
         cvOrderCart.setOnClickListener {
             val orderCartBottomSheet = OrderCartBottomSheet(context!!, newOrder)
+            orderCartBottomSheet.setOrderCartBottomSheetListener(object : OrderCartBottomSheet.OrderCartBottomSheetListener{
+                override fun onConfirmOrderClick() {
+                    val intent = Intent(context!!, PaymentActivity::class.java)
+                    intent.putExtra("order", newOrder)
+                    startActivity(intent)
+                }
+
+            })
             orderCartBottomSheet.show(childFragmentManager, orderCartBottomSheet.tag)
         }
     }

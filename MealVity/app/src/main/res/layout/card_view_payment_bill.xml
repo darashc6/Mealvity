@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    app:cardBackgroundColor="@color/colorAccent"
+    app:cardCornerRadius="5dp"
+    app:cardElevation="10dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="35sp"
+            android:textColor="@color/black"
+            android:fontFamily="@font/fonarto_bold"
+            android:gravity="center"
+            android:padding="5dp"
+            android:text="@string/text_my_order"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_order_cart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"/>
+
+        <include
+            layout="@layout/view_separator_black"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="20dp"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/fonarto_regular"
+                android:gravity="center_vertical|start"
+                android:padding="2dp"
+                android:text="@string/text_base_price"/>
+
+            <TextView
+                android:id="@+id/text_view_base_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="20dp"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/fonarto_regular"
+                android:gravity="center_vertical|end"
+                android:padding="2dp"
+                tools:text="€19.99"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="20dp"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/fonarto_regular"
+                android:gravity="center_vertical|start"
+                android:padding="2dp"
+                android:text="VAT (21%)"/>
+
+            <TextView
+                android:id="@+id/text_view_tax_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="20dp"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/fonarto_regular"
+                android:gravity="center_vertical|end"
+                android:padding="2dp"
+                tools:text="€19.99"/>
+        </LinearLayout>
+
+        <include
+            layout="@layout/view_separator_black"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="20dp"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/fonarto_regular"
+                android:gravity="center_vertical|start"
+                android:padding="2dp"
+                android:text="@string/text_total_price"/>
+
+            <TextView
+                android:id="@+id/text_view_total_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="20dp"
+                android:textSize="20sp"
+                android:textColor="@color/black"
+                android:fontFamily="@font/fonarto_regular"
+                android:gravity="center_vertical|end"
+                android:padding="2dp"
+                tools:text="€19.99"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

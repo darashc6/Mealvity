@@ -8,6 +8,11 @@
         <item name="android:colorActivatedHighlight">@color/colorAccent</item>
     </style>
 
+    <style name="color_control_black" parent="AppTheme" >
+        <item name="android:colorControlActivated">@color/black</item>
+        <item name="android:colorActivatedHighlight">@color/black</item>
+    </style>
+
     <style name="DateTimePickerDialog" parent="Theme.AppCompat.DayNight.Dialog">
         <item name="android:colorControlActivated">@color/colorPrimary</item>
         <item name="android:colorAccent">@color/colorAccentDark</item>

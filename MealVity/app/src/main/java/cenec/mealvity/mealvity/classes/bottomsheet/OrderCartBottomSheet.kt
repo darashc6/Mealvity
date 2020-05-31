@@ -19,6 +19,7 @@ import java.util.*
 class OrderCartBottomSheet(private var appContext: Context, private var order: Order): BottomSheetDialogFragment() {
     private var _binding: BottomSheetOrderCartBinding? = null
     private val binding get() = _binding
+    private lateinit var bsListener: OrderCartBottomSheetListener
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,6 +61,11 @@ class OrderCartBottomSheet(private var appContext: Context, private var order: O
             binding!!.recyclerViewOrderCart.visibility = View.VISIBLE
             binding!!.textViewEmptyCart.visibility = View.GONE
         }
+
+        binding!!.buttonConfirmOrder.setOnClickListener {
+            bsListener.onConfirmOrderClick()
+            dismiss()
+        }
     }
 
     private fun setupRecyclerView() {
@@ -68,5 +74,13 @@ class OrderCartBottomSheet(private var appContext: Context, private var order: O
 
         binding!!.recyclerViewOrderCart.layoutManager = rvLayoutManager
         binding!!.recyclerViewOrderCart.adapter = rvAdapter
+    }
+
+    fun setOrderCartBottomSheetListener(listener: OrderCartBottomSheetListener) {
+        bsListener = listener
+    }
+
+    interface OrderCartBottomSheetListener {
+        fun onConfirmOrderClick()
     }
 }
