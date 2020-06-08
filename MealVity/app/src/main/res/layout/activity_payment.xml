@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="cenec.mealvity.mealvity.activities.PaymentActivity">
+    tools:context="cenec.mealvity.mealvity.activities.OrderPaymentActivity">
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -38,8 +38,11 @@
             <include
                 android:id="@+id/cardView_payment_method"
                 layout="@layout/card_view_payment_method"/>
-        </LinearLayout>
 
+            <include
+                android:id="@+id/cardView_payment_confirmation"
+                layout="@layout/card_view_confirm_payment_button"/>
+        </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
 

@@ -11,12 +11,14 @@ import android.widget.Toast
 import androidx.viewpager.widget.ViewPager
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.ActivityRestaurantMoreInfoBinding
+import cenec.mealvity.mealvity.classes.config.DatabaseConfig
 import cenec.mealvity.mealvity.classes.constants.ApiAccess
 import cenec.mealvity.mealvity.classes.fragment.FragmentAdapter
 import cenec.mealvity.mealvity.classes.fragment.FragmentAdapter2
 import cenec.mealvity.mealvity.classes.interfaceapi.YelpFusionApi
 import cenec.mealvity.mealvity.classes.restaurant.RestaurantMoreInfo
 import cenec.mealvity.mealvity.classes.retrofit.CustomRetrofitBuilder
+import cenec.mealvity.mealvity.classes.user.User
 import cenec.mealvity.mealvity.fragments.restaurantmoreinfo.FragmentBookTable
 import cenec.mealvity.mealvity.fragments.restaurantmoreinfo.FragmentOrder
 import com.google.gson.Gson
@@ -24,7 +26,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class RestaurantMoreInfoActivity : AppCompatActivity() {
+class RestaurantMoreInfoActivity : AppCompatActivity(), DatabaseConfig.DatabaseConfigListener {
     private val fragmentBookTable by lazy { FragmentBookTable() }
     private val fragmentOrder by lazy { FragmentOrder() }
     private val yelpBuilder by lazy { CustomRetrofitBuilder.createRetrofitBuilder(ApiAccess.URL_YELP_FUSION_API) }
@@ -133,6 +135,8 @@ class RestaurantMoreInfoActivity : AppCompatActivity() {
         return true
     }
 
+
+
     private fun convertObjectToStringJson(restaurantMoreInfo: RestaurantMoreInfo): String {
         val gson = Gson()
         return gson.toJson(restaurantMoreInfo, RestaurantMoreInfo::class.java)
@@ -140,5 +144,17 @@ class RestaurantMoreInfoActivity : AppCompatActivity() {
 
     interface RestaurantMoreInfoListener {
         fun onInfoLoaded(example: RestaurantMoreInfo)
+    }
+
+    override fun onTaskSuccessful() {
+        Toast.makeText(this, "Task succesfull", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onTaskFailed() {
+        Toast.makeText(this, "Task failed", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onUserUpdated(userUpdated: User) {
+        // Do nothing
     }
 }

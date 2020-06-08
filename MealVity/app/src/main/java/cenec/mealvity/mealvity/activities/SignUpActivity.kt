@@ -4,17 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.widget.EditText
-import android.widget.ProgressBar
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.cardview.widget.CardView
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.ActivitySignUpBinding
 import cenec.mealvity.mealvity.classes.constants.Database
 import cenec.mealvity.mealvity.classes.user.Address
-import cenec.mealvity.mealvity.classes.user.Orders
+import cenec.mealvity.mealvity.classes.user.Order
 import com.google.firebase.auth.*
 import com.google.firebase.firestore.FirebaseFirestore
 import java.io.Serializable
@@ -100,10 +96,11 @@ class SignUpActivity : AppCompatActivity() {
                         if (task.isSuccessful) {
                             val firebaseUser = mFirebaseAuth.currentUser
                             val newUser = hashMapOf(
+                                Database.FIRESTORE_KEY_DATABASE_USERS_USER_ID to firebaseUser!!.uid,
                                 Database.FIRESTORE_KEY_DATABASE_USERS_FULL_NAME to fullName,
                                 Database.FIRESTORE_KEY_DATABASE_USERS_PHONE_NUMBER to phoneNumber,
                                 Database.FIRESTORE_KEY_DATABASE_USERS_EMAIL to email,
-                                Database.FIRESTORE_KEY_DATABASE_USERS_ORDERS to arrayListOf<Orders>(),
+                                Database.FIRESTORE_KEY_DATABASE_USERS_ORDERS to arrayListOf<Order>(),
                                 Database.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES to arrayListOf<Address>()
                             )
 

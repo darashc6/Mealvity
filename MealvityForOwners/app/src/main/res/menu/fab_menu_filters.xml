@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/filter_show_pending"
+        android:title="@string/text_show_pending"/>
+
+    <item
+        android:id="@+id/filter_show_accepted"
+        android:title="@string/text_string_accepted"/>
+
+    <item
+        android:id="@+id/filter_show_rejected"
+        android:title="@string/text_show_rejected"/>
+
+    <item
+        android:id="@+id/filter_show_all"
+        android:title="@string/text_show_all"/>
+</menu>

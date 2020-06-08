@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Mealvity For Owners</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="text_hint_user_id">User id</string>
+    <string name="button_text_sign_in">SIGN IN</string>
+    <string name="text_error_field_is_empty">Field is Empty</string>
+    <string name="text_menu_reservation">Reservations</string>
+    <string name="text_menu_orders">Orders</string>
+    <string name="text_accept">Accept</string>
+    <string name="text_reject">Reject</string>
+    <string name="text_confirm_rejection">Confirm Rejection</string>
+    <string name="text_hint_reason">Reason...</string>
+    <string name="text_show_all">Show ALL</string>
+    <string name="text_show_pending">Show PENDING</string>
+    <string name="text_string_accepted">Show ACCEPTED</string>
+    <string name="text_show_rejected">Show REJECTED</string>
+</resources>

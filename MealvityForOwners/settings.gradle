@@ -1,0 +1,2 @@
+rootProject.name='Mealvity For Owners'
+include ':app'

@@ -11,6 +11,7 @@ import android.widget.TimePicker
 import android.widget.Toast
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.FragmentDeliveryBinding
+import cenec.mealvity.mealvity.classes.dialogs.ChooseAddressDialog
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -34,6 +35,20 @@ class DeliveryFragment : Fragment() {
         binding!!.textViewTime.text = setPickupTime()
         binding!!.textViewTime.setOnClickListener {
             showTimePickerDialog()
+        }
+        binding!!.textViewAddress.setOnClickListener {
+            val userAddressDialog = ChooseAddressDialog(context!!)
+            userAddressDialog.setChooseAddressDialogListener(object : ChooseAddressDialog.ChooseAddressDialogListener{
+                override fun onAcceptClick(address: String) {
+                    if (address.isEmpty()) {
+                        Toast.makeText(context!!, "Please select a valid address", Toast.LENGTH_LONG).show()
+                    } else {
+                        binding!!.textViewAddress.text = address
+                    }
+                }
+
+            })
+            userAddressDialog.show(childFragmentManager, userAddressDialog.tag)
         }
     }
 

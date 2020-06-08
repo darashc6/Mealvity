@@ -143,5 +143,6 @@
     <string name="text_cash">Cash</string>
     <string name="text_card">Card</string>
     <string name="text_paypal">Paypal</string>
+    <string name="text_reservations">Reservations</string>
 
 </resources>

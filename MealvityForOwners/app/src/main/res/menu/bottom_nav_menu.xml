@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/bottom_nav_reservations"
+        android:title="@string/text_menu_reservation"
+        android:icon="@drawable/calendar_icon"/>
+
+    <item
+        android:id="@+id/bottom_nav_orders"
+        android:title="@string/text_menu_orders"
+        android:icon="@drawable/menu_icon"/>
+</menu>

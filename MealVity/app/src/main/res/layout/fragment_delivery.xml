@@ -44,17 +44,6 @@
         android:padding="1dp">
 
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:textColor="@color/black"
-            android:fontFamily="@font/fonarto_regular"
-            android:textSize="20sp"
-            android:text="Address"
-            />
-
-        <TextView
             android:id="@+id/text_view_address"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -63,7 +52,7 @@
             android:textColor="@color/black"
             android:fontFamily="@font/fonarto_regular"
             android:textSize="22sp"
-            android:text="Select"
+            android:text="Select an address"
             />
     </LinearLayout>
 

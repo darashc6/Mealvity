@@ -9,11 +9,12 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.FragmentOrderBinding
-import cenec.mealvity.mealvity.activities.PaymentActivity
+import cenec.mealvity.mealvity.activities.OrderPaymentActivity
+import cenec.mealvity.mealvity.activities.RestaurantMoreInfoActivity
 import cenec.mealvity.mealvity.classes.adapters.MenuRecyclerViewAdapter
 import cenec.mealvity.mealvity.classes.bottomsheet.AddItemToCartBottomSheet
 import cenec.mealvity.mealvity.classes.bottomsheet.OrderCartBottomSheet
-import cenec.mealvity.mealvity.classes.orders.Order
+import cenec.mealvity.mealvity.classes.orders.OrderCart
 import cenec.mealvity.mealvity.classes.orders.OrderListener
 import cenec.mealvity.mealvity.classes.restaurant.menu.Item
 import cenec.mealvity.mealvity.classes.restaurant.menu.Menu
@@ -25,7 +26,7 @@ class FragmentOrder : Fragment() {
     private var _binding: FragmentOrderBinding? = null
     private val binding get() = _binding
     private var restaurantMenu = Menu(arrayListOf())
-    private lateinit var newOrder: Order
+    private lateinit var newOrderCart: OrderCart
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -40,11 +41,11 @@ class FragmentOrder : Fragment() {
     }
 
     private fun setupNewOrder() {
-        newOrder = Order()
-        newOrder.setOrderListener(object : OrderListener {
+        newOrderCart = OrderCart()
+        newOrderCart.setOrderListener(object : OrderListener {
             override fun onOrderCartUpdated() {
-                binding!!.cardViewOrderCart.textViewNumberItems.text = "${newOrder.quantityTotal} items"
-                binding!!.cardViewOrderCart.textViewTotalPrice.text = String.format(Locale.getDefault(), "€%.2f", newOrder.totalPrice)
+                binding!!.cardViewOrderCart.textViewNumberItems.text = "${newOrderCart.quantityTotal} items"
+                binding!!.cardViewOrderCart.textViewTotalPrice.text = String.format(Locale.getDefault(), "€%.2f", newOrderCart.totalPrice)
             }
 
         })
@@ -66,11 +67,12 @@ class FragmentOrder : Fragment() {
         val cvOrderCart = binding!!.root.findViewById<View>(R.id.card_view_order_cart)
 
         cvOrderCart.setOnClickListener {
-            val orderCartBottomSheet = OrderCartBottomSheet(context!!, newOrder)
+            val orderCartBottomSheet = OrderCartBottomSheet(context!!, newOrderCart)
             orderCartBottomSheet.setOrderCartBottomSheetListener(object : OrderCartBottomSheet.OrderCartBottomSheetListener{
                 override fun onConfirmOrderClick() {
-                    val intent = Intent(context!!, PaymentActivity::class.java)
-                    intent.putExtra("order", newOrder)
+                    val intent = Intent(context!!, OrderPaymentActivity::class.java)
+                    intent.putExtra("order", newOrderCart)
+                    intent.putExtra("restaurant", (context as RestaurantMoreInfoActivity).getRestaurantMoreInfo()!!.name)
                     startActivity(intent)
                 }
 
@@ -87,7 +89,7 @@ class FragmentOrder : Fragment() {
                 val addItemToCartBottomSheet = AddItemToCartBottomSheet(restaurantMenu.menu[menuPosition].items[itemPosition])
                 addItemToCartBottomSheet.setAddItemToBottomSheetListener(object : AddItemToCartBottomSheet.AddItemToCartBottomSheetListener{
                     override fun onAddItemToCart(menuItem: Item, quantity: Int) {
-                        newOrder.addItemToOrder(menuItem, quantity)
+                        newOrderCart.addItemToOrder(menuItem, quantity)
                     }
 
                 })

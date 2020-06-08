@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.transition.Slide
 import android.util.Log
 import android.view.Gravity
-import android.view.View
 import android.view.animation.AnimationUtils
 import android.widget.Button
 import android.widget.TextView
@@ -14,7 +13,7 @@ import android.widget.Toast
 import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.classes.constants.Database
 import cenec.mealvity.mealvity.classes.user.Address
-import cenec.mealvity.mealvity.classes.user.Orders
+import cenec.mealvity.mealvity.classes.user.Order
 import cenec.mealvity.mealvity.classes.user.User
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -157,11 +156,13 @@ class MainActivity : AppCompatActivity() {
      */
     private fun addUserToDatabase(currentUser: FirebaseUser) {
         // To add an object to Firestore, we can add it as a hashmap value, since it uses a key-value pairing
+        val currentFirebaseUser = mFirebaseAuth.currentUser
         val newUser = hashMapOf(
+            Database.FIRESTORE_KEY_DATABASE_USERS_USER_ID to currentFirebaseUser!!.uid,
             Database.FIRESTORE_KEY_DATABASE_USERS_FULL_NAME to currentUser.displayName,
             Database.FIRESTORE_KEY_DATABASE_USERS_PHONE_NUMBER to "",
             Database.FIRESTORE_KEY_DATABASE_USERS_EMAIL to currentUser.email,
-            Database.FIRESTORE_KEY_DATABASE_USERS_ORDERS to arrayListOf<Orders>(),
+            Database.FIRESTORE_KEY_DATABASE_USERS_ORDERS to arrayListOf<Order>(),
             Database.FIRESTORE_KEY_DATABASE_USERS_ADDRESSES to arrayListOf<Address>()
         )
         mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).document(currentUser.uid).set(newUser)

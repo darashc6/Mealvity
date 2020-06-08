@@ -9,7 +9,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="cenec.mealvity.mealvity.activities.PaymentActivity"></activity>
+        <activity android:name="cenec.mealvity.mealvity.activities.OrderPaymentActivity"></activity>
         <activity android:name="cenec.mealvity.mealvity.activities.InfoActivity" />
 
         <meta-data
@@ -24,7 +24,7 @@
             android:name="cenec.mealvity.mealvity.activities.HelpActivity"
             android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
         <activity
-            android:name="cenec.mealvity.mealvity.activities.NotificationsActivity"
+            android:name="cenec.mealvity.mealvity.activities.ReservationsActivity"
             android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
         <activity
             android:name="cenec.mealvity.mealvity.activities.UserAddressesActivity"

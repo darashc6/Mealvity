@@ -80,7 +80,7 @@ class ProfileTabFragment : Fragment() {
         }
 
         cvNotifications.setOnClickListener {
-            newActivity(NotificationsActivity::class.java)
+            newActivity(ReservationsActivity::class.java)
         }
 
         cvHelp.setOnClickListener {

@@ -6,17 +6,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import cenec.darash.mealvity.databinding.BottomSheetOrderCartBinding
 import cenec.mealvity.mealvity.classes.adapters.OrderCartRecyclerViewAdapter
-import cenec.mealvity.mealvity.classes.orders.Order
+import cenec.mealvity.mealvity.classes.orders.OrderCart
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.util.*
 
-class OrderCartBottomSheet(private var appContext: Context, private var order: Order): BottomSheetDialogFragment() {
+class OrderCartBottomSheet(private var appContext: Context, private var orderCart: OrderCart): BottomSheetDialogFragment() {
     private var _binding: BottomSheetOrderCartBinding? = null
     private val binding get() = _binding
     private lateinit var bsListener: OrderCartBottomSheetListener
@@ -52,8 +51,8 @@ class OrderCartBottomSheet(private var appContext: Context, private var order: O
     }
 
     private fun setupViews() {
-        binding!!.textViewTotalPrice.text = String.format(Locale.getDefault(), "€%.2f", order.totalPrice)
-        if (order.orderCart.isEmpty()) {
+        binding!!.textViewTotalPrice.text = String.format(Locale.getDefault(), "€%.2f", orderCart.totalPrice)
+        if (orderCart.orderCart.isEmpty()) {
             binding!!.recyclerViewOrderCart.visibility = View.GONE
             binding!!.textViewEmptyCart.visibility = View.VISIBLE
         } else {
@@ -70,7 +69,7 @@ class OrderCartBottomSheet(private var appContext: Context, private var order: O
 
     private fun setupRecyclerView() {
         val rvLayoutManager = LinearLayoutManager(appContext, LinearLayoutManager.VERTICAL, false)
-        val rvAdapter = OrderCartRecyclerViewAdapter(order)
+        val rvAdapter = OrderCartRecyclerViewAdapter(orderCart)
 
         binding!!.recyclerViewOrderCart.layoutManager = rvLayoutManager
         binding!!.recyclerViewOrderCart.adapter = rvAdapter

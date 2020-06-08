@@ -3,10 +3,9 @@ package cenec.mealvity.mealvity.fragments.restaurantmoreinfo
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.ActivityNotFoundException
+import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
-import android.graphics.Point
-import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -14,35 +13,50 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.cardview.widget.CardView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.FragmentBookTableBinding
 import cenec.mealvity.mealvity.activities.RestaurantMoreInfoActivity
+import cenec.mealvity.mealvity.classes.config.DatabaseConfig
+import cenec.mealvity.mealvity.classes.reservations.Reservation
+import cenec.mealvity.mealvity.classes.reservations.UserReservationDetails
 import cenec.mealvity.mealvity.classes.restaurant.RestaurantMoreInfo
-import cenec.mealvity.mealvity.classes.viewmodels.BookTableViewModel
+import cenec.mealvity.mealvity.classes.singleton.UserSingleton
+import cenec.mealvity.mealvity.classes.user.Order
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.material.datepicker.MaterialDatePicker
-import java.sql.Time
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
+import java.io.Serializable
+import java.lang.ClassCastException
 import java.text.SimpleDateFormat
-import java.time.Instant
 import java.util.*
 
 
 class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActivity.RestaurantMoreInfoListener {
     private var _binding: FragmentBookTableBinding? = null
     private val binding get() = _binding
-    private lateinit var viewModel: BookTableViewModel
-    private lateinit var cvBookTable: CardView
+    private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() }
+    private var tableBooked = false
+    private lateinit var newReservation: Reservation
     private lateinit var restaurantMoreInfo: RestaurantMoreInfo
     private lateinit var googleMap: GoogleMap
     private lateinit var mapFragment: SupportMapFragment
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        try {
+            val databaseConfigListener = context as DatabaseConfig.DatabaseConfigListener
+            DatabaseConfig.setDatabaseConfigListener(databaseConfigListener)
+        } catch (ex: ClassCastException) {
+            throw ClassCastException("$context MUST implement DatabaseConfigListener")
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,9 +71,31 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         binding!!.loadingProgressBar.visibility = View.GONE
         binding!!.layoutFragmentMap.visibility = View.VISIBLE
 
-        setupViewModel()
         setupMap()
-        setupViews()
+        checkBookedTable()
+    }
+
+    private fun checkBookedTable() {
+        if (userLoggedIn.reservations.isNotEmpty()) {
+            for (reservation in userLoggedIn.reservations) {
+                if (reservation.restaurantName == restaurantMoreInfo.name) {
+                    tableBooked = true
+                    newReservation = reservation
+                    break
+                }
+            }
+        }
+
+        if (!tableBooked) {
+            binding!!.cardviewRestaurantBookTable.root.visibility = View.VISIBLE
+            binding!!.cardviewRestaurantReservationDetails.root.visibility = View.GONE
+            setupNewReservation()
+            setupNewReservationViews()
+        } else {
+            binding!!.cardviewRestaurantBookTable.root.visibility = View.GONE
+            binding!!.cardviewRestaurantReservationDetails.root.visibility = View.VISIBLE
+            setupReservationDetailsViews()
+        }
     }
 
     override fun onDestroyView() {
@@ -76,8 +112,11 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         googleMap.uiSettings.isMapToolbarEnabled = false
     }
 
-    private fun setupViewModel() {
-        viewModel = ViewModelProvider(requireActivity()).get(BookTableViewModel::class.java)
+    private fun setupNewReservation() {
+        val currentUser = UserSingleton.getInstance().getCurrentUser()
+        val userReservationDetails = UserReservationDetails(currentUser.userId, currentUser.fullName, currentUser.phoneNumber, currentUser.email)
+        newReservation = Reservation(userReservationDetails)
+        newReservation.restaurantName = restaurantMoreInfo.name
     }
 
     private fun setupMap() {
@@ -85,49 +124,62 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         mapFragment.getMapAsync(this)
     }
 
-    private fun setupViews() {
-        cvBookTable = binding!!.root.findViewById(R.id.cardview_restaurant_book_table)
-        cvBookTable.findViewById<TextView>(R.id.text_view_restaurant_name).text = restaurantMoreInfo.name
-        val cvDatePicker = cvBookTable.findViewById<CardView>(R.id.cardView_date_picker)
-        val cvHourPicker = cvBookTable.findViewById<CardView>(R.id.cardView_hour_picker)
-        val bAddGuest = cvBookTable.findViewById<ImageView>(R.id.button_add_guest)
-        val bRemoveGuest = cvBookTable.findViewById<ImageView>(R.id.button_remove_guest)
-        val bGoogleMaps = cvBookTable.findViewById<CardView>(R.id.button_google_maps)
-        val bVisitYelp = cvBookTable.findViewById<CardView>(R.id.button_browse_yelp)
-        val bBookTable = cvBookTable.findViewById<CardView>(R.id.button_book_table)
+    private fun setupNewReservationViews() {
+        binding!!.cardviewRestaurantBookTable.textViewRestaurantName.text = restaurantMoreInfo.name
 
-        cvBookTable.setOnClickListener {
+        binding!!.cardviewRestaurantBookTable.root.setOnClickListener {
             // Do nothing
         }
 
-        cvDatePicker.setOnClickListener {
+        binding!!.cardviewRestaurantBookTable.cardViewDatePicker.setOnClickListener {
             showDatePickerDialog()
         }
 
-        cvHourPicker.setOnClickListener {
+        binding!!.cardviewRestaurantBookTable.cardViewHourPicker.setOnClickListener {
             showTimePickerDialog()
         }
 
-        bAddGuest.setOnClickListener {
-            viewModel.addGuest()
+        binding!!.cardviewRestaurantBookTable.buttonAddGuest.setOnClickListener {
+            newReservation.addGuest()
             updateNumberGuests()
         }
 
-        bRemoveGuest.setOnClickListener {
-            viewModel.removeGuest()
+        binding!!.cardviewRestaurantBookTable.buttonRemoveGuest.setOnClickListener {
+            newReservation.removeGuest()
             updateNumberGuests()
         }
 
-        bGoogleMaps.setOnClickListener {
+        binding!!.cardviewRestaurantBookTable.buttonGoogleMaps.setOnClickListener {
             openGoogleMapsApp()
         }
 
-        bVisitYelp.setOnClickListener {
+        binding!!.cardviewRestaurantBookTable.buttonBrowseYelp.setOnClickListener {
             openYelpWebsite()
         }
 
-        bBookTable.setOnClickListener {
+        binding!!.cardviewRestaurantBookTable.buttonBookTable.setOnClickListener {
             verifiyReservation()
+        }
+    }
+
+    private fun setupReservationDetailsViews() {
+        binding!!.cardviewRestaurantReservationDetails.textViewRestaurantName.text = restaurantMoreInfo.name
+        binding!!.cardviewRestaurantReservationDetails.textViewReferenceNumber.text = "Reference Nº: ${newReservation.referenceNumber}"
+        binding!!.cardviewRestaurantReservationDetails.textViewDate.text = "Date: ${newReservation.date}"
+        binding!!.cardviewRestaurantReservationDetails.textViewHour.text = "Time: ${newReservation.time}"
+        binding!!.cardviewRestaurantReservationDetails.textViewNumberGuest.text = "Nº Guests: ${newReservation.nGuests}"
+        binding!!.cardviewRestaurantReservationDetails.textViewReservationStatus.text = "Status: ${newReservation.reservationStatus}"
+
+        binding!!.cardviewRestaurantReservationDetails.root.setOnClickListener {
+
+        }
+
+        binding!!.cardviewRestaurantReservationDetails.buttonGoogleMaps.setOnClickListener {
+            openGoogleMapsApp()
+        }
+
+        binding!!.cardviewRestaurantReservationDetails.buttonBrowseYelp.setOnClickListener {
+            openYelpWebsite()
         }
     }
 
@@ -176,11 +228,10 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
     }
 
     private fun updateNumberGuests() {
-        val tvNumberGuest = cvBookTable.findViewById<TextView>(R.id.text_view_number_guest)
-        if (viewModel.nGuest == 1) {
-            tvNumberGuest.text = "${viewModel.nGuest} guest"
+        if (newReservation.nGuests == 1) {
+            binding!!.cardviewRestaurantBookTable.textViewNumberGuest.text = "${newReservation.nGuests} guest"
         } else {
-            tvNumberGuest.text = "${viewModel.nGuest} guests"
+            binding!!.cardviewRestaurantBookTable.textViewNumberGuest.text = "${newReservation.nGuests} guests"
         }
     }
 
@@ -208,9 +259,8 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
             override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
                 val dateSelected = "$dayOfMonth/${month+1}/$year"
                 if (verifyDate(dateSelected)) {
-                    val tvDateSelected = cvBookTable.findViewById<TextView>(R.id.text_view_date_selected)
-                    viewModel.setReservationDate(dateSelected)
-                    tvDateSelected.text = viewModel.reservationDate
+                    newReservation.date = dateSelected
+                    binding!!.cardviewRestaurantBookTable.textViewDateSelected.text = newReservation.date
                 } else {
                     Toast.makeText(context, "Please select a valid date", Toast.LENGTH_LONG).show()
                 }
@@ -223,11 +273,11 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
     private fun showTimePickerDialog() {
         val timePickerDialog = TimePickerDialog(context!!, R.style.DateTimePickerDialog, object: TimePickerDialog.OnTimeSetListener{
             override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
-                val hourSelected = "$hourOfDay:$minute"
-                val tvHourSelected = cvBookTable.findViewById<TextView>(R.id.text_view_hour_selected)
+                val date = Calendar.getInstance()
+                date.set(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), hourOfDay, minute)
 
-                viewModel.setReservationTime(hourSelected)
-                tvHourSelected.text = viewModel.reservationTime
+                newReservation.time = SimpleDateFormat("HH:mm", Locale.getDefault()).format(date.time)
+                binding!!.cardviewRestaurantBookTable.textViewHourSelected.text = newReservation.time
             }
 
         }, Calendar.getInstance().get(Calendar.HOUR_OF_DAY), Calendar.getInstance().get(Calendar.MINUTE), false)
@@ -235,10 +285,48 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
     }
 
     private fun verifiyReservation() {
-        if (viewModel.verifyReservation()) {
-            Toast.makeText(context!!, "Reservation done properly", Toast.LENGTH_LONG).show()
+        if (newReservation.date.isNotEmpty() && newReservation.time.isNotEmpty()) {
+            userLoggedIn.addReservation(newReservation)
+            addReservationToRestaurantDatabase()
         } else {
             Toast.makeText(context!!, "Please fill all the necessary details", Toast.LENGTH_LONG).show()
         }
+    }
+
+    private fun addReservationToRestaurantDatabase() {
+        val mFirebaseFirestore = FirebaseFirestore.getInstance()
+        val restaurantNameString = restaurantMoreInfo.name.replace(" ", "").toLowerCase(Locale.ROOT)
+        val arrayListReservations = arrayListOf<Reservation>()
+        arrayListReservations.add(newReservation)
+
+        mFirebaseFirestore.collection("restaurants").document(restaurantNameString)
+            .update("reservations", FieldValue.arrayUnion(newReservation))
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    DatabaseConfig.updateUserInDatabase()
+                } else {
+                    createRestaurantDatabase(restaurantNameString)
+                    println(task.exception)
+                }
+            }
+    }
+
+    private fun createRestaurantDatabase(restaurantName: String) {
+        val mFirebaseFirestore = FirebaseFirestore.getInstance()
+
+        mFirebaseFirestore.collection("restaurants").document(restaurantName)
+            .set(hashMapOf(
+                "name" to restaurantName,
+                "reservations" to arrayListOf<Reservation>(),
+                "orders" to arrayListOf<Order>()
+            ))
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    addReservationToRestaurantDatabase()
+                } else {
+                    Toast.makeText(context, "Error creating database", Toast.LENGTH_LONG).show()
+                    println(task.exception)
+                }
+            }
     }
 }

@@ -12,4 +12,6 @@
     <color name="delete_color">#ff4444</color>
     <color name="edit_color">#73EC73</color>
     <color name="transparent">#00000000</color>
+    <color name="green_accept">#7AD654</color>
+    <color name="red_reject">#D35252</color>
 </resources>
