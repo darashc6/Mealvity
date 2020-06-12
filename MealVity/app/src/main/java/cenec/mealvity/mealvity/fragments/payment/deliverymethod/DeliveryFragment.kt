@@ -12,6 +12,7 @@ import android.widget.Toast
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.FragmentDeliveryBinding
 import cenec.mealvity.mealvity.classes.dialogs.ChooseAddressDialog
+import cenec.mealvity.mealvity.classes.singleton.OrderSingleton
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -44,6 +45,7 @@ class DeliveryFragment : Fragment() {
                         Toast.makeText(context!!, "Please select a valid address", Toast.LENGTH_LONG).show()
                     } else {
                         binding!!.textViewAddress.text = address
+                        OrderSingleton.getInstance().getOrder().addressSelected = address
                     }
                 }
 
@@ -68,7 +70,9 @@ class DeliveryFragment : Fragment() {
                 newDate.set(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), hourOfDay, minute)
                 val timeToVerify = newDate.time
                 if (verifyTime(timeToVerify)) {
-                    binding!!.textViewTime.text = SimpleDateFormat("HH:mm", Locale.getDefault()).format(timeToVerify)
+                    val sTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(timeToVerify)
+                    binding!!.textViewTime.text = sTime
+                    OrderSingleton.getInstance().getOrder().expectedDeliveryTime = sTime
                 } else {
                     Toast.makeText(context, "Please select a correct time. Select a time that is at least 60 minutes from the current time.", Toast.LENGTH_LONG).show()
                 }

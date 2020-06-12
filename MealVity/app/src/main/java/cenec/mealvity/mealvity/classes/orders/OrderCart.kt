@@ -45,7 +45,6 @@ class OrderCart(
     }
 
 
-
     fun getBasePrice(): Float {
         return totalPrice * 0.79f
     }

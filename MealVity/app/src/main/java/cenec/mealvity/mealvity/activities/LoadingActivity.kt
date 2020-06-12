@@ -24,6 +24,11 @@ class LoadingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loading)
 
+        loadUserFromDatabase()
+        goToHomeActivity()
+    }
+
+    private fun loadUserFromDatabase() {
         // We search for the user currently logged in via Firebase Auth
         mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).document(mFirebaseAuth.currentUser!!.uid).get()
             .addOnCompleteListener { task ->
@@ -33,7 +38,9 @@ class LoadingActivity : AppCompatActivity() {
                     Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
                 }
             }
+    }
 
+    private fun goToHomeActivity() {
         val handler=Handler()
         handler.postDelayed(Runnable {
             // If the user exists, userLoggedIn won't be null, and the app will move to the next activity
@@ -50,7 +57,7 @@ class LoadingActivity : AppCompatActivity() {
                 intentMainActivity.flags=Intent.FLAG_ACTIVITY_CLEAR_TASK
                 startActivity(intentMainActivity)
             }
-        }, 2000)
+        }, 3000)
     }
 
     override fun onBackPressed() {

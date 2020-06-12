@@ -3,7 +3,6 @@ package cenec.mealvity.mealvity.fragments.restaurantmoreinfo
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.ActivityNotFoundException
-import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.net.Uri
@@ -17,9 +16,9 @@ import androidx.fragment.app.Fragment
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.FragmentBookTableBinding
 import cenec.mealvity.mealvity.activities.RestaurantMoreInfoActivity
-import cenec.mealvity.mealvity.classes.config.DatabaseConfig
+import cenec.mealvity.mealvity.classes.constants.Database
 import cenec.mealvity.mealvity.classes.reservations.Reservation
-import cenec.mealvity.mealvity.classes.reservations.UserReservationDetails
+import cenec.mealvity.mealvity.classes.user.UserDetails
 import cenec.mealvity.mealvity.classes.restaurant.RestaurantMoreInfo
 import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.Order
@@ -27,12 +26,8 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
-import java.io.Serializable
-import java.lang.ClassCastException
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -42,21 +37,11 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
     private val binding get() = _binding
     private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() }
     private var tableBooked = false
+    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private lateinit var newReservation: Reservation
     private lateinit var restaurantMoreInfo: RestaurantMoreInfo
     private lateinit var googleMap: GoogleMap
     private lateinit var mapFragment: SupportMapFragment
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-
-        try {
-            val databaseConfigListener = context as DatabaseConfig.DatabaseConfigListener
-            DatabaseConfig.setDatabaseConfigListener(databaseConfigListener)
-        } catch (ex: ClassCastException) {
-            throw ClassCastException("$context MUST implement DatabaseConfigListener")
-        }
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -114,7 +99,13 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
 
     private fun setupNewReservation() {
         val currentUser = UserSingleton.getInstance().getCurrentUser()
-        val userReservationDetails = UserReservationDetails(currentUser.userId, currentUser.fullName, currentUser.phoneNumber, currentUser.email)
+        val userReservationDetails =
+            UserDetails(
+                currentUser.userId,
+                currentUser.fullName,
+                currentUser.phoneNumber,
+                currentUser.email
+            )
         newReservation = Reservation(userReservationDetails)
         newReservation.restaurantName = restaurantMoreInfo.name
     }
@@ -294,16 +285,13 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
     }
 
     private fun addReservationToRestaurantDatabase() {
-        val mFirebaseFirestore = FirebaseFirestore.getInstance()
         val restaurantNameString = restaurantMoreInfo.name.replace(" ", "").toLowerCase(Locale.ROOT)
-        val arrayListReservations = arrayListOf<Reservation>()
-        arrayListReservations.add(newReservation)
 
         mFirebaseFirestore.collection("restaurants").document(restaurantNameString)
             .update("reservations", FieldValue.arrayUnion(newReservation))
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    DatabaseConfig.updateUserInDatabase()
+                    updateUserInDatabase()
                 } else {
                     createRestaurantDatabase(restaurantNameString)
                     println(task.exception)
@@ -312,8 +300,6 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
     }
 
     private fun createRestaurantDatabase(restaurantName: String) {
-        val mFirebaseFirestore = FirebaseFirestore.getInstance()
-
         mFirebaseFirestore.collection("restaurants").document(restaurantName)
             .set(hashMapOf(
                 "name" to restaurantName,
@@ -326,6 +312,19 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
                 } else {
                     Toast.makeText(context, "Error creating database", Toast.LENGTH_LONG).show()
                     println(task.exception)
+                }
+            }
+    }
+
+    private fun updateUserInDatabase() {
+        val currentUser = UserSingleton.getInstance().getCurrentUser()
+
+        mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).document(currentUser.userId!!)
+            .set(currentUser).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    Toast.makeText(context, "Task successfull", Toast.LENGTH_LONG).show()
+                } else {
+                    Toast.makeText(context, "Task failed", Toast.LENGTH_LONG).show()
                 }
             }
     }

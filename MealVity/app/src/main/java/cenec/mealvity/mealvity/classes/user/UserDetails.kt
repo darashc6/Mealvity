@@ -1,8 +1,6 @@
-package cenec.mealvity.mealvityforowners.core.reservation
+package cenec.mealvity.mealvity.classes.user
 
-
-
-data class UserReservationDetails(
+data class UserDetails(
     var userId: String?,
     var fullName: String?,
     var phoneNumber: String?,

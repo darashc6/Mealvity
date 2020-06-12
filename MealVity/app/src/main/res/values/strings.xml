@@ -144,5 +144,8 @@
     <string name="text_card">Card</string>
     <string name="text_paypal">Paypal</string>
     <string name="text_reservations">Reservations</string>
+    <string name="text_more_info">+ Info</string>
+    <string name="text_string_delivery_details">Delivery Details</string>
+    <string name="text_string_confirmation">Confirmation</string>
 
 </resources>

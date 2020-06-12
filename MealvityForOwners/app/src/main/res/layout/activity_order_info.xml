@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/colorAccent"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <include
+                android:id="@+id/card_view_order"
+                layout="@layout/card_view_order"
+                />
+
+            <include
+                android:id="@+id/card_view_user_details"
+                layout="@layout/card_view_user_details"/>
+
+            <include
+                android:id="@+id/card_view_delivery_details"
+                layout="@layout/card_view_delivery_details"/>
+
+            <include
+                android:id="@+id/card_view_confirmation"
+                layout="@layout/card_view_confirmation"/>
+
+        </LinearLayout>
+
+
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

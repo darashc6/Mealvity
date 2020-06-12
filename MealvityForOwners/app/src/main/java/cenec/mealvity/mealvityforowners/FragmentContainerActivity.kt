@@ -87,7 +87,11 @@ class FragmentContainerActivity : AppCompatActivity() {
                     R.id.filter_show_rejected -> filterOptSelected = 3
                     R.id.filter_show_all -> filterOptSelected = 0
                 }
-                aListener = reservationListFragment
+                if (binding.bottomNav.menu.findItem(R.id.bottom_nav_reservations).isChecked) {
+                    aListener = reservationListFragment
+                } else if (binding.bottomNav.menu.findItem(R.id.bottom_nav_orders).isChecked) {
+                    aListener = orderListFragment
+                }
                 aListener!!.onUpdatedReservationList(dbRestaurant, filterOptSelected)
                 return true
             }
@@ -108,7 +112,11 @@ class FragmentContainerActivity : AppCompatActivity() {
                 if (documentSnapshot!!.exists()) {
                     dbRestaurant = documentSnapshot.toObject(RestaurantDatabase::class.java)!!
                     RestaurantDatabaseSingleton.getInstance().setRestaurantDatabase(dbRestaurant)
-                    aListener = reservationListFragment
+                    if (binding.bottomNav.menu.findItem(R.id.bottom_nav_reservations).isChecked) {
+                        aListener = reservationListFragment
+                    } else if (binding.bottomNav.menu.findItem(R.id.bottom_nav_orders).isChecked) {
+                        aListener = orderListFragment
+                    }
                     aListener!!.onUpdatedReservationList(dbRestaurant, filterOptSelected)
                 }
             }

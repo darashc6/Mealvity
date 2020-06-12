@@ -10,21 +10,24 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.ActivityPaymentBinding
+import cenec.darash.mealvity.databinding.FragmentDeliveryBinding
 import cenec.mealvity.mealvity.classes.adapters.OrderCartRecyclerViewAdapter
 import cenec.mealvity.mealvity.classes.config.PaypalConfig
 import cenec.mealvity.mealvity.classes.constants.Database
 import cenec.mealvity.mealvity.classes.fragment.FragmentAdapter2
 import cenec.mealvity.mealvity.classes.orders.OrderCart
+import cenec.mealvity.mealvity.classes.reservations.Reservation
+import cenec.mealvity.mealvity.classes.singleton.OrderSingleton
 import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.Order
-import cenec.mealvity.mealvity.classes.user.PaymentMethod
-import cenec.mealvity.mealvity.classes.user.User
+import cenec.mealvity.mealvity.classes.user.UserDetails
 import cenec.mealvity.mealvity.fragments.payment.deliverymethod.DeliveryFragment
 import cenec.mealvity.mealvity.fragments.payment.deliverymethod.PickupFragment
 import cenec.mealvity.mealvity.fragments.payment.paymentmethod.CardFragment
 import cenec.mealvity.mealvity.fragments.payment.paymentmethod.CashFragment
 import cenec.mealvity.mealvity.fragments.payment.paymentmethod.PaypalFragment
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.paypal.android.sdk.payments.PayPalService
 import com.paypal.android.sdk.payments.PaymentActivity
@@ -33,24 +36,35 @@ import java.util.*
 
 class OrderPaymentActivity : AppCompatActivity() {
     private val REQUEST_CODE_PAYPAL_PAYMENT = 1000
+    private val currentUser by lazy { UserSingleton.getInstance().getCurrentUser() }
+    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+    private lateinit var currentOrder: Order
     private lateinit var binding: ActivityPaymentBinding
     private lateinit var confirmedOrderCart: OrderCart
-    private lateinit var order: Order
+    private lateinit var restaurantName: String
     private var paymentOption = 0
+    private var deliveryOption = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPaymentBinding.inflate(LayoutInflater.from(this))
         setContentView(binding.root)
 
+        setupNewOrder()
         checkBundleExtras()
         setupToolbar()
         setupViews()
     }
 
+    private fun setupNewOrder() {
+        currentOrder = Order()
+        OrderSingleton.getInstance().setOrder(currentOrder)
+    }
+
     private fun checkBundleExtras() {
         intent.extras?.let {
             confirmedOrderCart = it.getSerializable("order") as OrderCart
+            restaurantName = it.getString("restaurant").toString()
         }
     }
 
@@ -113,38 +127,29 @@ class OrderPaymentActivity : AppCompatActivity() {
     private fun setupCardViewDeliveryOptions() {
         binding.cardViewDeliveryOptions.textViewPickupOption.setOnClickListener {
             showPickupFragment()
+            deliveryOption = 0
         }
 
         binding.cardViewDeliveryOptions.textViewDeliveryOption.setOnClickListener {
             showDeliveryFragment()
+            deliveryOption = 1
         }
     }
 
     private fun setupCardViewPaymentMethod() {
         binding.cardViewPaymentMethod.textViewCashMethod.setOnClickListener {
             showCashMethodFragment()
+            paymentOption = 0
         }
 
         binding.cardViewPaymentMethod.textViewCardMethod.setOnClickListener {
             showCardMethodFragment()
+            paymentOption = 1
         }
 
         binding.cardViewPaymentMethod.textViewPaypalMethod.setOnClickListener {
             showPaypalMethodFragment()
-        }
-    }
-
-    private fun setupCardViewConfirmationPayment() {
-        binding.cardViewPaymentConfirmation.cardViewPaymentConfirmation.setOnClickListener {
-            when (paymentOption) {
-                0, 1 -> {
-                    createNewOrder()
-                    updateUserInDatabase()
-                }
-                2 -> {
-                    startPaypalActivity()
-                }
-            }
+            paymentOption = 2
         }
     }
 
@@ -174,7 +179,6 @@ class OrderPaymentActivity : AppCompatActivity() {
         binding.cardViewPaymentMethod.textViewCashMethod.setTextColor(getColor(R.color.colorAccent))
 
         binding.cardViewPaymentMethod.layoutFragment.setCurrentItem(0, true)
-        paymentOption = 0
     }
 
     private fun showCardMethodFragment() {
@@ -183,7 +187,6 @@ class OrderPaymentActivity : AppCompatActivity() {
         binding.cardViewPaymentMethod.textViewCardMethod.setTextColor(getColor(R.color.colorAccent))
 
         binding.cardViewPaymentMethod.layoutFragment.setCurrentItem(1, true)
-        paymentOption = 1
     }
 
     private fun showPaypalMethodFragment() {
@@ -192,7 +195,6 @@ class OrderPaymentActivity : AppCompatActivity() {
         binding.cardViewPaymentMethod.textViewPaypalMethod.setTextColor(getColor(R.color.colorAccent))
 
         binding.cardViewPaymentMethod.layoutFragment.setCurrentItem(2, true)
-        paymentOption = 2
     }
 
     private fun resetCardViewPaymentButtons() {
@@ -204,19 +206,76 @@ class OrderPaymentActivity : AppCompatActivity() {
         binding.cardViewPaymentMethod.textViewCashMethod.setTextColor(getColor(R.color.black))
     }
 
-    private fun createNewOrder() {
-        var method: PaymentMethod? = null
-        when (paymentOption) {
-            0 -> method = PaymentMethod.CASH
-            1 -> method = PaymentMethod.CARD
-            2 -> method = PaymentMethod.PAYPAL
+    private fun setupCardViewConfirmationPayment() {
+        binding.cardViewPaymentConfirmation.cardViewPaymentConfirmation.setOnClickListener {
+            when (paymentOption) {
+                0, 1 -> {
+                    createNewOrder()
+                    addOrderToRestaurantDatabase()
+                }
+                2 -> {
+                    startPaypalActivity()
+                }
+            }
         }
-        order = Order(confirmedOrderCart, method!!)
-        UserSingleton.getInstance().getCurrentUser().addOrder(order)
+    }
+
+    private fun createNewOrder() {
+        val etFullName = binding.cardViewUserDetails.textViewUserName.text.toString()
+        val etPhoneNumber = binding.cardViewUserDetails.textViewUserPhone.text.toString()
+        val etEmail = binding.cardViewUserDetails.textViewUserEmail.text.toString()
+
+        when {
+            etFullName.isEmpty() -> {
+                binding.cardViewUserDetails.textViewUserName.requestFocus()
+                binding.cardViewUserDetails.textViewUserName.error = getString(R.string.text_field_empty)
+            }
+            etPhoneNumber.isEmpty() -> {
+                binding.cardViewUserDetails.textViewUserPhone.requestFocus()
+                binding.cardViewUserDetails.textViewUserPhone.error = getString(R.string.text_field_empty)
+            }
+            etEmail.isEmpty() -> {
+                binding.cardViewUserDetails.textViewUserEmail.requestFocus()
+                binding.cardViewUserDetails.textViewUserEmail.error = getString(R.string.text_field_empty)
+            }
+            else -> {
+                var method: Order.PaymentMethod? = null
+                val userDetails = UserDetails(currentUser.userId, etFullName, etPhoneNumber, etEmail)
+                when (paymentOption) {
+                    0 -> method = Order.PaymentMethod.CASH
+                    1 -> method = Order.PaymentMethod.CARD
+                    2 -> method = Order.PaymentMethod.PAYPAL
+                }
+
+                if (deliveryOption == 1) {
+                    if (currentOrder.addressSelected.isEmpty()) {
+                        Toast.makeText(this, "Please select an address", Toast.LENGTH_SHORT).show()
+                    } else {
+                        currentOrder.deliveryMode = Order.DeliveryMode.DELIVERY
+
+                        currentOrder.orderCart = confirmedOrderCart
+                        currentOrder.paymentMethod = method
+                        currentOrder.user = userDetails
+                        currentOrder.restaurantName = restaurantName
+
+                        currentUser.addOrder(currentOrder)
+                    }
+                } else if (deliveryOption == 0) {
+                    currentOrder.addressSelected = ""
+                    currentOrder.deliveryMode = Order.DeliveryMode.PICKUP
+
+                    currentOrder.orderCart = confirmedOrderCart
+                    currentOrder.paymentMethod = method
+                    currentOrder.user = userDetails
+                    currentOrder.restaurantName = restaurantName
+
+                    currentUser.addOrder(currentOrder)
+                }
+            }
+        }
     }
 
     private fun updateUserInDatabase() {
-        val currentUser = UserSingleton.getInstance().getCurrentUser()
         val currentFirebaseUser = FirebaseAuth.getInstance().currentUser
         val mFirebaseFirestore = FirebaseFirestore.getInstance()
 
@@ -227,6 +286,38 @@ class OrderPaymentActivity : AppCompatActivity() {
                     Toast.makeText(this, "Task successful", Toast.LENGTH_LONG).show()
                 } else {
                     Toast.makeText(this, "Task failed", Toast.LENGTH_LONG).show()
+                }
+            }
+    }
+
+    private fun addOrderToRestaurantDatabase() {
+        val restaurantNameString = restaurantName.replace(" ", "").toLowerCase(Locale.ROOT)
+
+        mFirebaseFirestore.collection("restaurants").document(restaurantNameString)
+            .update("orders", FieldValue.arrayUnion(currentOrder))
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    updateUserInDatabase()
+                } else {
+                    createRestaurantDatabase(restaurantNameString)
+                    println(task.exception)
+                }
+            }
+    }
+
+    private fun createRestaurantDatabase(restaurantName: String) {
+        mFirebaseFirestore.collection("restaurants").document(restaurantName)
+            .set(hashMapOf(
+                "name" to restaurantName,
+                "reservations" to arrayListOf<Reservation>(),
+                "orders" to arrayListOf<Order>()
+            ))
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    addOrderToRestaurantDatabase()
+                } else {
+                    Toast.makeText(this, "Error creating database", Toast.LENGTH_LONG).show()
+                    println(task.exception)
                 }
             }
     }
@@ -249,7 +340,7 @@ class OrderPaymentActivity : AppCompatActivity() {
                 val confirm = data?.getParcelableExtra<PaymentConfirmation>(PaymentActivity.EXTRA_RESULT_CONFIRMATION)
                 if (confirm != null) {
                     createNewOrder()
-                    updateUserInDatabase()
+                    addOrderToRestaurantDatabase()
                 } else {
                     Toast.makeText(this, "Error", Toast.LENGTH_LONG).show()
                 }

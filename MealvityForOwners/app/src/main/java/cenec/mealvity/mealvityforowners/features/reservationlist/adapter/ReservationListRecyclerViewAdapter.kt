@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import cenec.mealvity.mealvityforowners.R
 import cenec.mealvity.mealvityforowners.core.reservation.Reservation
 import cenec.mealvity.mealvityforowners.databinding.ItemListReservationBinding
 
@@ -60,17 +61,14 @@ class ReservationListRecyclerViewAdapter(private var reservationList: ArrayList<
 
             binding.buttonConfirmRejection.buttonConfirmRejection.setOnClickListener {
                 val textReason = binding.editTextRejectionReason.text.toString()
-                listener?.onOptionSelected(layoutPosition, Reservation.ReservationStatus.REJECTED, textReason)
-                isRejectedReasonLayoutExpanded = false
-                expandRejectionMessageLayout()
-            }
-        }
-
-        private fun expandRejectionLayout() {
-            if (!isRejectedLayoutExpanded) {
-                binding.layoutUserDetails.visibility = View.GONE
-            } else {
-                binding.layoutUserDetails.visibility = View.VISIBLE
+                if (textReason.isNotEmpty()) {
+                    listener?.onOptionSelected(layoutPosition, Reservation.ReservationStatus.REJECTED, textReason)
+                    isRejectedReasonLayoutExpanded = false
+                    expandRejectionMessageLayout()
+                } else {
+                    binding.editTextRejectionReason.requestFocus()
+                    binding.editTextRejectionReason.error = binding.root.context.getString(R.string.text_error_field_is_empty)
+                }
             }
         }
 
@@ -84,15 +82,11 @@ class ReservationListRecyclerViewAdapter(private var reservationList: ArrayList<
 
         private fun checkStatus(reservation: Reservation) {
             when (reservation.reservationStatus) {
-                Reservation.ReservationStatus.ACCEPTED -> {
-                    binding.layoutUserDetails.visibility = View.GONE
-                }
-                Reservation.ReservationStatus.REJECTED -> {
+                Reservation.ReservationStatus.ACCEPTED, Reservation.ReservationStatus.REJECTED -> {
                     binding.layoutUserDetails.visibility = View.GONE
                 }
                 else -> {
                     binding.layoutUserDetails.visibility = View.VISIBLE
-                    binding.layoutStatusUpdate.visibility = View.GONE
                 }
             }
         }

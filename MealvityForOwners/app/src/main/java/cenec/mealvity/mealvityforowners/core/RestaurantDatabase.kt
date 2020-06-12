@@ -45,4 +45,40 @@ data class RestaurantDatabase(
 
         return rejectedReservationList
     }
+
+    fun showPendingOrders(): ArrayList<Order> {
+        val pendingOrderList = arrayListOf<Order>()
+
+        for (order in orders) {
+            if (order.orderStatus == Order.OrderStatus.PENDING) {
+                pendingOrderList.add(order)
+            }
+        }
+
+        return pendingOrderList
+    }
+
+    fun showAcceptedOrders(): ArrayList<Order> {
+        val acceptedOrderList = arrayListOf<Order>()
+
+        for (order in orders) {
+            if (order.orderStatus == Order.OrderStatus.ACCEPTED) {
+                acceptedOrderList.add(order)
+            }
+        }
+
+        return acceptedOrderList
+    }
+
+    fun showRejectedOrders(): ArrayList<Order> {
+        val rejectedOrderList = arrayListOf<Order>()
+
+        for (order in orders) {
+            if (order.orderStatus == Order.OrderStatus.REJECTED) {
+                rejectedOrderList.add(order)
+            }
+        }
+
+        return rejectedOrderList
+    }
 }

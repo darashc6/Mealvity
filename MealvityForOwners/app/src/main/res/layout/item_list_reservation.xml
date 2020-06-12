@@ -187,6 +187,7 @@
                     android:layout_height="wrap_content"
                     android:layout_width="match_parent"
                     android:layout_marginTop="5dp"
+                    android:layout_marginBottom="5dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
                     layout="@layout/button_confirm_rejection"/>
@@ -194,32 +195,5 @@
 
             </LinearLayout>
         </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/layout_status_update"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone"
-            >
-
-            <include
-                layout="@layout/view_separator_black"/>
-
-            <TextView
-                android:id="@+id/text_view_status_update"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:layout_marginStart="5dp"
-                android:layout_marginEnd="5dp"
-                android:layout_marginBottom="5dp"
-                android:textSize="18sp"
-                android:textColor="@color/black"
-                android:padding="1dp"
-                android:fontFamily="@font/fonarto_regular"
-                tools:text="Name"/>
-            </LinearLayout>
-
         </LinearLayout>
 </androidx.cardview.widget.CardView>

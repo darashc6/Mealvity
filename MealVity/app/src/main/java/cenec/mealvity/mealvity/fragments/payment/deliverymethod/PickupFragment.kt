@@ -11,6 +11,7 @@ import android.widget.TimePicker
 import android.widget.Toast
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.FragmentPickupBinding
+import cenec.mealvity.mealvity.classes.singleton.OrderSingleton
 import java.text.SimpleDateFormat
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -53,7 +54,9 @@ class PickupFragment : Fragment() {
                 newDate.set(Calendar.getInstance().get(Calendar.YEAR), Calendar.getInstance().get(Calendar.MONTH), Calendar.getInstance().get(Calendar.DAY_OF_MONTH), hourOfDay, minute)
                 val timeToVerify = newDate.time
                 if (verifyTime(timeToVerify)) {
-                    binding!!.textViewTime.text = SimpleDateFormat("HH:mm", Locale.getDefault()).format(timeToVerify)
+                    val sTime = SimpleDateFormat("HH:mm", Locale.getDefault()).format(timeToVerify)
+                    binding!!.textViewTime.text = sTime
+                    OrderSingleton.getInstance().getOrder().expectedDeliveryTime = sTime
                 } else {
                     Toast.makeText(context, "Please select a correct time. Select a time that is at least 30 minutes from the current time.", Toast.LENGTH_LONG).show()
                 }

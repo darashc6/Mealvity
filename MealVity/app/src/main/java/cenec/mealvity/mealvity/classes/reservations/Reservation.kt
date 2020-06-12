@@ -1,10 +1,11 @@
 package cenec.mealvity.mealvity.classes.reservations
 
 
+import cenec.mealvity.mealvity.classes.user.UserDetails
 import java.util.*
 
 data class Reservation(
-    var user: UserReservationDetails?,
+    var user: UserDetails?,
     var restaurantName: String = "",
     var date: String = "",
     var time: String = "",

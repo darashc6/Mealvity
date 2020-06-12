@@ -1,8 +1,10 @@
 package cenec.mealvity.mealvityforowners.core.reservation
 
+import cenec.mealvity.mealvityforowners.core.order.UserDetails
+
 
 data class Reservation(
-    var user: UserReservationDetails?,
+    var user: UserDetails?,
     var restaurantName: String = "",
     var date: String = "",
     var time: String = "",

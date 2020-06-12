@@ -6,14 +6,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
-import android.view.View
 import android.widget.Toast
-import androidx.viewpager.widget.ViewPager
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.ActivityRestaurantMoreInfoBinding
-import cenec.mealvity.mealvity.classes.config.DatabaseConfig
 import cenec.mealvity.mealvity.classes.constants.ApiAccess
-import cenec.mealvity.mealvity.classes.fragment.FragmentAdapter
 import cenec.mealvity.mealvity.classes.fragment.FragmentAdapter2
 import cenec.mealvity.mealvity.classes.interfaceapi.YelpFusionApi
 import cenec.mealvity.mealvity.classes.restaurant.RestaurantMoreInfo
@@ -26,7 +22,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class RestaurantMoreInfoActivity : AppCompatActivity(), DatabaseConfig.DatabaseConfigListener {
+class RestaurantMoreInfoActivity : AppCompatActivity() {
     private val fragmentBookTable by lazy { FragmentBookTable() }
     private val fragmentOrder by lazy { FragmentOrder() }
     private val yelpBuilder by lazy { CustomRetrofitBuilder.createRetrofitBuilder(ApiAccess.URL_YELP_FUSION_API) }
@@ -144,17 +140,5 @@ class RestaurantMoreInfoActivity : AppCompatActivity(), DatabaseConfig.DatabaseC
 
     interface RestaurantMoreInfoListener {
         fun onInfoLoaded(example: RestaurantMoreInfo)
-    }
-
-    override fun onTaskSuccessful() {
-        Toast.makeText(this, "Task succesfull", Toast.LENGTH_LONG).show()
-    }
-
-    override fun onTaskFailed() {
-        Toast.makeText(this, "Task failed", Toast.LENGTH_LONG).show()
-    }
-
-    override fun onUserUpdated(userUpdated: User) {
-        // Do nothing
     }
 }
