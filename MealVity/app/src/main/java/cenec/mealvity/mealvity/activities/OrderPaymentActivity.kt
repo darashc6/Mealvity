@@ -18,6 +18,7 @@ import cenec.mealvity.mealvity.classes.fragment.FragmentAdapter2
 import cenec.mealvity.mealvity.classes.orders.OrderCart
 import cenec.mealvity.mealvity.classes.reservations.Reservation
 import cenec.mealvity.mealvity.classes.singleton.OrderSingleton
+import cenec.mealvity.mealvity.classes.singleton.RestaurantMoreInfoSingleton
 import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.Order
 import cenec.mealvity.mealvity.classes.user.UserDetails
@@ -38,10 +39,10 @@ class OrderPaymentActivity : AppCompatActivity() {
     private val REQUEST_CODE_PAYPAL_PAYMENT = 1000
     private val currentUser by lazy { UserSingleton.getInstance().getCurrentUser() }
     private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+    private val restaurantName by lazy { RestaurantMoreInfoSingleton.getInstance().getRestaurantMoreInfo()!!.name }
     private lateinit var currentOrder: Order
     private lateinit var binding: ActivityPaymentBinding
     private lateinit var confirmedOrderCart: OrderCart
-    private lateinit var restaurantName: String
     private var paymentOption = 0
     private var deliveryOption = 0
 
@@ -64,7 +65,6 @@ class OrderPaymentActivity : AppCompatActivity() {
     private fun checkBundleExtras() {
         intent.extras?.let {
             confirmedOrderCart = it.getSerializable("order") as OrderCart
-            restaurantName = it.getString("restaurant").toString()
         }
     }
 
@@ -283,9 +283,12 @@ class OrderPaymentActivity : AppCompatActivity() {
             .set(currentUser)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(this, "Task successful", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Order confirmed!", Toast.LENGTH_LONG).show()
+                    val intentHomePage = Intent(this, FragmentContainerActivity::class.java)
+                    intentHomePage.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intentHomePage)
                 } else {
-                    Toast.makeText(this, "Task failed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Error confirming order", Toast.LENGTH_LONG).show()
                 }
             }
     }

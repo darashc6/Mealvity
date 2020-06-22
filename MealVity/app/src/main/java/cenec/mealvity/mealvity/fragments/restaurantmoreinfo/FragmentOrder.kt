@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import cenec.darash.mealvity.R
@@ -19,13 +20,16 @@ import cenec.mealvity.mealvity.classes.orders.OrderListener
 import cenec.mealvity.mealvity.classes.restaurant.menu.Item
 import cenec.mealvity.mealvity.classes.restaurant.menu.Menu
 import cenec.mealvity.mealvity.classes.restaurant.menu.Section
+import cenec.mealvity.mealvity.classes.singleton.RestaurantMoreInfoSingleton
+import cenec.mealvity.mealvity.classes.utils.CategoryUtil
 import java.util.*
 
 
 class FragmentOrder : Fragment() {
     private var _binding: FragmentOrderBinding? = null
-    private val binding get() = _binding
+    private val binding get() = _binding!!
     private var restaurantMenu = Menu(arrayListOf())
+    private val restaurantMoreInfo by lazy { RestaurantMoreInfoSingleton.getInstance().getRestaurantMoreInfo() }
     private lateinit var newOrderCart: OrderCart
 
     override fun onCreateView(
@@ -34,46 +38,64 @@ class FragmentOrder : Fragment() {
     ): View? {
         _binding = FragmentOrderBinding.inflate(inflater, container, false)
         setupNewOrder()
-        setupFakeList()
+        setupRestaurantMenuList()
         setupOrderCart()
         setupRecyclerView()
-        return binding!!.root
+        return binding.root
     }
 
     private fun setupNewOrder() {
         newOrderCart = OrderCart()
         newOrderCart.setOrderListener(object : OrderListener {
             override fun onOrderCartUpdated() {
-                binding!!.cardViewOrderCart.textViewNumberItems.text = "${newOrderCart.quantityTotal} items"
-                binding!!.cardViewOrderCart.textViewTotalPrice.text = String.format(Locale.getDefault(), "€%.2f", newOrderCart.totalPrice)
+                binding.cardViewOrderCart.textViewNumberItems.text = "${newOrderCart.quantityTotal} items"
+                binding.cardViewOrderCart.textViewTotalPrice.text = String.format(Locale.getDefault(), "€%.2f", newOrderCart.totalPrice)
             }
 
         })
     }
 
-    private fun setupFakeList() {
-        for (i in 1..15) {
-            restaurantMenu.menu.add(Section("Starters", arrayListOf(
-                Item("Item 1", "Description 1", 8.50f),
-                Item("Item 2", "Description 2", 8.50f),
-                Item("Item 3", "Description 3", 8.50f),
-                Item("Item 4", "Description 4", 8.50f),
-                Item("Item 5", "Description 5", 8.50f)
-            ), false))
+    private fun setupRestaurantMenuList() {
+        val categoryName = restaurantMoreInfo!!.categories[0].title
+        val listStarters = CategoryUtil.generateStarters(categoryName)
+        val listMainCourse = CategoryUtil.generateMainCourse(categoryName)
+
+        if (listStarters.isNotEmpty() && listMainCourse.isNotEmpty()) {
+            var sectionNameStarters = ""
+            var sectionNameMainCourse = ""
+            if (categoryName == "Bakeries" || categoryName == "Bistro") {
+                sectionNameStarters = "Cupcakes"
+                sectionNameMainCourse = "Sandwiches"
+            } else {
+                sectionNameStarters = "Starters"
+                sectionNameMainCourse = "Main Course"
+            }
+            restaurantMenu.menu.add(Section(sectionNameStarters, listStarters, false))
+            restaurantMenu.menu.add(Section(sectionNameMainCourse, listMainCourse, false))
+            restaurantMenu.menu.add(Section("Desserts", CategoryUtil.generateDesserts(), false))
+            restaurantMenu.menu.add(Section("Drinks", CategoryUtil.generateDrinks(), false))
+            restaurantMenu.menu.add(Section("Extras", CategoryUtil.generateExtras(), false))
+
+            binding.layoutOrderCart.visibility = View.VISIBLE
+        } else {
+            binding.textViewOrderNotAvailable.visibility = View.VISIBLE
         }
     }
 
     private fun setupOrderCart() {
-        val cvOrderCart = binding!!.root.findViewById<View>(R.id.card_view_order_cart)
+        val cvOrderCart = binding.root.findViewById<View>(R.id.card_view_order_cart)
 
         cvOrderCart.setOnClickListener {
             val orderCartBottomSheet = OrderCartBottomSheet(context!!, newOrderCart)
             orderCartBottomSheet.setOrderCartBottomSheetListener(object : OrderCartBottomSheet.OrderCartBottomSheetListener{
                 override fun onConfirmOrderClick() {
-                    val intent = Intent(context!!, OrderPaymentActivity::class.java)
-                    intent.putExtra("order", newOrderCart)
-                    intent.putExtra("restaurant", (context as RestaurantMoreInfoActivity).getRestaurantMoreInfo()!!.name)
-                    startActivity(intent)
+                    if (newOrderCart.orderCart.isNotEmpty()) {
+                        val intent = Intent(context!!, OrderPaymentActivity::class.java)
+                        intent.putExtra("order", newOrderCart)
+                        startActivity(intent)
+                    } else {
+                        Toast.makeText(context, "No items in cart", Toast.LENGTH_SHORT).show()
+                    }
                 }
 
             })
@@ -97,8 +119,8 @@ class FragmentOrder : Fragment() {
             }
         })
 
-        binding!!.recyclerViewMenu.layoutManager = rvLayoutManager
-        binding!!.recyclerViewMenu.adapter = rvAdapter
+        binding.recyclerViewMenu.layoutManager = rvLayoutManager
+        binding.recyclerViewMenu.adapter = rvAdapter
     }
 
 }

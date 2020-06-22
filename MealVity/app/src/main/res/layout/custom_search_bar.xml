@@ -29,8 +29,10 @@
             android:maxLines="1"
             android:inputType="text"
             android:layout_gravity="center_vertical"
+            android:textColorHint="@color/gray"
+            android:theme="@style/color_control_black"
             android:hint="@string/text_hint_full_address"
-            android:backgroundTint="@color/colorPrimary"
+            android:backgroundTint="@color/black"
             />
 
     </LinearLayout>

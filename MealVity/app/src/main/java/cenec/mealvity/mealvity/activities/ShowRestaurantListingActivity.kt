@@ -81,7 +81,7 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
     /**
      * Depending on the values returned by the Intent Extras, it will return one list or the other
      * If the Intent Extras only returns the address, it will retrieve all the restaurants with the given address
-     * If the Intent Extras algo returns the category, it will retrieve all the restaurants with the given address & category
+     * If the Intent Extras also returns the category, it will retrieve all the restaurants with the given address & category
      */
     private fun getRestaurantListings() {
         if (category == null) {
@@ -109,7 +109,6 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
                 if (response.isSuccessful) {
                     val list = response.body()
                     binding.loadingProgressBar.visibility = View.GONE
-                    binding.recyclerViewRestaurantList.visibility = View.VISIBLE
                     list?.let {
                         restaurantList = it.getListWithFullInfo()
                         binding.toolbar.title = "${restaurantList.results.size} results"
@@ -141,7 +140,6 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
                 if (response.isSuccessful) {
                     val list = response.body()
                     binding.loadingProgressBar.visibility = View.GONE
-                    binding.recyclerViewRestaurantList.visibility = View.VISIBLE
                     list?.let {
                         restaurantList = it.getListWithFullInfo()
                         binding.toolbar.title = "${restaurantList.results.size} results"
@@ -159,6 +157,7 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
      * Returns a list of restaurants using the custom parameters using the filter option
      */
     private fun getRestaurantListingByCustomParameters(customParametersMap: HashMap<String, String>) {
+        binding.textViewEmptyRestaurantList.visibility = View.GONE
         val call = yelpFusionApi.getRestaurantListByCustomParameters(address, customParametersMap, category!!)
 
         call.enqueue(object : Callback<RestaurantList> {
@@ -173,7 +172,6 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
                 if (response.isSuccessful) {
                     val list = response.body()
                     binding.loadingProgressBar.visibility = View.GONE
-                    binding.recyclerViewRestaurantList.visibility = View.VISIBLE
                     list?.let {
                         restaurantList = it.getListWithFullInfo()
                         binding.toolbar.title = "${restaurantList.results.size} results"
@@ -247,34 +245,41 @@ class ShowRestaurantListingActivity : AppCompatActivity(), SortListByBottomSheet
      * 0 - Best match, 1 - Ratings, 2 - Distance, 3 - Economic price, 4 - Luxurious price
      */
     override fun onSortList(newOptionSelected: Int) {
-        when (newOptionSelected) {
-            0 -> {
-                rvAdapter.setRestaurantList(restaurantList.filterListByBestMatch())
-                rvAdapter.notifyDataSetChanged()
-                binding.toolbar.subtitle = resources.getString(R.string.text_sort_list_best_match)
+        if (restaurantList.results.isNotEmpty()) {
+            binding.recyclerViewRestaurantList.visibility = View.VISIBLE
+            binding.textViewEmptyRestaurantList.visibility = View.GONE
+            when (newOptionSelected) {
+                0 -> {
+                    rvAdapter.setRestaurantList(restaurantList.filterListByBestMatch())
+                    rvAdapter.notifyDataSetChanged()
+                    binding.toolbar.subtitle = resources.getString(R.string.text_sort_list_best_match)
+                }
+                1 -> {
+                    rvAdapter.setRestaurantList(restaurantList.filterListByRatings())
+                    rvAdapter.notifyDataSetChanged()
+                    binding.toolbar.subtitle = resources.getString(R.string.text_sort_list_rating)
+                }
+                2 -> {
+                    rvAdapter.setRestaurantList(restaurantList.filterListByDistance())
+                    rvAdapter.notifyDataSetChanged()
+                    binding.toolbar.subtitle = resources.getString(R.string.text_sort_list_distance)
+                }
+                3 -> {
+                    rvAdapter.setRestaurantList(restaurantList.filterListByEconomicPrice())
+                    rvAdapter.notifyDataSetChanged()
+                    binding.toolbar.subtitle = resources.getString(R.string.text_sort_list_economic_price)
+                }
+                4 -> {
+                    rvAdapter.setRestaurantList(restaurantList.filterListByLuxuriousPrice())
+                    rvAdapter.notifyDataSetChanged()
+                    binding.toolbar.subtitle = resources.getString(R.string.text_sort_luxurious_price)
+                }
             }
-            1 -> {
-                rvAdapter.setRestaurantList(restaurantList.filterListByRatings())
-                rvAdapter.notifyDataSetChanged()
-                binding.toolbar.subtitle = resources.getString(R.string.text_sort_list_rating)
-            }
-            2 -> {
-                rvAdapter.setRestaurantList(restaurantList.filterListByDistance())
-                rvAdapter.notifyDataSetChanged()
-                binding.toolbar.subtitle = resources.getString(R.string.text_sort_list_distance)
-            }
-            3 -> {
-                rvAdapter.setRestaurantList(restaurantList.filterListByEconomicPrice())
-                rvAdapter.notifyDataSetChanged()
-                binding.toolbar.subtitle = resources.getString(R.string.text_sort_list_economic_price)
-            }
-            4 -> {
-                rvAdapter.setRestaurantList(restaurantList.filterListByLuxuriousPrice())
-                rvAdapter.notifyDataSetChanged()
-                binding.toolbar.subtitle = resources.getString(R.string.text_sort_luxurious_price)
-            }
+            sortListOptionSelected = newOptionSelected
+        } else {
+            binding.textViewEmptyRestaurantList.visibility = View.VISIBLE
+            binding.recyclerViewRestaurantList.visibility = View.GONE
         }
-        sortListOptionSelected = newOptionSelected
     }
 
     /**

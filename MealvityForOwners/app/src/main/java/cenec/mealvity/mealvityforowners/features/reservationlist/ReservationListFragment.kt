@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import cenec.mealvity.mealvityforowners.FragmentContainerActivity
 import cenec.mealvity.mealvityforowners.R
@@ -26,6 +27,7 @@ class ReservationListFragment : Fragment(), FragmentContainerActivity.FragmentCo
     private val binding get() = _binding!!
     private var rvAdapter: ReservationListRecyclerViewAdapter? = null
     private var filterOpt = 0
+    private val viewModel by lazy { (context as FragmentContainerActivity).getViewModel() }
     private lateinit var auxReservation: Reservation
     private lateinit var reservationUser: User
 
@@ -36,6 +38,15 @@ class ReservationListFragment : Fragment(), FragmentContainerActivity.FragmentCo
         _binding = FragmentReservationListBinding.inflate(layoutInflater)
         setupRecyclerView()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.getRestaurantDatabase().observe(viewLifecycleOwner, Observer { newRestaurantDatabase ->
+            dbRestaurant = newRestaurantDatabase
+            filterReservationList()
+        })
     }
 
     private fun setupRecyclerView() {
@@ -52,10 +63,9 @@ class ReservationListFragment : Fragment(), FragmentContainerActivity.FragmentCo
                 if (updatedStatus == Reservation.ReservationStatus.REJECTED) {
                     dbRestaurant.reservations[position].rejectionReason = reason
                 }
-                dbRestaurant.reservations[position].reservationStatus = updatedStatus
-                auxReservation = dbRestaurant.reservations[position]
-                RestaurantDatabaseSingleton.getInstance().setRestaurantDatabase(dbRestaurant)
-                rvAdapter!!.setReservationList(RestaurantDatabaseSingleton.getInstance().getRestaurantDatabase().reservations)
+                dbRestaurant.reservations[dbRestaurant.reservations.size-1-position].reservationStatus = updatedStatus
+                auxReservation = dbRestaurant.reservations[dbRestaurant.reservations.size-1-position]
+                viewModel.setRestaurantDatabase(dbRestaurant)
                 updateChanges()
             }
 
@@ -72,7 +82,6 @@ class ReservationListFragment : Fragment(), FragmentContainerActivity.FragmentCo
         mFirebaseFirestore.collection("restaurants").document(dbRestaurant.name)
             .set(dbRestaurant).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    filterReservationList()
                     getReservationUser()
                 } else {
                     Toast.makeText(context, "Error in updateChanges()", Toast.LENGTH_LONG).show()
@@ -102,6 +111,7 @@ class ReservationListFragment : Fragment(), FragmentContainerActivity.FragmentCo
         for (i in 0 until userReservationList.size) {
             if (userReservationList[i].referenceNumber == auxReservation.referenceNumber) {
                 userReservationList[i] = auxReservation
+                break
             }
         }
 
@@ -111,7 +121,7 @@ class ReservationListFragment : Fragment(), FragmentContainerActivity.FragmentCo
             .update("reservations", userReservationList)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-
+                    filterReservationList()
                 } else {
                     Toast.makeText(context, "Error in updateUserDatabase()", Toast.LENGTH_LONG)
                         .show()
@@ -121,18 +131,14 @@ class ReservationListFragment : Fragment(), FragmentContainerActivity.FragmentCo
 
     private fun filterReservationList() {
         when (filterOpt) {
-            0 -> rvAdapter?.setReservationList(dbRestaurant.reservations)
+            0 -> rvAdapter?.setReservationList(dbRestaurant.showAllReservations())
             1 -> rvAdapter?.setReservationList(dbRestaurant.showPendingReservations())
             2 -> rvAdapter?.setReservationList(dbRestaurant.showAcceptedReservations())
             3 -> rvAdapter?.setReservationList(dbRestaurant.showRejectedReservations())
         }
     }
 
-    override fun onUpdatedReservationList(
-        updatedRestaurantDatabase: RestaurantDatabase,
-        filterOptSelected: Int
-    ) {
-        dbRestaurant = updatedRestaurantDatabase
+    override fun onFilterOptionSelected(filterOptSelected: Int) {
         filterOpt = filterOptSelected
         filterReservationList()
     }

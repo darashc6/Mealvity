@@ -14,7 +14,7 @@ import cenec.mealvity.mealvity.classes.autocompleteaddress.StreetName
  * @param streetList List of Street
  */
 class AutocompleteStreetRecyclerViewAdapter(private var streetList: StreetList): RecyclerView.Adapter<AutocompleteStreetRecyclerViewAdapter.AutocompleteStreetViewHolder>() {
-    private lateinit var rvListener: AutocompleteStreetRecyclerViewListener // Listener for the recyclerView
+    private var rvListener: AutocompleteStreetRecyclerViewListener? = null // Listener for the recyclerView
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -24,7 +24,7 @@ class AutocompleteStreetRecyclerViewAdapter(private var streetList: StreetList):
     }
 
     override fun onBindViewHolder(holder: AutocompleteStreetViewHolder, position: Int) {
-        holder.bind(streetList.results[position], rvListener)
+        holder.bind(streetList.results[position])
     }
 
     override fun getItemCount(): Int {
@@ -51,18 +51,22 @@ class AutocompleteStreetRecyclerViewAdapter(private var streetList: StreetList):
      * Object containing the item's view
      * @param itemView View where we bind the data
      */
-    class AutocompleteStreetViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    inner class AutocompleteStreetViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private val streetName = itemView.findViewById<TextView>(R.id.text_view_street_name)
+        private val viewSeparator = itemView.findViewById<View>(R.id.view_separator)
 
         /**
          * Binds the street data to the itemView
          * @param name Street Name
-         * @param listener Listener for the RecyclerView
          */
-        fun bind (name: StreetName, listener: AutocompleteStreetRecyclerViewListener) {
+        fun bind (name: StreetName) {
             streetName.text = name.streetName
             itemView.setOnClickListener {
-                listener.onClick(name.streetName)
+                rvListener?.onClick(name.streetName)
+            }
+
+            if (layoutPosition == itemCount - 1) {
+                viewSeparator.visibility = View.INVISIBLE
             }
         }
     }

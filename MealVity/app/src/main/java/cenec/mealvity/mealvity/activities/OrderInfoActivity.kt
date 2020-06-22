@@ -3,6 +3,7 @@ package cenec.mealvity.mealvity.activities
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.MenuItem
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import cenec.darash.mealvity.R
@@ -87,5 +88,12 @@ class OrderInfoActivity : AppCompatActivity() {
     private fun showDeliveryTime() {
         binding.cardViewOrderConfirmation.textViewOrderExpectedTime.visibility = View.VISIBLE
         binding.cardViewOrderConfirmation.textViewOrderExpectedTime.text = "Expected delivery time: ${orderInfo.expectedDeliveryTime}"
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> finish()
+        }
+        return true
     }
 }

@@ -9,6 +9,23 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view_order_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="109dp"
+        tools:layout_editor_absoluteY="-305dp" />
+
+    <TextView
+        android:id="@+id/text_view_empty_order_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/fonarto_regular"
+        android:gravity="center"
+        android:text="@string/text_order_list_empty"
+        android:textColor="@color/colorAccent"
+        android:textSize="25sp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/recycler_view_order_list" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

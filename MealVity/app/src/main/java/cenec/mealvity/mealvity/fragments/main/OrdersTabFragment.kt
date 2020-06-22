@@ -1,19 +1,16 @@
 package cenec.mealvity.mealvity.fragments.main
 
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
-import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.FragmentOrdersTabBinding
 import cenec.mealvity.mealvity.activities.OrderInfoActivity
 import cenec.mealvity.mealvity.classes.adapters.OrderRecyclerViewAdapter
 import cenec.mealvity.mealvity.classes.constants.Database
-import cenec.mealvity.mealvity.classes.reservations.Reservation
 import cenec.mealvity.mealvity.classes.singleton.OrderSingleton
 import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.Order
@@ -41,7 +38,7 @@ class OrdersTabFragment : Fragment() {
 
     private fun setupRecyclerView() {
         val rvLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        rvAdapter = OrderRecyclerViewAdapter(reverseOrdersList(currentUser.orders))
+        rvAdapter = OrderRecyclerViewAdapter(currentUser.showAllOrders())
         rvAdapter!!.setOrderRecyclerViewListener(object: OrderRecyclerViewAdapter.OrderRecyclerViewListener{
             override fun onItemClick(position: Int) {
                 val orderPosition = currentUser.orders.size-1-position
@@ -56,18 +53,6 @@ class OrdersTabFragment : Fragment() {
         binding.recyclerViewOrderList.adapter = rvAdapter
     }
 
-    private fun reverseOrdersList(userOrdersList: ArrayList<Order>): ArrayList<Order> {
-        val reversedOrderList = arrayListOf<Order>()
-
-        if (userOrdersList.isNotEmpty()) {
-            for (i in userOrdersList.size-1 downTo 0) {
-                reversedOrderList.add(userOrdersList[i])
-            }
-        }
-
-        return reversedOrderList
-    }
-
     private fun listenForDatabaseChanges() {
         val mFirebaseFirestore = FirebaseFirestore.getInstance()
         val currentUserId = UserSingleton.getInstance().getCurrentUser().userId
@@ -77,9 +62,22 @@ class OrdersTabFragment : Fragment() {
                 if (documentSnapshot!!.exists()) {
                     val updatedUser = documentSnapshot.toObject(User::class.java)
                     UserSingleton.getInstance().setCurrentUser(updatedUser!!)
-                    rvAdapter?.setOrderList(reverseOrdersList(updatedUser.orders))
+                    checkUserOrdersList()
                 }
             }
+    }
+
+    private fun checkUserOrdersList() {
+        if (currentUser.orders.isEmpty()) {
+            binding.textViewEmptyOrderList.visibility = View.VISIBLE
+            binding.recyclerViewOrderList.visibility = View.GONE
+        } else {
+            if (binding.recyclerViewOrderList.visibility == View.GONE) {
+                binding.recyclerViewOrderList.visibility = View.VISIBLE
+                binding.textViewEmptyOrderList.visibility = View.GONE
+            }
+            rvAdapter?.setOrderList(currentUser.showAllOrders())
+        }
     }
 
 }

@@ -20,6 +20,7 @@ import cenec.mealvity.mealvity.classes.constants.Database
 import cenec.mealvity.mealvity.classes.reservations.Reservation
 import cenec.mealvity.mealvity.classes.user.UserDetails
 import cenec.mealvity.mealvity.classes.restaurant.RestaurantMoreInfo
+import cenec.mealvity.mealvity.classes.singleton.RestaurantMoreInfoSingleton
 import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.Order
 import com.google.android.gms.maps.*
@@ -36,7 +37,6 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
     private var _binding: FragmentBookTableBinding? = null
     private val binding get() = _binding
     private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() }
-    private var tableBooked = false
     private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private lateinit var newReservation: Reservation
     private lateinit var restaurantMoreInfo: RestaurantMoreInfo
@@ -53,34 +53,13 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
 
     override fun onInfoLoaded(example: RestaurantMoreInfo) {
         restaurantMoreInfo = example
+        RestaurantMoreInfoSingleton.getInstance().setRestaurantMoreInfo(example)
         binding!!.loadingProgressBar.visibility = View.GONE
         binding!!.layoutFragmentMap.visibility = View.VISIBLE
 
         setupMap()
-        checkBookedTable()
-    }
-
-    private fun checkBookedTable() {
-        if (userLoggedIn.reservations.isNotEmpty()) {
-            for (reservation in userLoggedIn.reservations) {
-                if (reservation.restaurantName == restaurantMoreInfo.name) {
-                    tableBooked = true
-                    newReservation = reservation
-                    break
-                }
-            }
-        }
-
-        if (!tableBooked) {
-            binding!!.cardviewRestaurantBookTable.root.visibility = View.VISIBLE
-            binding!!.cardviewRestaurantReservationDetails.root.visibility = View.GONE
-            setupNewReservation()
-            setupNewReservationViews()
-        } else {
-            binding!!.cardviewRestaurantBookTable.root.visibility = View.GONE
-            binding!!.cardviewRestaurantReservationDetails.root.visibility = View.VISIBLE
-            setupReservationDetailsViews()
-        }
+        setupNewReservation()
+        setupNewReservationViews()
     }
 
     override fun onDestroyView() {
@@ -150,27 +129,6 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
 
         binding!!.cardviewRestaurantBookTable.buttonBookTable.setOnClickListener {
             verifiyReservation()
-        }
-    }
-
-    private fun setupReservationDetailsViews() {
-        binding!!.cardviewRestaurantReservationDetails.textViewRestaurantName.text = restaurantMoreInfo.name
-        binding!!.cardviewRestaurantReservationDetails.textViewReferenceNumber.text = "Reference Nº: ${newReservation.referenceNumber}"
-        binding!!.cardviewRestaurantReservationDetails.textViewDate.text = "Date: ${newReservation.date}"
-        binding!!.cardviewRestaurantReservationDetails.textViewHour.text = "Time: ${newReservation.time}"
-        binding!!.cardviewRestaurantReservationDetails.textViewNumberGuest.text = "Nº Guests: ${newReservation.nGuests}"
-        binding!!.cardviewRestaurantReservationDetails.textViewReservationStatus.text = "Status: ${newReservation.reservationStatus}"
-
-        binding!!.cardviewRestaurantReservationDetails.root.setOnClickListener {
-
-        }
-
-        binding!!.cardviewRestaurantReservationDetails.buttonGoogleMaps.setOnClickListener {
-            openGoogleMapsApp()
-        }
-
-        binding!!.cardviewRestaurantReservationDetails.buttonBrowseYelp.setOnClickListener {
-            openYelpWebsite()
         }
     }
 
@@ -310,7 +268,7 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
                 if (task.isSuccessful) {
                     addReservationToRestaurantDatabase()
                 } else {
-                    Toast.makeText(context, "Error creating database", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Error booking a table, please try again later", Toast.LENGTH_LONG).show()
                     println(task.exception)
                 }
             }
@@ -322,9 +280,10 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).document(currentUser.userId!!)
             .set(currentUser).addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    Toast.makeText(context, "Task successfull", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Table booked", Toast.LENGTH_LONG).show()
+                    (context as RestaurantMoreInfoActivity).finish()
                 } else {
-                    Toast.makeText(context, "Task failed", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Error booking a table, please try again later", Toast.LENGTH_LONG).show()
                 }
             }
     }

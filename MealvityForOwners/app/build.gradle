@@ -60,5 +60,9 @@ dependencies {
     implementation 'com.google.firebase:firebase-firestore:21.4.3'
     // FAB Speed dial
     implementation 'io.github.yavski:fab-speed-dial:1.0.6'
+    // ViewModel
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
+    // LiveData
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
 
 }

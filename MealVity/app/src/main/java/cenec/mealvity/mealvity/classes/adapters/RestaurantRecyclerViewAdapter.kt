@@ -3,6 +3,7 @@ package cenec.mealvity.mealvity.classes.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.ItemListRestaurantBinding
 import cenec.mealvity.mealvity.classes.restaurant.Restaurant
 import cenec.mealvity.mealvity.classes.restaurant.RestaurantList
@@ -53,6 +54,11 @@ class RestaurantRecyclerViewAdapter(private var restaurantList: RestaurantList):
             if (!restaurant.image_url.isNullOrEmpty()) {
                 Glide.with(binding.root)
                     .load(restaurant.image_url)
+                    .centerCrop()
+                    .into(binding.imageViewRestaurant)
+            } else {
+                Glide.with(binding.root)
+                    .load(binding.root.context.getDrawable(R.drawable.logo))
                     .centerCrop()
                     .into(binding.imageViewRestaurant)
             }

@@ -2,8 +2,11 @@ package cenec.mealvity.mealvity.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
+import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.ActivityReservationsBinding
 import cenec.mealvity.mealvity.classes.adapters.ReservationListRecyclerViewAdapter
 import cenec.mealvity.mealvity.classes.constants.Database
@@ -41,7 +44,7 @@ class ReservationsActivity : AppCompatActivity() {
                 if (documentSnapshot!!.exists()) {
                     val updatedUser = documentSnapshot.toObject(User::class.java)
                     UserSingleton.getInstance().setCurrentUser(updatedUser!!)
-                    rvAdapter?.setReservationList(reverseReservationList(updatedUser.reservations))
+                    checkUserReservationList()
                 }
             }
     }
@@ -53,29 +56,39 @@ class ReservationsActivity : AppCompatActivity() {
 
     private fun setupRecyclerView() {
         val rvLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        rvAdapter = ReservationListRecyclerViewAdapter(reverseReservationList(currentUser.reservations))
+        rvAdapter = ReservationListRecyclerViewAdapter(currentUser.showAllReservations())
 
         binding.recyclerViewReservationsList.layoutManager = rvLayoutManager
         binding.recyclerViewReservationsList.adapter = rvAdapter
     }
 
-    private fun reverseReservationList(userReservationList: ArrayList<Reservation>): ArrayList<Reservation> {
-        val reversedReservationList = arrayListOf<Reservation>()
-
-        if (userReservationList.isNotEmpty()) {
-            for (i in userReservationList.size-1 downTo 0) {
-                reversedReservationList.add(currentUser.reservations[i])
+    private fun checkUserReservationList() {
+        if (currentUser.reservations.isEmpty()) {
+            binding.textViewEmptyReservationList.visibility = View.VISIBLE
+            binding.recyclerViewReservationsList.visibility = View.GONE
+        } else {
+            if (binding.recyclerViewReservationsList.visibility == View.GONE) {
+                binding.recyclerViewReservationsList.visibility = View.VISIBLE
+                binding.textViewEmptyReservationList.visibility = View.GONE
             }
+            rvAdapter?.setReservationList(currentUser.showAllReservations())
         }
-
-        return reversedReservationList
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> finish()
+            R.id.menu_show_all -> rvAdapter?.setReservationList(currentUser.showAllReservations())
+            R.id.menu_show_pending -> rvAdapter?.setReservationList(currentUser.showPendingReservations())
+            R.id.menu_show_accepted -> rvAdapter?.setReservationList(currentUser.showAcceptedReservations())
+            R.id.menu_show_rejected -> rvAdapter?.setReservationList(currentUser.showRejectedReservations())
         }
 
+        return true
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_filter_reservations, menu)
         return true
     }
 }

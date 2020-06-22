@@ -9,6 +9,8 @@ import androidx.core.view.marginBottom
 import androidx.recyclerview.widget.RecyclerView
 import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.classes.restaurant.menu.Item
+import java.util.*
+import kotlin.collections.ArrayList
 
 class SectionRecyclerViewAdapter(private val items: ArrayList<Item>): RecyclerView.Adapter<SectionRecyclerViewAdapter.SectionViewHolder>() {
     private lateinit var rvListener: SectionRecyclerViewListener
@@ -18,7 +20,7 @@ class SectionRecyclerViewAdapter(private val items: ArrayList<Item>): RecyclerVi
     }
 
     override fun onBindViewHolder(holder: SectionViewHolder, position: Int) {
-        holder.bind(items, position, rvListener)
+        holder.bind(items[position], rvListener)
     }
 
     override fun getItemCount(): Int {
@@ -34,10 +36,10 @@ class SectionRecyclerViewAdapter(private val items: ArrayList<Item>): RecyclerVi
         private val tvItemDescription = itemView.findViewById<TextView>(R.id.text_view_item_description)
         private val tvItemPrice = itemView.findViewById<TextView>(R.id.text_view_item_price)
 
-        fun bind(list: ArrayList<Item>, position: Int, listener: SectionRecyclerViewListener) {
-            tvItemName.text = list[position].name
-            tvItemDescription.text = list[position].description
-            tvItemPrice.text = "€${list[position].price}"
+        fun bind(item: Item, listener: SectionRecyclerViewListener) {
+            tvItemName.text = item.name
+            tvItemDescription.text = item.description
+            tvItemPrice.text = String.format(Locale.getDefault(), "€%.2f", item.price)
 
             itemView.setOnClickListener {
                 listener.onItemClick(position)

@@ -4,11 +4,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.ViewPager
 import cenec.mealvity.mealvityforowners.core.RestaurantDatabase
 import cenec.mealvity.mealvityforowners.core.adapter.ViewPagerAdapter
-import cenec.mealvity.mealvityforowners.core.reservation.Reservation
+import cenec.mealvity.mealvityforowners.core.viewmodels.RestaurantDatabaseViewModel
 import cenec.mealvity.mealvityforowners.databinding.ActivityFragmentContainerBinding
 import cenec.mealvity.mealvityforowners.features.orderlist.OrderListFragment
 import cenec.mealvity.mealvityforowners.features.reservationlist.ReservationListFragment
@@ -23,15 +23,21 @@ class FragmentContainerActivity : AppCompatActivity() {
     private var aListener: FragmentContainerActivityListener? = null
     private var filterOptSelected = 0
     private lateinit var binding: ActivityFragmentContainerBinding
+    private lateinit var viewModel: RestaurantDatabaseViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFragmentContainerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupViewModel()
         setupViewPager()
         listenForDatabaseChanges()
         setupFab()
+    }
+
+    private fun setupViewModel() {
+        viewModel = ViewModelProvider(this).get(RestaurantDatabaseViewModel::class.java)
     }
 
     private fun setupViewPager() {
@@ -92,7 +98,7 @@ class FragmentContainerActivity : AppCompatActivity() {
                 } else if (binding.bottomNav.menu.findItem(R.id.bottom_nav_orders).isChecked) {
                     aListener = orderListFragment
                 }
-                aListener!!.onUpdatedReservationList(dbRestaurant, filterOptSelected)
+                aListener!!.onFilterOptionSelected(filterOptSelected)
                 return true
             }
 
@@ -111,18 +117,16 @@ class FragmentContainerActivity : AppCompatActivity() {
             .addSnapshotListener { documentSnapshot, firebaseFirestoreException ->
                 if (documentSnapshot!!.exists()) {
                     dbRestaurant = documentSnapshot.toObject(RestaurantDatabase::class.java)!!
-                    RestaurantDatabaseSingleton.getInstance().setRestaurantDatabase(dbRestaurant)
-                    if (binding.bottomNav.menu.findItem(R.id.bottom_nav_reservations).isChecked) {
-                        aListener = reservationListFragment
-                    } else if (binding.bottomNav.menu.findItem(R.id.bottom_nav_orders).isChecked) {
-                        aListener = orderListFragment
-                    }
-                    aListener!!.onUpdatedReservationList(dbRestaurant, filterOptSelected)
+                    viewModel.setRestaurantDatabase(dbRestaurant)
                 }
             }
     }
 
+    fun getViewModel(): RestaurantDatabaseViewModel {
+        return viewModel
+    }
+
     interface FragmentContainerActivityListener{
-        fun onUpdatedReservationList(updatedRestaurantDatabase: RestaurantDatabase, filterOptSelected: Int)
+        fun onFilterOptionSelected(filterOptSelected: Int)
     }
 }

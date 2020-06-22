@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import cenec.mealvity.mealvityforowners.FragmentContainerActivity
 import cenec.mealvity.mealvityforowners.OrderInfoActivity
@@ -24,6 +25,7 @@ class OrderListFragment : Fragment(), FragmentContainerActivity.FragmentContaine
     private var rvAdapter: OrderListRecyclerViewAdapter? = null
     private var dbRestaurant = RestaurantDatabaseSingleton.getInstance().getRestaurantDatabase()
     private var filterOpt = 0
+    private val viewModel by lazy { (context as FragmentContainerActivity).getViewModel() }
     private var _binding: FragmentOrderListBinding? = null
     private val binding get() = _binding!!
 
@@ -34,6 +36,14 @@ class OrderListFragment : Fragment(), FragmentContainerActivity.FragmentContaine
         _binding = FragmentOrderListBinding.inflate(layoutInflater)
         setupRecyclerView()
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.getRestaurantDatabase().observe(viewLifecycleOwner, Observer { newRestaurantDatabase ->
+            Toast.makeText(context, "Pasa por aqui", Toast.LENGTH_SHORT).show()
+        })
     }
 
     private fun setupRecyclerView() {
@@ -54,18 +64,14 @@ class OrderListFragment : Fragment(), FragmentContainerActivity.FragmentContaine
 
     private fun filterOrdersList() {
         when (filterOpt) {
-            0 -> rvAdapter?.setOrderList(dbRestaurant.orders)
+            0 -> rvAdapter?.setOrderList(dbRestaurant.showAllOrders())
             1 -> rvAdapter?.setOrderList(dbRestaurant.showPendingOrders())
             2 -> rvAdapter?.setOrderList(dbRestaurant.showAcceptedOrders())
             3 -> rvAdapter?.setOrderList(dbRestaurant.showRejectedOrders())
         }
     }
 
-    override fun onUpdatedReservationList(
-        updatedRestaurantDatabase: RestaurantDatabase,
-        filterOptSelected: Int
-    ) {
-        dbRestaurant = updatedRestaurantDatabase
+    override fun onFilterOptionSelected(filterOptSelected: Int) {
         filterOpt = filterOptSelected
         filterOrdersList()
     }

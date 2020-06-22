@@ -1,7 +1,9 @@
 package cenec.mealvity.mealvityforowners.core
 
+import androidx.core.content.ContextCompat
 import cenec.mealvity.mealvityforowners.core.order.Order
 import cenec.mealvity.mealvityforowners.core.reservation.Reservation
+
 
 data class RestaurantDatabase(
     var name: String,
@@ -9,6 +11,10 @@ data class RestaurantDatabase(
     var reservations: ArrayList<Reservation> = arrayListOf()
 ) {
     constructor(): this("", arrayListOf(), arrayListOf())
+
+    fun showAllReservations(): ArrayList<Reservation> {
+        return reverseReservationList(reservations)
+    }
 
     fun showPendingReservations(): ArrayList<Reservation> {
         val pendingReservationList = arrayListOf<Reservation>()
@@ -19,7 +25,7 @@ data class RestaurantDatabase(
             }
         }
 
-        return pendingReservationList
+        return reverseReservationList(pendingReservationList)
     }
 
     fun showAcceptedReservations(): ArrayList<Reservation> {
@@ -31,7 +37,7 @@ data class RestaurantDatabase(
             }
         }
 
-        return acceptedReservationList
+        return reverseReservationList(acceptedReservationList)
     }
 
     fun showRejectedReservations(): ArrayList<Reservation> {
@@ -43,7 +49,11 @@ data class RestaurantDatabase(
             }
         }
 
-        return rejectedReservationList
+        return reverseReservationList(rejectedReservationList)
+    }
+
+    fun showAllOrders(): ArrayList<Order> {
+        return reverseOrderList(orders)
     }
 
     fun showPendingOrders(): ArrayList<Order> {
@@ -55,7 +65,7 @@ data class RestaurantDatabase(
             }
         }
 
-        return pendingOrderList
+        return reverseOrderList(pendingOrderList)
     }
 
     fun showAcceptedOrders(): ArrayList<Order> {
@@ -67,7 +77,7 @@ data class RestaurantDatabase(
             }
         }
 
-        return acceptedOrderList
+        return reverseOrderList(acceptedOrderList)
     }
 
     fun showRejectedOrders(): ArrayList<Order> {
@@ -79,6 +89,30 @@ data class RestaurantDatabase(
             }
         }
 
-        return rejectedOrderList
+        return reverseOrderList(rejectedOrderList)
+    }
+
+    private fun reverseReservationList(listToReverse: ArrayList<Reservation>): ArrayList<Reservation> {
+        val reversedReservationList = arrayListOf<Reservation>()
+
+        if (listToReverse.isNotEmpty()) {
+            for (i in listToReverse.size-1 downTo 0) {
+                reversedReservationList.add(listToReverse[i])
+            }
+        }
+
+        return reversedReservationList
+    }
+
+    private fun reverseOrderList(listToReverse: ArrayList<Order>): ArrayList<Order> {
+        val reversedOrderList = arrayListOf<Order>()
+
+        if (listToReverse.isNotEmpty()) {
+            for (i in listToReverse.size-1 downTo 0) {
+                reversedOrderList.add(listToReverse[i])
+            }
+        }
+
+        return reversedOrderList
     }
 }

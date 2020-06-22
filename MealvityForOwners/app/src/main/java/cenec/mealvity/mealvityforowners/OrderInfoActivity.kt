@@ -25,10 +25,16 @@ class OrderInfoActivity : AppCompatActivity() {
         binding = ActivityOrderInfoBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setupToolbar()
         setupCardViewOrder()
         setupCardViewUserDetails()
         setupCardViewDeliveryDetails()
         setupCardViewConfirmation()
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(binding.toolbar)
+        supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
     private fun setupCardViewOrder() {
