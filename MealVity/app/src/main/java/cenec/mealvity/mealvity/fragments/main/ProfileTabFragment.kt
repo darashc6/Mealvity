@@ -11,6 +11,8 @@ import android.widget.TextView
 import androidx.cardview.widget.CardView
 import androidx.lifecycle.Observer
 import cenec.darash.mealvity.R
+import cenec.darash.mealvity.databinding.FragmentProfileTabBinding
+import cenec.darash.mealvity.databinding.FragmentProfileTabGoogleBinding
 import cenec.mealvity.mealvity.activities.*
 import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.User

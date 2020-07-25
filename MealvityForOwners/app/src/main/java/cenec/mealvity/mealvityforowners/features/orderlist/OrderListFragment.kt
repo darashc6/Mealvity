@@ -19,15 +19,15 @@ import cenec.mealvity.mealvityforowners.databinding.FragmentOrderListBinding
 import cenec.mealvity.mealvityforowners.features.orderlist.adapter.OrderListRecyclerViewAdapter
 
 /**
- * A simple [Fragment] subclass.
+ * Fragment showing a list of orders received by the restaurant
  */
 class OrderListFragment : Fragment(), FragmentContainerActivity.FragmentContainerActivityListener {
-    private var rvAdapter: OrderListRecyclerViewAdapter? = null
-    private var dbRestaurant = RestaurantDatabaseSingleton.getInstance().getRestaurantDatabase()
-    private var filterOpt = 0
-    private val viewModel by lazy { (context as FragmentContainerActivity).getViewModel() }
-    private var _binding: FragmentOrderListBinding? = null
-    private val binding get() = _binding!!
+    private var rvAdapter: OrderListRecyclerViewAdapter? = null // RecyclerView adapter
+    private var dbRestaurant = RestaurantDatabaseSingleton.getInstance().getRestaurantDatabase() // Database of the restaurant
+    private var filterOpt = 0 // Option for the filter (0 - All orders, 1 - Pending, 2 - Accepted, 3 - Rejected)
+    private val viewModel by lazy { (context as FragmentContainerActivity).getViewModel() } // ViewModel of RestaurantDatabase
+    private var _binding: FragmentOrderListBinding? = null // View binding for the fragment
+    private val binding get() = _binding!! // Non-nullable version of teh binding variable above
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,10 +42,19 @@ class OrderListFragment : Fragment(), FragmentContainerActivity.FragmentContaine
         super.onViewCreated(view, savedInstanceState)
 
         viewModel.getRestaurantDatabase().observe(viewLifecycleOwner, Observer { newRestaurantDatabase ->
-            Toast.makeText(context, "Pasa por aqui", Toast.LENGTH_SHORT).show()
+            dbRestaurant = newRestaurantDatabase
+            filterOrdersList()
         })
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    /**
+     * Sets up a RecyclerView containing a list of orders
+     */
     private fun setupRecyclerView() {
         val rvLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         rvAdapter = OrderListRecyclerViewAdapter(dbRestaurant.orders)
@@ -62,6 +71,9 @@ class OrderListFragment : Fragment(), FragmentContainerActivity.FragmentContaine
         binding.orderListRecyclerView.adapter = rvAdapter
     }
 
+    /**
+     * Filters the order list depending on the option selected
+     */
     private fun filterOrdersList() {
         when (filterOpt) {
             0 -> rvAdapter?.setOrderList(dbRestaurant.showAllOrders())

@@ -32,16 +32,18 @@ import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
 
-
+/**
+ * Fragment where the user can book a table
+ */
 class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActivity.RestaurantMoreInfoListener {
-    private var _binding: FragmentBookTableBinding? = null
-    private val binding get() = _binding
-    private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() }
-    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
-    private lateinit var newReservation: Reservation
-    private lateinit var restaurantMoreInfo: RestaurantMoreInfo
-    private lateinit var googleMap: GoogleMap
-    private lateinit var mapFragment: SupportMapFragment
+    private var _binding: FragmentBookTableBinding? = null // View binding of the fragment
+    private val binding get() = _binding // Non nullable version of the binding variable above
+    private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() } // User currently logged in
+    private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() } // Instance of Firestore database
+    private lateinit var newReservation: Reservation // Object containing reservation details
+    private lateinit var restaurantMoreInfo: RestaurantMoreInfo // Object containing extra info of the restaurant
+    private lateinit var googleMap: GoogleMap // Instance of Google maps
+    private lateinit var mapFragment: SupportMapFragment // Fragment where the map is shown
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -76,6 +78,9 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         googleMap.uiSettings.isMapToolbarEnabled = false
     }
 
+    /**
+     * Sets up a new reservation
+     */
     private fun setupNewReservation() {
         val currentUser = UserSingleton.getInstance().getCurrentUser()
         val userReservationDetails =
@@ -89,11 +94,17 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         newReservation.restaurantName = restaurantMoreInfo.name
     }
 
+    /**
+     * Sets up a map of the location of the restaurant
+     */
     private fun setupMap() {
         mapFragment = childFragmentManager.findFragmentById(R.id.fragment_map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
 
+    /**
+     * Sets up view for the fragment
+     */
     private fun setupNewReservationViews() {
         binding!!.cardviewRestaurantBookTable.textViewRestaurantName.text = restaurantMoreInfo.name
 
@@ -156,6 +167,9 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         }
     }
 
+    /**
+     * Sets up a camera for the map, for moving around
+     */
     private fun setupMapCamera(locationRestaurant: LatLng) {
         googleMap.moveCamera(
             CameraUpdateFactory
@@ -163,12 +177,19 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
 
     }
 
+    /**
+     * Sets up a marker on the map where the restaurant is located
+     */
     private fun setupRestaurantMarker(locationRestaurant: LatLng) {
         googleMap.addMarker(
             MarkerOptions()
                 .position(locationRestaurant))
     }
 
+    /**
+     * Verifies the date selected in the DatePicker dialog
+     * @return True if the date selected is after the current date, false if otherwise
+     */
     private fun verifyDate(dateToVerify: String): Boolean {
         val currentDate = Calendar.getInstance().time
         val dateSelected = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).parse(dateToVerify)
@@ -176,6 +197,9 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         return dateSelected!!.after(currentDate)
     }
 
+    /**
+     * Updates the number of guests
+     */
     private fun updateNumberGuests() {
         if (newReservation.nGuests == 1) {
             binding!!.cardviewRestaurantBookTable.textViewNumberGuest.text = "${newReservation.nGuests} guest"
@@ -184,6 +208,9 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         }
     }
 
+    /**
+     * Opens the Google Maps app
+     */
     private fun openGoogleMapsApp() {
         val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:${restaurantMoreInfo.coordinates.latitude},${restaurantMoreInfo.coordinates.longitude}?q=${restaurantMoreInfo.name}, ${restaurantMoreInfo.displayFullAddress()}"))
         mapIntent.setPackage("com.google.android.apps.maps")
@@ -192,6 +219,9 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         }
     }
 
+    /**
+     * Opens a web browser redirecting to the restaurant's Yelp website
+     */
     private fun openYelpWebsite(){
         val intentBrowser = Intent(Intent.ACTION_VIEW, Uri.parse(restaurantMoreInfo.yelp_url))
         try {
@@ -202,6 +232,9 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         }
     }
 
+    /**
+     * Shows a Date picker dialog
+     */
     private fun showDatePickerDialog() {
         val datePickerDialog = DatePickerDialog(context!!, R.style.DateTimePickerDialog)
         datePickerDialog.setOnDateSetListener(object : DatePickerDialog.OnDateSetListener{
@@ -219,6 +252,9 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         datePickerDialog.show()
     }
 
+    /**
+     * Shows a Time picker dialog
+     */
     private fun showTimePickerDialog() {
         val timePickerDialog = TimePickerDialog(context!!, R.style.DateTimePickerDialog, object: TimePickerDialog.OnTimeSetListener{
             override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
@@ -233,8 +269,11 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         timePickerDialog.show()
     }
 
+    /**
+     * Verifies the reservation made
+     */
     private fun verifiyReservation() {
-        if (newReservation.date.isNotEmpty() && newReservation.time.isNotEmpty()) {
+        if (newReservation.date.isNotEmpty() && newReservation.time.isNotEmpty()) { // If the user has filled all the necessary details
             userLoggedIn.addReservation(newReservation)
             addReservationToRestaurantDatabase()
         } else {
@@ -242,6 +281,9 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
         }
     }
 
+    /**
+     * Adds the reservations to the corresponding restaurant's database
+     */
     private fun addReservationToRestaurantDatabase() {
         val restaurantNameString = restaurantMoreInfo.name.replace(" ", "").toLowerCase(Locale.ROOT)
 
@@ -257,6 +299,9 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
             }
     }
 
+    /**
+     * Creates a new restaurant database, in case it doesn't exist
+     */
     private fun createRestaurantDatabase(restaurantName: String) {
         mFirebaseFirestore.collection("restaurants").document(restaurantName)
             .set(hashMapOf(
@@ -274,6 +319,9 @@ class FragmentBookTable : Fragment(), OnMapReadyCallback, RestaurantMoreInfoActi
             }
     }
 
+    /**
+     * Updates the user in the database with the new reservation made
+     */
     private fun updateUserInDatabase() {
         val currentUser = UserSingleton.getInstance().getCurrentUser()
 

@@ -8,6 +8,10 @@ import androidx.recyclerview.widget.RecyclerView
 import cenec.darash.mealvity.R
 import cenec.mealvity.mealvity.classes.restaurant.Open
 
+/**
+ * RecyclerView adapter binding the restaurant's opening hours
+ * @param listOpeningHours List of the opening hours
+ */
 class OpeningHoursRecyclerViewAdapter(private val listOpeningHours: List<Open>): RecyclerView.Adapter<OpeningHoursRecyclerViewAdapter.OpeningHoursViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OpeningHoursViewHolder {
@@ -26,6 +30,10 @@ class OpeningHoursRecyclerViewAdapter(private val listOpeningHours: List<Open>):
         private val tvDay = itemView.findViewById<TextView>(R.id.text_view_day)
         private val tvHours = itemView.findViewById<TextView>(R.id.text_view_hours)
 
+        /**
+         * Bind the opening hours to the itemview
+         * @param hours Opening hours
+         */
         fun bind(hours: Open) {
             tvDay.text = hours.formatDay()
             tvHours.text = hours.formatHours()

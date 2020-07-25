@@ -18,9 +18,12 @@ import cenec.mealvity.mealvity.classes.adapters.OpeningHoursRecyclerViewAdapter
 import cenec.mealvity.mealvity.classes.restaurant.RestaurantMoreInfo
 import com.google.gson.Gson
 
+/**
+ * Activity displaying extra information of the restaurant selected
+ */
 class InfoActivity : AppCompatActivity() {
-    private lateinit var restaurantInfo: RestaurantMoreInfo
-    private lateinit var binding: ActivityInfoBinding
+    private lateinit var restaurantInfo: RestaurantMoreInfo // Object containing extra info of the restaurant
+    private lateinit var binding: ActivityInfoBinding // View binding of the activity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,18 +35,27 @@ class InfoActivity : AppCompatActivity() {
         setupViews()
     }
 
+    /**
+     * Function receiving the object containing the restaurant's extra info
+     */
     private fun checkBundleExtras() {
-        intent.extras?.getString("object")?.let {
-            restaurantInfo = convertStringJsonToObject(it)
+        intent.extras?.getSerializable("object")?.let {
+            restaurantInfo = it as RestaurantMoreInfo
         }
     }
 
+    /**
+     * Sets up the activity's toolbar
+     */
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.title = "Restaurant Info"
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
+    /**
+     * Sets up the views in the activity
+     */
     private fun setupViews() {
         binding.imageSlider.setSliderAdapter(AutoImageSliderAdapter(restaurantInfo.photos))
         if (restaurantInfo.photos.size > 1) binding.imageSlider.startAutoCycle()
@@ -70,6 +82,9 @@ class InfoActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Sets up the recycler view containing the restaurant's opening hours
+     */
     private fun setupRecyclerView() {
         val rvLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         val rvAdapter = OpeningHoursRecyclerViewAdapter(restaurantInfo.hours[0].open)
@@ -79,11 +94,9 @@ class InfoActivity : AppCompatActivity() {
         binding.recyclerViewOpeningHours.suppressLayout(true)
     }
 
-    private fun convertStringJsonToObject(stringJson: String): RestaurantMoreInfo {
-        val gson = Gson()
-        return gson.fromJson(stringJson, RestaurantMoreInfo::class.java)
-    }
-
+    /**
+     * Overrides the buttons displayed in the toolbar
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> finish()

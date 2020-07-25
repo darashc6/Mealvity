@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 
 /**
- * Adapter for containg the fragments
+ * Adapter for containing the fragments
  * @param fragmentManager Activity's fragment manager
  */
 class FragmentAdapter(fragmentManager: FragmentManager): FragmentPagerAdapter(fragmentManager, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {

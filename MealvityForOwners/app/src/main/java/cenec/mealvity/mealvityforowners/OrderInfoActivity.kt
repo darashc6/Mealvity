@@ -13,12 +13,14 @@ import cenec.mealvity.mealvityforowners.databinding.ActivityOrderInfoBinding
 import com.google.firebase.firestore.FirebaseFirestore
 import java.util.*
 
+/**
+ * Activity showing information about an order made
+ */
 class OrderInfoActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityOrderInfoBinding
-    private var newOrderStatus: Order.OrderStatus = Order.OrderStatus.ACCEPTED
-    private lateinit var orderUser: User
-    private val currentOrder by lazy { OrderSingleton.getInstance().getOrder() }
-    private val dbRestaurant by lazy { RestaurantDatabaseSingleton.getInstance().getRestaurantDatabase() }
+    private lateinit var binding: ActivityOrderInfoBinding // View binding for the activity
+    private lateinit var orderUser: User // User who made the order
+    private val currentOrder by lazy { OrderSingleton.getInstance().getOrder() } // Order made
+    private val dbRestaurant by lazy { RestaurantDatabaseSingleton.getInstance().getRestaurantDatabase() } // Database of the restaurant in charde of the order
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,11 +34,17 @@ class OrderInfoActivity : AppCompatActivity() {
         setupCardViewConfirmation()
     }
 
+    /**
+     * Sets up the activity's toolbar
+     */
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
+    /**
+     * Sets up the CardView layout of the order
+     */
     private fun setupCardViewOrder() {
         setupCartItemRecyclerView()
 
@@ -45,6 +53,9 @@ class OrderInfoActivity : AppCompatActivity() {
         binding.cardViewOrder.textViewTotalPrice.text = String.format(Locale.getDefault(), "€%.2f", currentOrder.orderCart!!.totalPrice)
     }
 
+    /**
+     * Sets up the CardView layout for the cart item
+     */
     private fun setupCartItemRecyclerView() {
         val rvLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         val rvAdapter = OrderCartRecyclerViewAdapter(currentOrder.orderCart!!.orderCart)
@@ -53,6 +64,9 @@ class OrderInfoActivity : AppCompatActivity() {
         binding.cardViewOrder.recyclerViewOrderCart.adapter = rvAdapter
     }
 
+    /**
+     * Sets up the CartView layout for the User details
+     */
     private fun setupCardViewUserDetails() {
         val userDetails = currentOrder.user
 
@@ -61,6 +75,9 @@ class OrderInfoActivity : AppCompatActivity() {
         binding.cardViewUserDetails.textViewUserEmail.text = "Email: ${userDetails.email}"
     }
 
+    /**
+     * Sets up the CardView layout for the delivery details
+     */
     private fun setupCardViewDeliveryDetails() {
         binding.cardViewDeliveryDetails.textViewPaymentMethod.text = "Payment made by: ${currentOrder.paymentMethod}"
         binding.cardViewDeliveryDetails.textViewDeliveryMode.text = "Delivery Mode: ${currentOrder.deliveryMode}"
@@ -68,6 +85,9 @@ class OrderInfoActivity : AppCompatActivity() {
         binding.cardViewDeliveryDetails.textViewDeliveryTime.text = "Time: ${currentOrder.expectedDeliveryTime}"
     }
 
+    /**
+     * Sets up the CardView layout for the order confirmation
+     */
     private fun setupCardViewConfirmation() {
         if (currentOrder.orderStatus == Order.OrderStatus.ACCEPTED || currentOrder.orderStatus == Order.OrderStatus.REJECTED) {
             binding.cardViewConfirmation.textViewStatusInfo.visibility = View.VISIBLE
@@ -82,9 +102,12 @@ class OrderInfoActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Sets up the confirmation option for an order
+     */
     private fun setupConfirmationOptions() {
         binding.cardViewConfirmation.buttonAccept.buttonAccept.setOnClickListener {
-            currentOrder.orderStatus = newOrderStatus
+            currentOrder.orderStatus = Order.OrderStatus.ACCEPTED
             for (i in 0 until dbRestaurant.orders.size) {
                 if (dbRestaurant.orders[i].referenceNumber == currentOrder.referenceNumber) {
                     dbRestaurant.orders[i] = currentOrder
@@ -109,6 +132,9 @@ class OrderInfoActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Shows/Hide the reason for a REJECTED order
+     */
     private fun showRejectionReasonLayout() {
         val layoutRejectionReason = binding.cardViewConfirmation.layoutRejectionReason
 
@@ -119,6 +145,9 @@ class OrderInfoActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Updates the changes made to the order
+     */
     private fun updateChanges() {
         val mFirebaseFirestore = FirebaseFirestore.getInstance()
         val restaurantNameString = currentOrder.restaurantName.replace(" ", "")
@@ -134,6 +163,9 @@ class OrderInfoActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Retrieves the user in charge for the order, in order to update that specific user to the database
+     */
     private fun getReservationUser() {
         val mFirebaseFirestore = FirebaseFirestore.getInstance()
 
@@ -150,6 +182,9 @@ class OrderInfoActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Updates the user who's made the order to the database
+     */
     private fun updateUserDatabase() {
         val userOrdersList = orderUser.orders
         for (i in 0 until userOrdersList.size) {

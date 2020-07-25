@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import cenec.darash.mealvity.R
 
 /**
- * A simple [Fragment] subclass.
+ * Paypal payment fragment
  */
 class PaypalFragment : Fragment() {
 

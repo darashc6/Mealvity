@@ -11,7 +11,12 @@ import cenec.mealvity.mealvity.classes.restaurant.menu.CartItem
 import cenec.mealvity.mealvity.classes.restaurant.menu.Item
 import java.util.*
 
+/**
+ * RecyclerView adapter binding the cart of an order
+ * @param orderCart Cart of an order
+ */
 class OrderCartRecyclerViewAdapter(private var orderCart: OrderCart): RecyclerView.Adapter<OrderCartRecyclerViewAdapter.OrderCartViewHolder>() {
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderCartViewHolder {
         return OrderCartViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_list_cart_item, parent, false))
     }
@@ -30,6 +35,10 @@ class OrderCartRecyclerViewAdapter(private var orderCart: OrderCart): RecyclerVi
         private val tvItemName = itemView.findViewById<TextView>(R.id.text_view_item_name)
         private val tvItemPrice = itemView.findViewById<TextView>(R.id.text_view_item_price)
 
+        /**
+         * Bind the cart item to the itemview
+         * @param cartItem Cart item
+         */
         fun bind(cartItem: CartItem) {
             tvQuantity.text = "${cartItem.quantity}x"
             tvItemName.text = cartItem.item!!.name

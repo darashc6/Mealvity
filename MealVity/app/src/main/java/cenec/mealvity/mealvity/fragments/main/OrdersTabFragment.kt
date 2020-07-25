@@ -21,10 +21,10 @@ import com.google.firebase.firestore.FirebaseFirestore
  * Fragment of the Orders Tab
  */
 class OrdersTabFragment : Fragment() {
-    private val currentUser by lazy { UserSingleton.getInstance().getCurrentUser() }
-    private var rvAdapter: OrderRecyclerViewAdapter? = null
-    private var _binding: FragmentOrdersTabBinding? = null
-    private val binding get() = _binding!!
+    private val currentUser by lazy { UserSingleton.getInstance().getCurrentUser() } // User currently logged in
+    private var rvAdapter: OrderRecyclerViewAdapter? = null // RecyclerView adapter
+    private var _binding: FragmentOrdersTabBinding? = null // View binding for the fragment
+    private val binding get() = _binding!! // Non-nullable version of the binding variable above
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +36,9 @@ class OrdersTabFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * Sets up the RecyclerView, containing a list of orders
+     */
     private fun setupRecyclerView() {
         val rvLayoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         rvAdapter = OrderRecyclerViewAdapter(currentUser.showAllOrders())
@@ -53,6 +56,9 @@ class OrdersTabFragment : Fragment() {
         binding.recyclerViewOrderList.adapter = rvAdapter
     }
 
+    /**
+     * Listens for any changes made in the database
+     */
     private fun listenForDatabaseChanges() {
         val mFirebaseFirestore = FirebaseFirestore.getInstance()
         val currentUserId = UserSingleton.getInstance().getCurrentUser().userId
@@ -67,11 +73,14 @@ class OrdersTabFragment : Fragment() {
             }
     }
 
+    /**
+     * Checks the user's orders list, and it will display one layout or another depending on the result
+     */
     private fun checkUserOrdersList() {
-        if (currentUser.orders.isEmpty()) {
+        if (currentUser.orders.isEmpty()) { // If the user hasn't made any orders
             binding.textViewEmptyOrderList.visibility = View.VISIBLE
             binding.recyclerViewOrderList.visibility = View.GONE
-        } else {
+        } else { // If the user has made at least 1 order
             if (binding.recyclerViewOrderList.visibility == View.GONE) {
                 binding.recyclerViewOrderList.visibility = View.VISIBLE
                 binding.textViewEmptyOrderList.visibility = View.GONE

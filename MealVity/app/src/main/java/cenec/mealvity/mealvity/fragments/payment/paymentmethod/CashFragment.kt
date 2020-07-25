@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import cenec.darash.mealvity.R
 
 /**
- * A simple [Fragment] subclass.
+ * Cash payment fragment
  */
 class CashFragment : Fragment() {
 

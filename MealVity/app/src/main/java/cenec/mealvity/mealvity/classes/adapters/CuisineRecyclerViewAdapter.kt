@@ -17,14 +17,14 @@ import kotlinx.android.synthetic.main.item_list_category.view.*
  * @param list List of Cuisine
  */
 class CuisineRecyclerViewAdapter(var list: ArrayList<Cuisine>): RecyclerView.Adapter<CuisineRecyclerViewAdapter.CuisineViewHolder>() {
-    private lateinit var mListener: CuisineRecyclerViewListener // Listener for the RecyclerView
+    private lateinit var mListener: CuisineRecyclerViewListener // Listener for the RecyclerView adapter
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CuisineViewHolder {
         return CuisineViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_list_category, parent, false))
     }
 
     override fun onBindViewHolder(holder: CuisineViewHolder, position: Int) {
-        holder.bind(list[position], mListener)
+        holder.bind(list[position])
     }
 
     override fun getItemCount(): Int {
@@ -39,7 +39,7 @@ class CuisineRecyclerViewAdapter(var list: ArrayList<Cuisine>): RecyclerView.Ada
         mListener = listener
     }
 
-    class CuisineViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    inner class CuisineViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
         private val nameCuisine = itemView.text_cuisine_name
         private val imageCuisine = itemView.image_view_cuisine
 
@@ -48,13 +48,13 @@ class CuisineRecyclerViewAdapter(var list: ArrayList<Cuisine>): RecyclerView.Ada
          * @param cuisine Cuisine containing all the data
          * @param listener Listener for the RecyclerView
          */
-        fun bind(cuisine: Cuisine, listener: CuisineRecyclerViewListener) {
+        fun bind(cuisine: Cuisine) {
             nameCuisine.text = cuisine.name
             Glide.with(itemView)
                 .load(cuisine.resourceId)
                 .into(imageCuisine)
             itemView.setOnClickListener {
-                listener.onClick(layoutPosition)
+                mListener.onClick(layoutPosition)
             }
         }
     }

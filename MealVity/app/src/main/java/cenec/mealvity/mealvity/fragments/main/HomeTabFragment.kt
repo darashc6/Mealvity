@@ -9,10 +9,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cenec.darash.mealvity.R
+import cenec.darash.mealvity.databinding.FragmentHomeTabBinding
 import cenec.mealvity.mealvity.activities.AutocompleteStreetActivity
 import cenec.mealvity.mealvity.activities.ShowRestaurantListingActivity
 import cenec.mealvity.mealvity.classes.adapters.CuisineRecyclerViewAdapter
@@ -28,39 +28,27 @@ import kotlin.collections.ArrayList
  * Fragment of the Home Tab
  */
 class HomeTabFragment : Fragment() {
-    private lateinit var fragmentView: View
-    private lateinit var rvCuisines: RecyclerView
-    private lateinit var tvUser: TextView
-    private lateinit var etAddress: EditText
-    private lateinit var bSearch: Button
-    private lateinit var fakeList: ArrayList<Cuisine>
-    private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() }
+    private var _binding: FragmentHomeTabBinding? = null // View binding of the fragment
+    private val binding = _binding!! // Non-nullable version of the binding variable above
+    private lateinit var categoryList: ArrayList<Cuisine> // List of categories
+    private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() } // User currently logged in
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding.textViewUser.text = "Hi, ${userLoggedIn.fullName}!"
 
-        fragmentView = LayoutInflater.from(context).inflate(R.layout.fragment_home_tab, null)
-        rvCuisines = fragmentView.findViewById(R.id.recycler_view_cuisines_list)
-        tvUser = fragmentView.findViewById(R.id.text_view_user)
-        etAddress = fragmentView.findViewById(R.id.editText_address)
-        bSearch = fragmentView.findViewById(R.id.search_restaurant_listings)
-
-        tvUser.text = "Hi, ${userLoggedIn.fullName}!"
-
-        etAddress.background = null
-
-        etAddress.setText(SharedPreferencesConfig(context!!).getDefaultStreet())
-
-        etAddress.setOnClickListener {
+        binding.editTextAddress.background = null
+        binding.editTextAddress.setText(SharedPreferencesConfig(context!!).getDefaultStreet())
+        binding.editTextAddress.setOnClickListener {
             val intentAutocompleteStreet = Intent(context, AutocompleteStreetActivity::class.java)
             startActivity(intentAutocompleteStreet)
         }
 
-        bSearch.setOnClickListener {
-            val address = etAddress.text.toString()
+        binding.searchRestaurantListings.setOnClickListener {
+            val address = binding.editTextAddress.text.toString()
             if (address.isEmpty()) {
-                etAddress.error = getString(R.string.text_field_empty)
-                etAddress.requestFocus()
+                binding.editTextAddress.error = getString(R.string.text_field_empty)
+                binding.editTextAddress.requestFocus()
             } else {
                 val intentGetBusinessListings = Intent(context, ShowRestaurantListingActivity::class.java)
                 val bun = Bundle()
@@ -70,12 +58,12 @@ class HomeTabFragment : Fragment() {
             }
         }
 
-        setupFakeList()
+        setupCategoryList()
         setupRecyclerView()
 
         StreetSingleton.setStreetSingletonListener(object : StreetSingleton.StreetSingletonListener{
             override fun onStreetSelectedListener(streetSelected: String) {
-                etAddress.setText(streetSelected)
+                binding.editTextAddress.setText(streetSelected)
             }
 
         })
@@ -86,36 +74,47 @@ class HomeTabFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return fragmentView
+        return binding.root
     }
 
-    private fun setupFakeList() {
-        fakeList = arrayListOf()
-
-        fakeList.add(Cuisine("Bars", context!!.resources.getIdentifier("bars", "drawable", context!!.packageName)))
-        fakeList.add(Cuisine("Burgers", context!!.resources.getIdentifier("burgers", "drawable", context!!.packageName)))
-        fakeList.add(Cuisine("Chinese", context!!.resources.getIdentifier("chinese", "drawable", context!!.packageName)))
-        fakeList.add(Cuisine("Indian", context!!.resources.getIdentifier("indian", "drawable", context!!.packageName)))
-        fakeList.add(Cuisine("Italian", context!!.resources.getIdentifier("italian", "drawable", context!!.packageName)))
-        fakeList.add(Cuisine("Japanese", context!!.resources.getIdentifier("japanese", "drawable", context!!.packageName)))
-        fakeList.add(Cuisine("Mexican", context!!.resources.getIdentifier("mexican", "drawable", context!!.packageName)))
-        fakeList.add(Cuisine("Pizza", context!!.resources.getIdentifier("pizza", "drawable", context!!.packageName)))
-        fakeList.add(Cuisine("Spanish", context!!.resources.getIdentifier("spanish", "drawable", context!!.packageName)))
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
+    /**
+     * Sets up a category list to filter restaurants
+     */
+    private fun setupCategoryList() {
+        categoryList = arrayListOf()
+
+        categoryList.add(Cuisine("Bars", context!!.resources.getIdentifier("bars", "drawable", context!!.packageName)))
+        categoryList.add(Cuisine("Burgers", context!!.resources.getIdentifier("burgers", "drawable", context!!.packageName)))
+        categoryList.add(Cuisine("Chinese", context!!.resources.getIdentifier("chinese", "drawable", context!!.packageName)))
+        categoryList.add(Cuisine("Indian", context!!.resources.getIdentifier("indian", "drawable", context!!.packageName)))
+        categoryList.add(Cuisine("Italian", context!!.resources.getIdentifier("italian", "drawable", context!!.packageName)))
+        categoryList.add(Cuisine("Japanese", context!!.resources.getIdentifier("japanese", "drawable", context!!.packageName)))
+        categoryList.add(Cuisine("Mexican", context!!.resources.getIdentifier("mexican", "drawable", context!!.packageName)))
+        categoryList.add(Cuisine("Pizza", context!!.resources.getIdentifier("pizza", "drawable", context!!.packageName)))
+        categoryList.add(Cuisine("Spanish", context!!.resources.getIdentifier("spanish", "drawable", context!!.packageName)))
+    }
+
+    /**
+     * Sets up a RecyclerView containing a list of categories
+     */
     private fun setupRecyclerView() {
         val layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         layoutManager.stackFromEnd = false
-        rvCuisines.layoutManager = layoutManager
+        binding.recyclerViewCuisinesList.layoutManager = layoutManager
 
-        val adapter = CuisineRecyclerViewAdapter(fakeList)
+        val adapter = CuisineRecyclerViewAdapter(categoryList)
         adapter.setCategoryRecyclerViewListener(object : CuisineRecyclerViewAdapter.CuisineRecyclerViewListener{
             override fun onClick(position: Int) {
                 val category = when (position) {
                     3 -> "indpak"
-                    else -> fakeList[position].name.toLowerCase(Locale.ROOT)
+                    else -> categoryList[position].name.toLowerCase(Locale.ROOT)
                 }
-                val address = etAddress.text.toString()
+                val address = binding.editTextAddress.text.toString()
 
                 val intentGetBusinessListing = Intent(context, ShowRestaurantListingActivity::class.java)
                 intentGetBusinessListing.putExtra(BundleKeys.RESTAURANT_CATEGORY, category)
@@ -124,7 +123,7 @@ class HomeTabFragment : Fragment() {
             }
 
         })
-        rvCuisines.adapter = adapter
+        binding.recyclerViewCuisinesList.adapter = adapter
     }
 
 }

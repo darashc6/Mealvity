@@ -8,6 +8,10 @@ import cenec.darash.mealvity.R
 import com.bumptech.glide.Glide
 import com.smarteist.autoimageslider.SliderViewAdapter
 
+/**
+ * Image Slider Adapter binding the image url
+ * @param list List of urls of images
+ */
 class AutoImageSliderAdapter(var list: List<String>): SliderViewAdapter<AutoImageSliderAdapter.AutoImageSliderViewHolder>() {
 
 
@@ -26,6 +30,10 @@ class AutoImageSliderAdapter(var list: List<String>): SliderViewAdapter<AutoImag
     class AutoImageSliderViewHolder(itemView: View): SliderViewAdapter.ViewHolder(itemView) {
         private val image = itemView.findViewById<ImageView>(R.id.slide_image)
 
+        /**
+         * Binds the image url to the itemview
+         * @param image_url url of image
+         */
         fun bind(image_url: String) {
             Glide.with(itemView)
                 .load(image_url)

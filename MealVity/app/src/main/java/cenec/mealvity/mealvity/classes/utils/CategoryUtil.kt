@@ -2,8 +2,16 @@ package cenec.mealvity.mealvity.classes.utils
 
 import cenec.mealvity.mealvity.classes.restaurant.menu.Item
 
+/**
+ * Class acting as utility methods for generating categories
+ */
 class CategoryUtil {
     companion object {
+        /**
+         * Generates a list of starters depending on the category name
+         * @param categoryName Category name
+         * @return List of menu items
+         */
         fun generateStarters(categoryName: String): ArrayList<Item> {
             val listStarters = arrayListOf<Item>()
 
@@ -48,6 +56,11 @@ class CategoryUtil {
             return listStarters
         }
 
+        /**
+         * Generates a list of main course dishes depending on the category name
+         * @param categoryName Category name
+         * @return List of menu items
+         */
         fun generateMainCourse(categoryName: String): ArrayList<Item> {
             val listMainCourse = arrayListOf<Item>()
 
@@ -95,6 +108,10 @@ class CategoryUtil {
             return listMainCourse
         }
 
+        /**
+         * Generates a list of desserts
+         * @return List of menu items
+         */
         fun generateDesserts(): ArrayList<Item> {
             val listDesserts = arrayListOf<Item>()
 
@@ -104,6 +121,10 @@ class CategoryUtil {
             return listDesserts
         }
 
+        /**
+         * Generates a list of drinks
+         * @return List of menu items
+         */
         fun generateDrinks(): ArrayList<Item> {
             val listDrinks = arrayListOf<Item>()
 
@@ -115,6 +136,10 @@ class CategoryUtil {
             return listDrinks
         }
 
+        /**
+         * Generates a list of extras
+         * @return List of menu items
+         */
         fun generateExtras(): ArrayList<Item> {
             val listExtras = arrayListOf<Item>()
 

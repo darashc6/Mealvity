@@ -2,7 +2,6 @@ package cenec.mealvity.mealvity.fragments.payment.deliverymethod
 
 import android.app.TimePickerDialog
 import android.os.Bundle
-import android.text.style.LocaleSpan
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,11 +16,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 /**
- * A simple [Fragment] subclass.
+ * Delivery option fragment
  */
 class DeliveryFragment : Fragment() {
-    private var _binding: FragmentDeliveryBinding? = null
-    private val binding get() = _binding
+    private var _binding: FragmentDeliveryBinding? = null // View binding for the fragment
+    private val binding get() = _binding // Non-nullable version of the binding variable above
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -32,8 +31,11 @@ class DeliveryFragment : Fragment() {
         return binding!!.root
     }
 
+    /**
+     * Sets up the fragment's initial views
+     */
     private fun setupViews() {
-        binding!!.textViewTime.text = setPickupTime()
+        binding!!.textViewTime.text = setDeliveryTime()
         binding!!.textViewTime.setOnClickListener {
             showTimePickerDialog()
         }
@@ -54,7 +56,11 @@ class DeliveryFragment : Fragment() {
         }
     }
 
-    private fun setPickupTime(): String {
+    /**
+     * Converts a Calendar time to String
+     * @return Formatted time
+     */
+    private fun setDeliveryTime(): String {
         val time = Calendar.getInstance()
         time.add(Calendar.MINUTE, 60)
         val timeDate = time.time
@@ -63,6 +69,9 @@ class DeliveryFragment : Fragment() {
         return format.format(timeDate)
     }
 
+    /**
+     * Shows a Time picker dialog
+     */
     private fun showTimePickerDialog() {
         val timePickerDialog = TimePickerDialog(context!!, R.style.DateTimePickerDialog, object: TimePickerDialog.OnTimeSetListener{
             override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
@@ -82,9 +91,13 @@ class DeliveryFragment : Fragment() {
         timePickerDialog.show()
     }
 
+    /**
+     * Verifies the time selected via the TimePicker
+     * @return True if difference between time selected and current time is at least 60 minutes, false if otherwise
+     */
     private fun verifyTime(timeToVerify: Date): Boolean {
         val currentTime = Calendar.getInstance()
-        currentTime.add(Calendar.MINUTE, 30)
+        currentTime.add(Calendar.MINUTE, 60)
         val timeDate = currentTime.time
 
         return timeToVerify.after(timeDate)

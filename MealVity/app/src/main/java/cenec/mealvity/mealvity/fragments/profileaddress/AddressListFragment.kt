@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import cenec.darash.mealvity.R
+import cenec.darash.mealvity.databinding.FragmentAddressListBinding
 import cenec.mealvity.mealvity.activities.SaveAddressActivity
 import cenec.mealvity.mealvity.activities.UserAddressesActivity
 import cenec.mealvity.mealvity.classes.adapters.AddressRecyclerViewAdapter
@@ -28,33 +29,35 @@ import kotlinx.android.synthetic.main.fragment_address_list.view.*
  * Fragment containing a list of all the addresses saved by the user
  */
 class AddressListFragment : Fragment() {
-    private lateinit var fragmentView: View
-    private lateinit var rvAddressList: RecyclerView
-    private lateinit var rvAdapter: AddressRecyclerViewAdapter
-    private lateinit var userViewModel: UserViewModel
+    private var _binding: FragmentAddressListBinding? = null // View binding for the fragment
+    private val binding = _binding!! // Non-nullable version of the binding variable above
+    private lateinit var rvAdapter: AddressRecyclerViewAdapter // Adapter for the RecyclerView
+    private lateinit var userViewModel: UserViewModel // User ViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        fragmentView=LayoutInflater.from(context).inflate(R.layout.fragment_address_list, null)
-        rvAddressList=fragmentView.recycler_view_address_list
         userViewModel=(activity as UserAddressesActivity).getUserViewModel()
-        setupRecyclerView(context!!)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return fragmentView
+        setupRecyclerView()
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 
     /**
-     * Sets up the RecyclerView
-     * @param context Application context
+     * Sets up the RecyclerView containing a list of addresses
      */
-    private fun setupRecyclerView(context: Context) {
-        rvAddressList.layoutManager=SSMLLinearLayoutManager(context)
+    private fun setupRecyclerView() {
+        binding.recyclerViewAddressList.layoutManager=SSMLLinearLayoutManager(context!!)
         rvAdapter=AddressRecyclerViewAdapter(UserSingleton.getInstance().getCurrentUser().addresses)
         rvAdapter.setOnAddressRecyclerViewListener(object : AddressRecyclerViewAdapter.AddressRecyclerViewListener{
             override fun onAddressDelete(position: Int) {
@@ -70,15 +73,14 @@ class AddressListFragment : Fragment() {
             }
 
         })
-        rvAddressList.adapter=rvAdapter
+        binding.recyclerViewAddressList.adapter=rvAdapter
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         userViewModel.getUserLiveData().observe(viewLifecycleOwner, object : Observer<User>{
             override fun onChanged(t: User?) {
-                rvAdapter.notifyDataSetChanged()
-                rvAddressList.adapter=rvAdapter
+                rvAdapter.setAddressList(t!!.addresses)
             }
 
         })
@@ -103,7 +105,7 @@ class AddressListFragment : Fragment() {
                     userViewModel.setUserLiveData(userLoggedIn)
                     Toast.makeText(context, "Address deleted", Toast.LENGTH_SHORT).show()
                 } else {
-                    // TODO
+                    Toast.makeText(context, "Error deleting address, please try again later", Toast.LENGTH_SHORT).show()
                 }
             }
     }

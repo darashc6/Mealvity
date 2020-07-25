@@ -15,10 +15,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.util.*
 
+/**
+ * Bottom Sheet used for displaying the order cart
+ * @param appContext Application context
+ * @param orderCart Order cart
+ */
 class OrderCartBottomSheet(private var appContext: Context, private var orderCart: OrderCart): BottomSheetDialogFragment() {
-    private var _binding: BottomSheetOrderCartBinding? = null
-    private val binding get() = _binding
-    private lateinit var bsListener: OrderCartBottomSheetListener
+    private var _binding: BottomSheetOrderCartBinding? = null // View binding of the bottom sheet
+    private val binding get() = _binding!! // Non-nullable version of the binding variable above
+    private lateinit var bsListener: OrderCartBottomSheetListener // Listener for the bottom sheet
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -28,7 +33,7 @@ class OrderCartBottomSheet(private var appContext: Context, private var orderCar
         _binding = BottomSheetOrderCartBinding.inflate(inflater, container, false)
         expandBottomSheetOnShow(dialog!!)
         setupViews()
-        return binding!!.root
+        return binding.root
     }
 
     override fun onDestroyView() {
@@ -50,36 +55,52 @@ class OrderCartBottomSheet(private var appContext: Context, private var orderCar
         }
     }
 
+    /**
+     * Sets up the views of the bottom sheet
+     */
     private fun setupViews() {
-        binding!!.textViewTotalPrice.text = String.format(Locale.getDefault(), "€%.2f", orderCart.totalPrice)
+        binding.textViewTotalPrice.text = String.format(Locale.getDefault(), "€%.2f", orderCart.totalPrice)
         if (orderCart.orderCart.isEmpty()) {
-            binding!!.recyclerViewOrderCart.visibility = View.GONE
-            binding!!.textViewEmptyCart.visibility = View.VISIBLE
+            binding.recyclerViewOrderCart.visibility = View.GONE
+            binding.textViewEmptyCart.visibility = View.VISIBLE
         } else {
             setupRecyclerView()
-            binding!!.recyclerViewOrderCart.visibility = View.VISIBLE
-            binding!!.textViewEmptyCart.visibility = View.GONE
+            binding.recyclerViewOrderCart.visibility = View.VISIBLE
+            binding.textViewEmptyCart.visibility = View.GONE
         }
 
-        binding!!.buttonConfirmOrder.setOnClickListener {
+        binding.buttonConfirmOrder.setOnClickListener {
             bsListener.onConfirmOrderClick()
             dismiss()
         }
     }
 
+    /**
+     * Sets up the RecyclerView containing the Order's cart
+     */
     private fun setupRecyclerView() {
         val rvLayoutManager = LinearLayoutManager(appContext, LinearLayoutManager.VERTICAL, false)
         val rvAdapter = OrderCartRecyclerViewAdapter(orderCart)
 
-        binding!!.recyclerViewOrderCart.layoutManager = rvLayoutManager
-        binding!!.recyclerViewOrderCart.adapter = rvAdapter
+        binding.recyclerViewOrderCart.layoutManager = rvLayoutManager
+        binding.recyclerViewOrderCart.adapter = rvAdapter
     }
 
+    /**
+     * Sets the listener of the bottom sheet
+     * @param listener New listener
+     */
     fun setOrderCartBottomSheetListener(listener: OrderCartBottomSheetListener) {
         bsListener = listener
     }
 
+    /**
+     * Inteface for the bottom sheet
+     */
     interface OrderCartBottomSheetListener {
+        /**
+         * Triggered when the user clicks the 'Confirm Order' button
+         */
         fun onConfirmOrderClick()
     }
 }

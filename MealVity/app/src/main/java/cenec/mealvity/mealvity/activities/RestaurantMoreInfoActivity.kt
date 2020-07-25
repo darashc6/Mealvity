@@ -22,15 +22,18 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+/**
+ * Activity containing FragmentBookTable and FragmentOrder
+ */
 class RestaurantMoreInfoActivity : AppCompatActivity() {
-    private val fragmentBookTable by lazy { FragmentBookTable() }
-    private val fragmentOrder by lazy { FragmentOrder() }
-    private val yelpBuilder by lazy { CustomRetrofitBuilder.createRetrofitBuilder(ApiAccess.URL_YELP_FUSION_API) }
-    private val yelpFusionApi by lazy { yelpBuilder.create(YelpFusionApi::class.java) }
-    private var restaurantMoreInfo: RestaurantMoreInfo? = null
-    private lateinit var restaurantId: String
-    private lateinit var aListener: RestaurantMoreInfoListener
-    private lateinit var binding: ActivityRestaurantMoreInfoBinding
+    private val fragmentBookTable by lazy { FragmentBookTable() } // Instance of FragmentBookTable
+    private val fragmentOrder by lazy { FragmentOrder() } // Instance of FragmentOrder
+    private val yelpBuilder by lazy { CustomRetrofitBuilder.createRetrofitBuilder(ApiAccess.URL_YELP_FUSION_API) } // Retrofit builder for the Yelp Fusion APO
+    private val yelpFusionApi by lazy { yelpBuilder.create(YelpFusionApi::class.java) } // Instance of the API
+    private var restaurantMoreInfo: RestaurantMoreInfo? = null // // Object containing extra info of the restaurant
+    private lateinit var restaurantId: String // Yelp id of the restaurant
+    private lateinit var aListener: RestaurantMoreInfoListener // Listener of the activity
+    private lateinit var binding: ActivityRestaurantMoreInfoBinding // View binding of the activity
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,11 +48,17 @@ class RestaurantMoreInfoActivity : AppCompatActivity() {
         getRestaurantInfo()
     }
 
+    /**
+     * Sets up the activity's toolbar
+     */
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
+    /**
+     * Sets up the viewpager for navigation between fragments
+     */
     private fun setupViewPager() {
         val fragmentAdapter = FragmentAdapter2(this, listOf(fragmentBookTable, fragmentOrder))
 
@@ -58,6 +67,9 @@ class RestaurantMoreInfoActivity : AppCompatActivity() {
 
     }
 
+    /**
+     * Sets up the bottom navigation view
+     */
     private fun setupNavView() {
         binding.bottomNavView.setOnNavigationItemSelectedListener { item ->
             when (item.title) {
@@ -72,12 +84,18 @@ class RestaurantMoreInfoActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Receives the yelp id of the restaurant
+     */
     private fun checkBundleExtras() {
         intent.extras?.let {
             restaurantId = it.getString("restaurantId", "")
         }
     }
 
+    /**
+     * Returns all the info of the restaurant from the API, given the restaurant's yelp id
+     */
     private fun getRestaurantInfo() {
         val call = yelpFusionApi.getRestaurantInfoById(restaurantId)
 
@@ -106,15 +124,17 @@ class RestaurantMoreInfoActivity : AppCompatActivity() {
         })
     }
 
-    fun getRestaurantMoreInfo(): RestaurantMoreInfo? {
-        return restaurantMoreInfo
-    }
-
+    /**
+     * Overrides the options menu in the activity's toolbar
+     */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_restaurant_more_info_toolbar, menu)
         return true
     }
 
+    /**
+     * Overrides the behaviour of each menu item
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (restaurantMoreInfo == null) {
             Toast.makeText(this, "Please wait while we load all the info", Toast.LENGTH_SHORT).show()
@@ -122,7 +142,7 @@ class RestaurantMoreInfoActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.more_info_info -> {
                     val intentMoreInfo = Intent(this, InfoActivity::class.java)
-                    intentMoreInfo.putExtra("object", convertObjectToStringJson(restaurantMoreInfo!!))
+                    intentMoreInfo.putExtra("object", restaurantMoreInfo)
                     startActivity(intentMoreInfo)
                 }
                 android.R.id.home -> finish()
@@ -131,14 +151,14 @@ class RestaurantMoreInfoActivity : AppCompatActivity() {
         return true
     }
 
-
-
-    private fun convertObjectToStringJson(restaurantMoreInfo: RestaurantMoreInfo): String {
-        val gson = Gson()
-        return gson.toJson(restaurantMoreInfo, RestaurantMoreInfo::class.java)
-    }
-
+    /**
+     * Interface of the current activity
+     */
     interface RestaurantMoreInfoListener {
+        /**
+         * Executed when all the info from the API is retrieved
+         * @param example Object with all the restaurant info
+         */
         fun onInfoLoaded(example: RestaurantMoreInfo)
     }
 }

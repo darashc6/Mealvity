@@ -16,14 +16,17 @@ import com.google.android.material.internal.NavigationMenu
 import com.google.firebase.firestore.*
 import io.github.yavski.fabspeeddial.FabSpeedDial
 
+/**
+ * Activity where the fragments are located
+ */
 class FragmentContainerActivity : AppCompatActivity() {
-    private val reservationListFragment by lazy { ReservationListFragment() }
-    private val orderListFragment by lazy { OrderListFragment() }
-    private var dbRestaurant = RestaurantDatabaseSingleton.getInstance().getRestaurantDatabase()
-    private var aListener: FragmentContainerActivityListener? = null
-    private var filterOptSelected = 0
-    private lateinit var binding: ActivityFragmentContainerBinding
-    private lateinit var viewModel: RestaurantDatabaseViewModel
+    private val reservationListFragment by lazy { ReservationListFragment() } // Instance of the fragment with a reservations list
+    private val orderListFragment by lazy { OrderListFragment() } // Instance of the fragment with a orders list
+    private var dbRestaurant = RestaurantDatabaseSingleton.getInstance().getRestaurantDatabase() // Instance of the restaurant database
+    private var aListener: FragmentContainerActivityListener? = null // Activity's listener
+    private var filterOptSelected = 0 // Options for filtering (0 - All, 1 - PENDING, 2 - ACCEPTED, 3 - REJECTED)
+    private lateinit var binding: ActivityFragmentContainerBinding // View binding for the activity
+    private lateinit var viewModel: RestaurantDatabaseViewModel // ViewModel of the RestaurantDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,10 +39,16 @@ class FragmentContainerActivity : AppCompatActivity() {
         setupFab()
     }
 
+    /**
+     * Sets up the view model
+     */
     private fun setupViewModel() {
         viewModel = ViewModelProvider(this).get(RestaurantDatabaseViewModel::class.java)
     }
 
+    /**
+     * Sets up the viewpager for the fragments
+     */
     private fun setupViewPager() {
         val vpAdapter = ViewPagerAdapter(supportFragmentManager, arrayListOf(reservationListFragment, orderListFragment))
 
@@ -80,6 +89,9 @@ class FragmentContainerActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Sets up the floating action button, where you can filter the lists
+     */
     private fun setupFab() {
         binding.fabFilterList.setMenuListener(object : FabSpeedDial.MenuListener{
             override fun onPrepareMenu(p0: NavigationMenu?): Boolean {
@@ -109,6 +121,9 @@ class FragmentContainerActivity : AppCompatActivity() {
         })
     }
 
+    /**
+     * Listens for any changes made in the database
+     */
     private fun listenForDatabaseChanges() {
         val mFirebaseFirestore = FirebaseFirestore.getInstance()
 
@@ -122,11 +137,22 @@ class FragmentContainerActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Returns the RestaurantDatabase ViewModel
+     * @return RestaurantDatabase ViewModel
+     */
     fun getViewModel(): RestaurantDatabaseViewModel {
         return viewModel
     }
 
+    /**
+     * Interface for the activity
+     */
     interface FragmentContainerActivityListener{
+        /**
+         * Triggered whenever a filter option is selected
+         * @param filterOptSelected Filter option selected
+         */
         fun onFilterOptionSelected(filterOptSelected: Int)
     }
 }

@@ -8,8 +8,12 @@ import cenec.mealvity.mealvityforowners.R
 import cenec.mealvity.mealvityforowners.core.reservation.Reservation
 import cenec.mealvity.mealvityforowners.databinding.ItemListReservationBinding
 
+/**
+ * RecyclerView adpater binding a list of reservations
+ * @param reservationList List of reservations
+ */
 class ReservationListRecyclerViewAdapter(private var reservationList: ArrayList<Reservation>): RecyclerView.Adapter<ReservationListRecyclerViewAdapter.ReservationViewHolder>() {
-    private var rvListener: ReservationListRecyclerViewAdapterListener? = null
+    private var rvListener: ReservationListRecyclerViewAdapterListener? = null // Listener for the RecyclerView adapter
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReservationViewHolder {
         val _binding = ItemListReservationBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -21,24 +25,35 @@ class ReservationListRecyclerViewAdapter(private var reservationList: ArrayList<
     }
 
     override fun onBindViewHolder(holder: ReservationViewHolder, position: Int) {
-        holder.bind(reservationList[position], rvListener)
+        holder.bind(reservationList[position])
     }
 
+    /**
+     * Sets a new listener for the RecyclerView adapter
+     * @param newListener New listener for the adapter
+     */
     fun setReservationListRecyclerViewAdapterListener(newListener: ReservationListRecyclerViewAdapterListener) {
         rvListener = newListener
     }
 
+    /**
+     * Sets a new list of reservations
+     * @param newReservationList New list of reservations
+     */
     fun setReservationList(newReservationList: ArrayList<Reservation>) {
         reservationList = newReservationList
         notifyDataSetChanged()
     }
 
-    class ReservationViewHolder(_binding: ItemListReservationBinding): RecyclerView.ViewHolder(_binding.root) {
+    inner class ReservationViewHolder(_binding: ItemListReservationBinding): RecyclerView.ViewHolder(_binding.root) {
         private val binding = _binding
-        private var isRejectedLayoutExpanded = false
         private var isRejectedReasonLayoutExpanded = false
 
-        fun bind(reservation: Reservation, listener: ReservationListRecyclerViewAdapterListener?) {
+        /**
+         * Binds the Reservation to the itemview
+         * @param reservation Reservation to bind
+         */
+        fun bind(reservation: Reservation) {
             binding.textViewReferenceNumber.text = "Reference Nº: ${reservation.referenceNumber}"
             binding.textViewDate.text = "Date: ${reservation.date}"
             binding.textViewTime.text = "Time: ${reservation.time}"
@@ -51,7 +66,7 @@ class ReservationListRecyclerViewAdapter(private var reservationList: ArrayList<
             checkStatus(reservation)
 
             binding.buttonAccept.buttonAccept.setOnClickListener {
-                listener?.onOptionSelected(layoutPosition, Reservation.ReservationStatus.ACCEPTED, "")
+                rvListener?.onOptionSelected(layoutPosition, Reservation.ReservationStatus.ACCEPTED, "")
             }
 
             binding.buttonReject.buttonReject.setOnClickListener {
@@ -62,7 +77,7 @@ class ReservationListRecyclerViewAdapter(private var reservationList: ArrayList<
             binding.buttonConfirmRejection.buttonConfirmRejection.setOnClickListener {
                 val textReason = binding.editTextRejectionReason.text.toString()
                 if (textReason.isNotEmpty()) {
-                    listener?.onOptionSelected(layoutPosition, Reservation.ReservationStatus.REJECTED, textReason)
+                    rvListener?.onOptionSelected(layoutPosition, Reservation.ReservationStatus.REJECTED, textReason)
                     isRejectedReasonLayoutExpanded = false
                     expandRejectionMessageLayout()
                 } else {
@@ -72,6 +87,9 @@ class ReservationListRecyclerViewAdapter(private var reservationList: ArrayList<
             }
         }
 
+        /**
+         * Expands the layout featuring the reason for the REJECTED status
+         */
         private fun expandRejectionMessageLayout() {
             if (!isRejectedReasonLayoutExpanded) {
                 binding.layoutRejectionReason.visibility = View.GONE
@@ -80,6 +98,10 @@ class ReservationListRecyclerViewAdapter(private var reservationList: ArrayList<
             }
         }
 
+        /**
+         * Checks the status of the reservations. It will display diffetent layout depending on the result
+         * @param reservation Reservation to check
+         */
         private fun checkStatus(reservation: Reservation) {
             when (reservation.reservationStatus) {
                 Reservation.ReservationStatus.ACCEPTED, Reservation.ReservationStatus.REJECTED -> {
@@ -92,7 +114,16 @@ class ReservationListRecyclerViewAdapter(private var reservationList: ArrayList<
         }
     }
 
+    /**
+     * Interface for the RecyclerView
+     */
     interface ReservationListRecyclerViewAdapterListener {
+        /**
+         * Triggered when the reservation option is selected (ACCEPTED or REJECTED)
+         * @param position item position
+         * @param updatedStatus New status of the reservation
+         * @param reason Reason in case the status is REJECTED
+         */
         fun onOptionSelected(position: Int, updatedStatus: Reservation.ReservationStatus, reason: String)
     }
 }

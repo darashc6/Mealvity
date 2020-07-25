@@ -12,11 +12,11 @@ import kotlin.math.floor
 
 /**
  * RecyclerView adapter binding the RestaurantList data
- * @param restaurantList List of Restaurant
+ * @param restaurantList List of Restaurants
  */
 class RestaurantRecyclerViewAdapter(private var restaurantList: RestaurantList): RecyclerView.Adapter<RestaurantRecyclerViewAdapter.RestaurantViewHolder>() {
     private lateinit var _binding: ItemListRestaurantBinding // Binding of the layout used for this RecyclerView
-    private lateinit var rvListener: RestaurantRecyclerViewListener
+    private lateinit var rvListener: RestaurantRecyclerViewListener // Listener for the RecyclerView adapter
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RestaurantViewHolder {
         _binding = ItemListRestaurantBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -24,33 +24,37 @@ class RestaurantRecyclerViewAdapter(private var restaurantList: RestaurantList):
     }
 
     override fun onBindViewHolder(holder: RestaurantViewHolder, position: Int) {
-        holder.bind(restaurantList.results[position], rvListener)
+        holder.bind(restaurantList.results[position])
     }
 
     override fun getItemCount(): Int {
         return restaurantList.results.size
     }
 
+    /**
+     * Sets the new listener of the RecyclerView
+     * @param listener New listener
+     */
     fun setRestaurantRecyclerViewListener(listener: RestaurantRecyclerViewListener) {
         rvListener = listener
     }
 
     /**
-     * Sets a new list of Restaurant
+     * Sets a new list of Restaurants
      * @param newRestaurantList New list
      */
     fun setRestaurantList(newRestaurantList: RestaurantList) {
         restaurantList = newRestaurantList
     }
 
-    class RestaurantViewHolder(_binding: ItemListRestaurantBinding): RecyclerView.ViewHolder(_binding.root) {
+    inner class RestaurantViewHolder(_binding: ItemListRestaurantBinding): RecyclerView.ViewHolder(_binding.root) {
         private val binding = _binding
 
         /**
          * Binds the Restaurant data to the itemView
          * @param restaurant Restaurant containing all its data
          */
-        fun bind(restaurant: Restaurant, listener: RestaurantRecyclerViewListener) {
+        fun bind(restaurant: Restaurant) {
             if (!restaurant.image_url.isNullOrEmpty()) {
                 Glide.with(binding.root)
                     .load(restaurant.image_url)
@@ -70,12 +74,19 @@ class RestaurantRecyclerViewAdapter(private var restaurantList: RestaurantList):
             binding.restaurantDistance.text = "${floor(restaurant.distance).toInt()} m"
             binding.restaurantRatings.rating = restaurant.rating
             binding.restaurantMoreInfo.setOnClickListener {
-                listener.onMoreInfoClick(restaurant.id)
+                rvListener.onMoreInfoClick(restaurant.id)
             }
         }
     }
 
+    /**
+     * Interface for the RecyclerView
+     */
     interface RestaurantRecyclerViewListener {
+        /**
+         * Executed when user clicks the '+ Info' button
+         * @param restaurantId Yelp id of the restaurant
+         */
         fun onMoreInfoClick(restaurantId: String)
     }
 }

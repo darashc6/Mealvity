@@ -18,12 +18,12 @@ import com.google.firebase.firestore.FirebaseFirestore
 import kotlin.collections.ArrayList
 
 /**
- * TODO
+ * Activity showing all the reservations the logged in user has made
  */
 class ReservationsActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityReservationsBinding
-    private var rvAdapter: ReservationListRecyclerViewAdapter? = null
-    private val currentUser by lazy { UserSingleton.getInstance().getCurrentUser()}
+    private lateinit var binding: ActivityReservationsBinding // View binding of the activity
+    private var rvAdapter: ReservationListRecyclerViewAdapter? = null // Adapter for the RecyclerView containing a list of reservations
+    private val currentUser by lazy { UserSingleton.getInstance().getCurrentUser()} // User currently logged in
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +35,10 @@ class ReservationsActivity : AppCompatActivity() {
         listenForDatabaseChanges()
     }
 
+    /**
+     * Listens for any changes made in the database
+     * If changes are made in the database, it will update the current screen
+     */
     private fun listenForDatabaseChanges() {
         val mFirebaseFirestore = FirebaseFirestore.getInstance()
         val currentUserId = UserSingleton.getInstance().getCurrentUser().userId
@@ -49,11 +53,17 @@ class ReservationsActivity : AppCompatActivity() {
             }
     }
 
+    /**
+     * Sets up the activity's toolbar
+     */
     private fun setupToolbar() {
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.setDisplayHomeAsUpEnabled(true)
     }
 
+    /**
+     * Sets up the RecyclerView containing a list of reservations
+     */
     private fun setupRecyclerView() {
         val rvLayoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         rvAdapter = ReservationListRecyclerViewAdapter(currentUser.showAllReservations())
@@ -62,6 +72,10 @@ class ReservationsActivity : AppCompatActivity() {
         binding.recyclerViewReservationsList.adapter = rvAdapter
     }
 
+    /**
+     * Checks if the user has a list of reservations made
+     * Layouts will be different depending on the list (If it's empty or not)
+     */
     private fun checkUserReservationList() {
         if (currentUser.reservations.isEmpty()) {
             binding.textViewEmptyReservationList.visibility = View.VISIBLE
@@ -75,6 +89,9 @@ class ReservationsActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Overrides the behaviour of the buttons in the options menu
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             android.R.id.home -> finish()
@@ -87,6 +104,9 @@ class ReservationsActivity : AppCompatActivity() {
         return true
     }
 
+    /**
+     * Overrides the options menu in the toolbar
+     */
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_filter_reservations, menu)
         return true

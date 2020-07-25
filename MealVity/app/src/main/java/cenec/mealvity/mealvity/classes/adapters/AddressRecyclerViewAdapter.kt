@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.item_list_address.view.*
  * @param addressList List of Address
  */
 class AddressRecyclerViewAdapter(private var addressList: ArrayList<Address>): RecyclerView.Adapter<AddressRecyclerViewAdapter.AddressViewHolder>() {
-    private lateinit var rvListener: AddressRecyclerViewListener // Listener for the RecyclerView
+    private lateinit var rvListener: AddressRecyclerViewListener // Listener for the RecyclerView adapter
     private lateinit var _binding: ItemListAddressBinding // View binding of the layout used for this RecyclerView
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddressViewHolder {
@@ -24,20 +24,20 @@ class AddressRecyclerViewAdapter(private var addressList: ArrayList<Address>): R
     }
 
     override fun onBindViewHolder(holder: AddressViewHolder, position: Int) {
-        holder.bind(addressList[position], rvListener)
+        holder.bind(addressList[position])
     }
 
     override fun getItemCount(): Int {
         return addressList.size
     }
 
-
     /**
-     * Sets the new address list to bind
-     * @param newAddressList new address list
+     * Sets a new address list for the adapter
+     * @param newAddressList New address list
      */
     fun setAddressList(newAddressList: ArrayList<Address>) {
         addressList = newAddressList
+        notifyDataSetChanged()
     }
 
     /**
@@ -49,15 +49,14 @@ class AddressRecyclerViewAdapter(private var addressList: ArrayList<Address>): R
     }
 
 
-    class AddressViewHolder(_binding: ItemListAddressBinding): RecyclerView.ViewHolder(_binding.root) {
+    inner class AddressViewHolder(_binding: ItemListAddressBinding): RecyclerView.ViewHolder(_binding.root) {
         private val binding = _binding
 
         /**
          * Binds the address data to the itemView
          * @param address Address containing all the data
-         * @param listener Listener for the RecyclerView
          */
-        fun bind(address: Address, listener: AddressRecyclerViewListener) {
+        fun bind(address: Address) {
             binding.textViewAddressTitle.text = address.title
             binding.textViewAddressStreet.text = "${address.name}, ${address.number}"
             if (address.door.equals("")) {
@@ -79,11 +78,11 @@ class AddressRecyclerViewAdapter(private var addressList: ArrayList<Address>): R
             })
 
             binding.editAddressButton.setOnClickListener {
-                listener.onAddressEdit(layoutPosition)
+                rvListener.onAddressEdit(layoutPosition)
             }
 
             binding.deleteAddressButton.setOnClickListener {
-                listener.onAddressDelete(layoutPosition)
+                rvListener.onAddressDelete(layoutPosition)
             }
 
             itemView.swipe_container.apply(address.expandedMenu)

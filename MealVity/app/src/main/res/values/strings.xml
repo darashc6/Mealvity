@@ -155,5 +155,6 @@
     <string name="text_show_accepted">Show ACCEPTED</string>
     <string name="text_show_rejected">Show REJECTED</string>
     <string name="text_order_not_available">Pick-Up / Delivery not available in this restaurant</string>
+    <string name="string_vat_percentage">VAT (10%)</string>
 
 </resources>

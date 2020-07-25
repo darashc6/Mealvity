@@ -8,6 +8,10 @@ import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.ItemListReservationBinding
 import cenec.mealvity.mealvity.classes.reservations.Reservation
 
+/**
+ * RecyclerView adpater binding a list of reservations
+ * @param reservationList List of reservations
+ */
 class ReservationListRecyclerViewAdapter(private var reservationList: ArrayList<Reservation>): RecyclerView.Adapter<ReservationListRecyclerViewAdapter.ReservationViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReservationViewHolder {
@@ -23,6 +27,10 @@ class ReservationListRecyclerViewAdapter(private var reservationList: ArrayList<
         return reservationList.size
     }
 
+    /**
+     * Sets a new list of reservations
+     * @param newReservationList New list of reservations
+     */
     fun setReservationList(newReservationList: ArrayList<Reservation>) {
         reservationList = newReservationList
         notifyDataSetChanged()
@@ -31,6 +39,10 @@ class ReservationListRecyclerViewAdapter(private var reservationList: ArrayList<
     class ReservationViewHolder(_binding: ItemListReservationBinding): RecyclerView.ViewHolder(_binding.root) {
         private val binding = _binding
 
+        /**
+         * Bind a Reservation to the itemview
+         * @param reservation Reservation
+         */
         fun bind(reservation: Reservation) {
             binding.textViewReferenceNumber.text = "Reference Nº: ${reservation.referenceNumber}"
             binding.textViewRestaurantName.text = "Restaurant: ${reservation.restaurantName}"

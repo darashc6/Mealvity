@@ -1,23 +1,37 @@
 package cenec.mealvity.mealvity.classes.orders
 
-import android.os.Parcelable
+
 import cenec.mealvity.mealvity.classes.restaurant.menu.CartItem
 import cenec.mealvity.mealvity.classes.restaurant.menu.Item
 import java.io.Serializable
 
-
+/**
+ * Class acting as a cart for an Order
+ * @param orderCart List of item's
+ * @param quantityTotal Total quantity of items
+ * @param totalPrice Total price of the Order
+ */
 class OrderCart(
     var orderCart: ArrayList<CartItem> = arrayListOf(),
     var quantityTotal: Int = 0,
     var totalPrice: Float = 0f
 ): Serializable {
     @Transient
-    private lateinit var oListener: OrderListener
+    private lateinit var oListener: OrderListener // Listener for the class
 
+    /**
+     * Sets the listener for the class
+     * @param listener New listener
+     */
     fun setOrderListener(listener: OrderListener) {
         oListener = listener
     }
 
+    /**
+     * Adds a new item to the order cart
+     * @param menuItem Item to add
+     * @param quantity Item quantity
+     */
     fun addItemToOrder(menuItem: Item, quantity: Int) {
         var isItemDuplicate = false
         var position = 0
@@ -44,17 +58,30 @@ class OrderCart(
         oListener.onOrderCartUpdated()
     }
 
-
+    /**
+     * Returns price without tax
+     * @return Price excluding tax
+     */
     fun getBasePrice(): Float {
-        return totalPrice * 0.79f
+        return totalPrice * 0.9f
     }
 
+    /**
+     * Returns tax price
+     * @return Tax price
+     */
     fun getTaxPrice(): Float {
         return totalPrice - getBasePrice()
     }
 
 }
 
+/**
+ * Listener for the class
+ */
 interface OrderListener {
+    /**
+     * Triggered whenever the cart is updated
+     */
     fun onOrderCartUpdated()
 }

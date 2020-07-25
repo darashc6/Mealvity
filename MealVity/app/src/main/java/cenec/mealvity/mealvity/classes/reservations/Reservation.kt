@@ -4,6 +4,17 @@ package cenec.mealvity.mealvity.classes.reservations
 import cenec.mealvity.mealvity.classes.user.UserDetails
 import java.util.*
 
+/**
+ * Class acting as a table reservation
+ * @param user Specific user details
+ * @param restaurantName Name of the restaurant where the table is being reserved
+ * @param date Date of reservation
+ * @param time Time of reservation
+ * @param nGuests Nº of guests
+ * @param referenceNumber Reference number, to identify the reservation
+ * @param reservationStatus Status of the reservation (PENDING, ACCEPTED, REJECTED)
+ * @param rejectionReason In case of rejection, reason
+ */
 data class Reservation(
     var user: UserDetails?,
     var restaurantName: String = "",
@@ -21,6 +32,10 @@ data class Reservation(
         referenceNumber = generateReferenceNumber()
     }
 
+    /**
+     * Returns a custom generated reference number
+     * @return String with generated reference number
+     */
     private fun generateReferenceNumber(): String {
         val charList = charArrayOf('A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
             '1','2','3','4','5','6','7','8','9')
@@ -35,10 +50,16 @@ data class Reservation(
         return ref
     }
 
+    /**
+     * Adds a guest
+     */
     fun addGuest() {
         nGuests++
     }
 
+    /**
+     * Removes a guest
+     */
     fun removeGuest() {
         if (nGuests > 1) {
             nGuests--

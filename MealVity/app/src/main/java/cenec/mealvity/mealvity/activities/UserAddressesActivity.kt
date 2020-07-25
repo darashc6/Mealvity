@@ -108,7 +108,7 @@ class UserAddressesActivity : AppCompatActivity() {
     }
 
     /**
-     * Overrides the home button displayed in the toolbar
+     * Overrides the buttons displayed in the toolbar
      */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {

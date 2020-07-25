@@ -24,13 +24,15 @@ import cenec.mealvity.mealvity.classes.singleton.RestaurantMoreInfoSingleton
 import cenec.mealvity.mealvity.classes.utils.CategoryUtil
 import java.util.*
 
-
+/**
+ * Fragment where the user can select items from the restaurant menu to add to the order cart
+ */
 class FragmentOrder : Fragment() {
-    private var _binding: FragmentOrderBinding? = null
-    private val binding get() = _binding!!
-    private var restaurantMenu = Menu(arrayListOf())
-    private val restaurantMoreInfo by lazy { RestaurantMoreInfoSingleton.getInstance().getRestaurantMoreInfo() }
-    private lateinit var newOrderCart: OrderCart
+    private var _binding: FragmentOrderBinding? = null // View binding for the fragment
+    private val binding get() = _binding!! // Non-nullable version of the binding variable above
+    private var restaurantMenu = Menu(arrayListOf()) // Restaurant menu
+    private val restaurantMoreInfo by lazy { RestaurantMoreInfoSingleton.getInstance().getRestaurantMoreInfo() } // Object containing extra info about the restaurant
+    private lateinit var newOrderCart: OrderCart // Order cart
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -44,6 +46,9 @@ class FragmentOrder : Fragment() {
         return binding.root
     }
 
+    /**
+     * Sets up a new order
+     */
     private fun setupNewOrder() {
         newOrderCart = OrderCart()
         newOrderCart.setOrderListener(object : OrderListener {
@@ -55,6 +60,9 @@ class FragmentOrder : Fragment() {
         })
     }
 
+    /**
+     * Sets up the restaurant menu, depending on the category
+     */
     private fun setupRestaurantMenuList() {
         val categoryName = restaurantMoreInfo!!.categories[0].title
         val listStarters = CategoryUtil.generateStarters(categoryName)
@@ -82,6 +90,9 @@ class FragmentOrder : Fragment() {
         }
     }
 
+    /**
+     * Sets up a new order cart
+     */
     private fun setupOrderCart() {
         val cvOrderCart = binding.root.findViewById<View>(R.id.card_view_order_cart)
 
@@ -103,6 +114,9 @@ class FragmentOrder : Fragment() {
         }
     }
 
+    /**
+     * Sets up a RecyclerView, containing the restaurant menu
+     */
     private fun setupRecyclerView() {
         val rvLayoutManager = LinearLayoutManager(context!!, LinearLayoutManager.VERTICAL, false)
         val rvAdapter = MenuRecyclerViewAdapter(restaurantMenu)

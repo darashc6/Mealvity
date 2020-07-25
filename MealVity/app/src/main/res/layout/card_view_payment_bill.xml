@@ -82,7 +82,7 @@
                 android:fontFamily="@font/fonarto_regular"
                 android:gravity="center_vertical|start"
                 android:padding="2dp"
-                android:text="VAT (21%)"/>
+                android:text="@string/string_vat_percentage"/>
 
             <TextView
                 android:id="@+id/text_view_tax_price"

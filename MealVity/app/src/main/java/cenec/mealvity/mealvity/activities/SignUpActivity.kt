@@ -22,7 +22,7 @@ import java.io.Serializable
 class SignUpActivity : AppCompatActivity() {
     private val mFirebaseAuth by lazy { FirebaseAuth.getInstance() } // Instance of Authentication for Firebase
     private val mFirebaseFirestore by lazy { FirebaseFirestore.getInstance() } // Instance of Firesotre database
-    private lateinit var binding: ActivitySignUpBinding
+    private lateinit var binding: ActivitySignUpBinding // View binding of the activity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

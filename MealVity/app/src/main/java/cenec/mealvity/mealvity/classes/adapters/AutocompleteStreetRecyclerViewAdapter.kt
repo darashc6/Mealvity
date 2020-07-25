@@ -14,7 +14,7 @@ import cenec.mealvity.mealvity.classes.autocompleteaddress.StreetName
  * @param streetList List of Street
  */
 class AutocompleteStreetRecyclerViewAdapter(private var streetList: StreetList): RecyclerView.Adapter<AutocompleteStreetRecyclerViewAdapter.AutocompleteStreetViewHolder>() {
-    private var rvListener: AutocompleteStreetRecyclerViewListener? = null // Listener for the recyclerView
+    private var rvListener: AutocompleteStreetRecyclerViewListener? = null // Listener for the RecyclerView adapter
 
     override fun onCreateViewHolder(
         parent: ViewGroup,

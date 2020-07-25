@@ -20,7 +20,7 @@ import java.lang.ClassCastException
  */
 class SortListByBottomSheet(private var appContext: Context, private var sortListOptSelected: Int): BottomSheetDialogFragment() {
     private var _binding: BottomSheetSortListByBinding? = null // View binding for the layout used for this Bottom Sheet
-    private val binding get() = _binding // Non-nullable version of the view binding variable above
+    private val binding get() = _binding!! // Non-nullable version of the view binding variable above
     private lateinit var bsListener: SortListByBottomSheetListener // Listener for the Bottom Sheet
 
     override fun onAttach(context: Context) {
@@ -41,7 +41,7 @@ class SortListByBottomSheet(private var appContext: Context, private var sortLis
         _binding = BottomSheetSortListByBinding.inflate(inflater, container, false)
         expandBottomSheetOnShow(dialog!!)
         setupViews()
-        return binding!!.root
+        return binding.root
     }
 
     override fun onDestroyView() {
@@ -66,11 +66,11 @@ class SortListByBottomSheet(private var appContext: Context, private var sortLis
      */
     private fun initialOptionSelected() {
         when (sortListOptSelected) {
-            0 -> binding!!.cardViewSortBestMatch.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
-            1 -> binding!!.cardViewSortRating.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
-            2 -> binding!!.cardViewSortDistance.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
-            3 -> binding!!.cardViewSortEconomicPrice.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
-            4 -> binding!!.cardViewSortLuxuriousPrice.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
+            0 -> binding.cardViewSortBestMatch.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
+            1 -> binding.cardViewSortRating.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
+            2 -> binding.cardViewSortDistance.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
+            3 -> binding.cardViewSortEconomicPrice.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
+            4 -> binding.cardViewSortLuxuriousPrice.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
         }
     }
 
@@ -80,37 +80,37 @@ class SortListByBottomSheet(private var appContext: Context, private var sortLis
     private fun setupViews() {
         initialOptionSelected()
 
-        binding!!.cardViewSortBestMatch.setOnClickListener {
+        binding.cardViewSortBestMatch.setOnClickListener {
             resetCardViews()
-            binding!!.cardViewSortBestMatch.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
+            binding.cardViewSortBestMatch.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
             sortListOptSelected = 0
         }
 
-        binding!!.cardViewSortRating.setOnClickListener {
+        binding.cardViewSortRating.setOnClickListener {
             resetCardViews()
-            binding!!.cardViewSortRating.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
+            binding.cardViewSortRating.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
             sortListOptSelected = 1
         }
 
-        binding!!.cardViewSortDistance.setOnClickListener {
+        binding.cardViewSortDistance.setOnClickListener {
             resetCardViews()
-            binding!!.cardViewSortDistance.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
+            binding.cardViewSortDistance.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
             sortListOptSelected = 2
         }
 
-        binding!!.cardViewSortEconomicPrice.setOnClickListener {
+        binding.cardViewSortEconomicPrice.setOnClickListener {
             resetCardViews()
-            binding!!.cardViewSortEconomicPrice.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
+            binding.cardViewSortEconomicPrice.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
             sortListOptSelected = 3
         }
 
-        binding!!.cardViewSortLuxuriousPrice.setOnClickListener {
+        binding.cardViewSortLuxuriousPrice.setOnClickListener {
             resetCardViews()
-            binding!!.cardViewSortLuxuriousPrice.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
+            binding.cardViewSortLuxuriousPrice.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDarkDark))
             sortListOptSelected = 4
         }
 
-        binding!!.buttonSortList.setOnClickListener {
+        binding.buttonSortList.setOnClickListener {
             bsListener.onSortList(sortListOptSelected)
             dismiss()
         }
@@ -121,11 +121,11 @@ class SortListByBottomSheet(private var appContext: Context, private var sortLis
      */
     private fun resetCardViews() {
         when (sortListOptSelected) {
-            0 -> binding!!.cardViewSortBestMatch.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDark))
-            1 -> binding!!.cardViewSortRating.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDark))
-            2 -> binding!!.cardViewSortDistance.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDark))
-            3 -> binding!!.cardViewSortEconomicPrice.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDark))
-            4 -> binding!!.cardViewSortLuxuriousPrice.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDark))
+            0 -> binding.cardViewSortBestMatch.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDark))
+            1 -> binding.cardViewSortRating.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDark))
+            2 -> binding.cardViewSortDistance.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDark))
+            3 -> binding.cardViewSortEconomicPrice.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDark))
+            4 -> binding.cardViewSortLuxuriousPrice.setCardBackgroundColor(appContext.getColor(R.color.colorAccentDark))
         }
     }
 

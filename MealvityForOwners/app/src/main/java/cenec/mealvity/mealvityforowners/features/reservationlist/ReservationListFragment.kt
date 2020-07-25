@@ -19,17 +19,17 @@ import cenec.mealvity.mealvityforowners.features.reservationlist.adapter.Reserva
 import com.google.firebase.firestore.FirebaseFirestore
 
 /**
- * A simple [Fragment] subclass.
+ *Fragment containing a list of reservations received by the restaurant
  */
 class ReservationListFragment : Fragment(), FragmentContainerActivity.FragmentContainerActivityListener {
-    private var dbRestaurant = RestaurantDatabaseSingleton.getInstance().getRestaurantDatabase()
-    private var _binding: FragmentReservationListBinding? = null
-    private val binding get() = _binding!!
-    private var rvAdapter: ReservationListRecyclerViewAdapter? = null
-    private var filterOpt = 0
-    private val viewModel by lazy { (context as FragmentContainerActivity).getViewModel() }
-    private lateinit var auxReservation: Reservation
-    private lateinit var reservationUser: User
+    private var dbRestaurant = RestaurantDatabaseSingleton.getInstance().getRestaurantDatabase() // Instance of the restaurant database
+    private var _binding: FragmentReservationListBinding? = null // View binding for the fragment
+    private val binding get() = _binding!! // Non-nullable version for the binding variable above
+    private var rvAdapter: ReservationListRecyclerViewAdapter? = null // Adapter for the RecyclerView
+    private var filterOpt = 0 // Option for the filter (0 - All orders, 1 - Pending, 2 - Accepted, 3 - Rejected)
+    private val viewModel by lazy { (context as FragmentContainerActivity).getViewModel() } // ViewModel of RestaurantDatabase
+    private lateinit var auxReservation: Reservation // Auxiliar variable for Reservations
+    private lateinit var reservationUser: User // User who has made the reservations
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -49,6 +49,9 @@ class ReservationListFragment : Fragment(), FragmentContainerActivity.FragmentCo
         })
     }
 
+    /**
+     * Sets up a RecyclerView, containing a list of reservations
+     */
     private fun setupRecyclerView() {
         val rvLayoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
@@ -76,6 +79,9 @@ class ReservationListFragment : Fragment(), FragmentContainerActivity.FragmentCo
         binding.reservationListRecyclerView.adapter = rvAdapter
     }
 
+    /**
+     * Updates the changes made to the database
+     */
     private fun updateChanges() {
         val mFirebaseFirestore = FirebaseFirestore.getInstance()
 
@@ -84,12 +90,15 @@ class ReservationListFragment : Fragment(), FragmentContainerActivity.FragmentCo
                 if (task.isSuccessful) {
                     getReservationUser()
                 } else {
-                    Toast.makeText(context, "Error in updateChanges()", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Error updating changes, please try again later", Toast.LENGTH_LONG).show()
                     println(task.exception)
                 }
             }
     }
 
+    /**
+     * Retrieves the user who made the reservation in order to update that specific user to the database
+     */
     private fun getReservationUser() {
         val mFirebaseFirestore = FirebaseFirestore.getInstance()
 
@@ -99,13 +108,16 @@ class ReservationListFragment : Fragment(), FragmentContainerActivity.FragmentCo
                     reservationUser = task.result!!.toObject(User::class.java)!!
                     updateUserDatabase()
                 } else {
-                    Toast.makeText(context, "Error in getReservationUser()", Toast.LENGTH_LONG)
+                    Toast.makeText(context, "Error updating changes, please try again later", Toast.LENGTH_LONG)
                         .show()
                     println(task.exception)
                 }
             }
     }
 
+    /**
+     * Updates the user who made the reservation the the database
+     */
     private fun updateUserDatabase() {
         val userReservationList = reservationUser.reservations
         for (i in 0 until userReservationList.size) {
@@ -123,12 +135,15 @@ class ReservationListFragment : Fragment(), FragmentContainerActivity.FragmentCo
                 if (task.isSuccessful) {
                     filterReservationList()
                 } else {
-                    Toast.makeText(context, "Error in updateUserDatabase()", Toast.LENGTH_LONG)
+                    Toast.makeText(context, "Error updating changes, please try again later", Toast.LENGTH_LONG)
                         .show()
                 }
             }
     }
 
+    /**
+     * Filters the list depending on the option selected
+     */
     private fun filterReservationList() {
         when (filterOpt) {
             0 -> rvAdapter?.setReservationList(dbRestaurant.showAllReservations())

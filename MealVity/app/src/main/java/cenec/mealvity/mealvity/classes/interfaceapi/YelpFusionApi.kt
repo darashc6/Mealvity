@@ -73,6 +73,11 @@ interface YelpFusionApi {
         @Query("limit") limit: Int = SEARCH_LIMIT
     ): Call<RestaurantList>
 
+    /**
+     * Returns a RestaurantMoreInfo object, containing extra info about the restaurant
+     * @param restaurantId Yelp's id of the restaurant
+     * @return Call with RestaurantMoreInfo
+     */
     @GET("businesses/{id}")
     @Headers("Authorization: Bearer $API_KEY")
     fun getRestaurantInfoById(

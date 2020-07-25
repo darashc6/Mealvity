@@ -4,6 +4,16 @@ import cenec.mealvity.mealvityforowners.core.order.Order
 import cenec.mealvity.mealvityforowners.core.reservation.Reservation
 import java.io.Serializable
 
+/**
+ * Class acting as an user of the application
+ * @param userId User's uid
+ * @param fullName User's full name
+ * @param phoneNumber User's phone number
+ * @param email User's email
+ * @param addresses List of addresses
+ * @param orders List of orders
+ * @param reservations List of reservations
+ */
 data class User(
     var userId: String?,
     var fullName: String?,

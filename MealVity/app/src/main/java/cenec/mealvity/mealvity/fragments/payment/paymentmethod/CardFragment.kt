@@ -7,6 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import cenec.darash.mealvity.R
 
+/**
+ * Card payment fragment
+ */
 class CardFragment : Fragment() {
 
     override fun onCreateView(

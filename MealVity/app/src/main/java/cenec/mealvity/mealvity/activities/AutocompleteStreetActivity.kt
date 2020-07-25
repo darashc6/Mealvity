@@ -26,8 +26,7 @@ import retrofit2.Response
 class AutocompleteStreetActivity : AppCompatActivity() {
     private val hereRetrofitBuilder by lazy { CustomRetrofitBuilder.createRetrofitBuilder(ApiAccess.URL_HERE_API) } // Retrofit builder for the API
     private val api by lazy { hereRetrofitBuilder.create(HereApi::class.java) }
-    private lateinit var streetSelected: String // Street selected from the recyclerView list
-    private lateinit var rvAdapter: AutocompleteStreetRecyclerViewAdapter // Adapter of the RceyclerView
+    private lateinit var rvAdapter: AutocompleteStreetRecyclerViewAdapter // Adapter of the RecyclerView
     private var streetList = StreetList(arrayListOf()) // List of streets
     private lateinit var binding: ActivityAutocompleteStreetBinding // View binding of the activity
 

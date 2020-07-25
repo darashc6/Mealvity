@@ -1,10 +1,20 @@
 package cenec.mealvity.mealvity.classes.restaurant
 
-import android.os.Parcel
-import android.os.Parcelable
+
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
-
+/**
+ * Class acting as extra info of the restaurant
+ * @param name Name of the restaurant
+ * @param yelp_url URL of the restaurant0s yelp website
+ * @param display_phone Phone number
+ * @param categories Categories/Cuisines
+ * @param location Address of the restaurant
+ * @param coordinates Coordinates of the restaurant
+ * @param photos List of urls containing the restaurant's photos
+ * @param hours List of the restaurant's opening hours
+ */
 data class RestaurantMoreInfo(
     var name: String,
     @SerializedName("url")
@@ -15,8 +25,12 @@ data class RestaurantMoreInfo(
     var coordinates: Coordinates,
     var photos: List<String>,
     var hours: List<Hour>
-){
+): Serializable{
 
+    /**
+     * Returns a string with all the categories/cuisines the restaurant has to offer
+     * @return String with all the categories/cuisines
+     */
     fun displayCategories(): String {
         var stringCategories = ""
 
@@ -27,6 +41,10 @@ data class RestaurantMoreInfo(
         return stringCategories.subSequence(0, stringCategories.length-2).toString()
     }
 
+    /**
+     * Returns a string displaying the restaurant's full address
+     * @return String with full address
+     */
     fun displayFullAddress(): String {
         var stringAddress = ""
 
@@ -38,25 +56,48 @@ data class RestaurantMoreInfo(
     }
 }
 
+/**
+ * Class acting as coordinates
+ * @param latitude Latitude value of coordinates
+ * @param longitude Longitude value of coordinates
+ */
 data class Coordinates(
     var latitude: String,
     var longitude: String
 )
 
+/**
+ * Class acting as a restaurant address
+ * @param display_address List of different string components of an address
+ */
 data class DisplayAddress(
     var display_address: List<String>
 )
 
+/**
+ * Class acting as opening hours
+ * @param open List of opening hours
+ */
 data class Hour(
     var open: List<Open>
 )
 
+/**
+ * Class acting as a timing
+ * @param day Day
+ * @param start Starting hour
+ * @param end Closing hour
+ */
 data class Open(
     var day: Int,
     var start: String,
     var end: String
 ) {
 
+    /**
+     * Returns a string depending on the integer value of day
+     * @return String value of day
+     */
     fun formatDay(): String {
         var formattedDay = ""
 
@@ -73,6 +114,10 @@ data class Open(
         return formattedDay
     }
 
+    /**
+     * Returns a formatted value of start and end
+     * @return String with formatted value of start and end
+     */
     fun formatHours(): String {
         var formattedStart = ""
         var formattedEnd = ""
