@@ -25,7 +25,7 @@
             android:name="cenec.mealvity.mealvity.activities.HelpActivity"
             android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
         <activity
-            android:name="cenec.mealvity.mealvity.activities.ReservationsActivity"
+            android:name="cenec.mealvity.mealvity.activities.UserReservationsActivity"
             android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
         <activity
             android:name="cenec.mealvity.mealvity.activities.UserAddressesActivity"

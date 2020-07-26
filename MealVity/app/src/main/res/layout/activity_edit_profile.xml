@@ -15,7 +15,6 @@
         android:background="@color/colorAccent"
         android:elevation="5dp"
         app:title="Edit Profile"
-        app:titleTextColor="@color/colorPrimary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

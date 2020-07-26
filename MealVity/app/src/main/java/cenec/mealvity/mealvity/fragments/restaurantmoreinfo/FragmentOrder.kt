@@ -53,11 +53,19 @@ class FragmentOrder : Fragment() {
         newOrderCart = OrderCart()
         newOrderCart.setOrderListener(object : OrderListener {
             override fun onOrderCartUpdated() {
-                binding.cardViewOrderCart.textViewNumberItems.text = "${newOrderCart.quantityTotal} items"
-                binding.cardViewOrderCart.textViewTotalPrice.text = String.format(Locale.getDefault(), "€%.2f", newOrderCart.totalPrice)
+                updateCartValues()
             }
 
         })
+    }
+
+    private fun updateCartValues() {
+        if (newOrderCart.quantityTotal == 1) {
+            binding.cardViewOrderCart.textViewNumberItems.text = "${newOrderCart.quantityTotal} item"
+        } else {
+            binding.cardViewOrderCart.textViewNumberItems.text = "${newOrderCart.quantityTotal} items"
+        }
+        binding.cardViewOrderCart.textViewTotalPrice.text = String.format(Locale.getDefault(), "€%.2f", newOrderCart.totalPrice)
     }
 
     /**
@@ -106,6 +114,16 @@ class FragmentOrder : Fragment() {
                         startActivity(intent)
                     } else {
                         Toast.makeText(context, "No items in cart", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onClearCartClick() {
+                    if (newOrderCart.orderCart.isEmpty()) {
+                        Toast.makeText(context, "Cart is already empty", Toast.LENGTH_SHORT).show()
+                    } else {
+                        newOrderCart.emptyOrderCart()
+                        updateCartValues()
+                        Toast.makeText(context, "Cart emptied", Toast.LENGTH_SHORT).show()
                     }
                 }
 

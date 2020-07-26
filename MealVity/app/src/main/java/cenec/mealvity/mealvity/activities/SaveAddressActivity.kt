@@ -1,20 +1,19 @@
 package cenec.mealvity.mealvity.activities
 
+
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.*
-import androidx.appcompat.widget.Toolbar
-import androidx.cardview.widget.CardView
 import cenec.darash.mealvity.R
 import cenec.darash.mealvity.databinding.ActivitySaveAddressBinding
 import cenec.mealvity.mealvity.classes.constants.BundleKeys
 import cenec.mealvity.mealvity.classes.constants.Database
 import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.Address
-import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -142,5 +141,12 @@ class SaveAddressActivity : AppCompatActivity() {
                     Log.d("errorAddressSave", task.exception!!.message!!, task.exception)
                 }
             }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            android.R.id.home -> finish()
+        }
+        return true
     }
 }

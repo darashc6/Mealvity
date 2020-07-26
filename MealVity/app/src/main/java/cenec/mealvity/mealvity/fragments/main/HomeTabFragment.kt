@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cenec.darash.mealvity.R
@@ -29,12 +30,43 @@ import kotlin.collections.ArrayList
  */
 class HomeTabFragment : Fragment() {
     private var _binding: FragmentHomeTabBinding? = null // View binding of the fragment
-    private val binding = _binding!! // Non-nullable version of the binding variable above
+    private val binding get() = _binding!! // Non-nullable version of the binding variable above
     private lateinit var categoryList: ArrayList<Cuisine> // List of categories
     private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() } // User currently logged in
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        _binding = FragmentHomeTabBinding.inflate(inflater, container, false)
+
+        setupViews()
+        setupCategoryList()
+        setupRecyclerView()
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        StreetSingleton.setStreetSingletonListener(object : StreetSingleton.StreetSingletonListener{
+            override fun onStreetSelectedListener(streetSelected: String) {
+                binding.editTextAddress.setText(streetSelected)
+            }
+
+        })
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
+    }
+
+    /**
+     * Sets up the the views in the fragment
+     */
+    private fun setupViews() {
         binding.textViewUser.text = "Hi, ${userLoggedIn.fullName}!"
 
         binding.editTextAddress.background = null
@@ -57,29 +89,6 @@ class HomeTabFragment : Fragment() {
                 startActivity(intentGetBusinessListings)
             }
         }
-
-        setupCategoryList()
-        setupRecyclerView()
-
-        StreetSingleton.setStreetSingletonListener(object : StreetSingleton.StreetSingletonListener{
-            override fun onStreetSelectedListener(streetSelected: String) {
-                binding.editTextAddress.setText(streetSelected)
-            }
-
-        })
-
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        return binding.root
-    }
-
-    override fun onDestroyView() {
-        _binding = null
-        super.onDestroyView()
     }
 
     /**
@@ -116,10 +125,15 @@ class HomeTabFragment : Fragment() {
                 }
                 val address = binding.editTextAddress.text.toString()
 
-                val intentGetBusinessListing = Intent(context, ShowRestaurantListingActivity::class.java)
-                intentGetBusinessListing.putExtra(BundleKeys.RESTAURANT_CATEGORY, category)
-                intentGetBusinessListing.putExtra(BundleKeys.ADDRESS_SEARCH, address)
-                startActivity(intentGetBusinessListing)
+                if (address.isEmpty()) {
+                    binding.editTextAddress.error = getString(R.string.text_field_empty)
+                    binding.editTextAddress.requestFocus()
+                } else {
+                    val intentGetBusinessListing = Intent(context, ShowRestaurantListingActivity::class.java)
+                    intentGetBusinessListing.putExtra(BundleKeys.RESTAURANT_CATEGORY, category)
+                    intentGetBusinessListing.putExtra(BundleKeys.ADDRESS_SEARCH, address)
+                    startActivity(intentGetBusinessListing)
+                }
             }
 
         })

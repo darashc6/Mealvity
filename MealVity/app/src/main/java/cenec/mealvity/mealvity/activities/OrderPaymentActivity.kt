@@ -262,7 +262,6 @@ class OrderPaymentActivity : AppCompatActivity() {
             when (paymentOption) {
                 0, 1 -> { // If payment is made using cash or credit card
                     createNewOrder()
-                    addOrderToRestaurantDatabase()
                 }
                 2 -> { // If payment is made using Paypal
                     startPaypalActivity()
@@ -325,6 +324,7 @@ class OrderPaymentActivity : AppCompatActivity() {
 
                     currentUser.addOrder(currentOrder)
                 }
+                addOrderToRestaurantDatabase()
             }
         }
     }
@@ -422,7 +422,6 @@ class OrderPaymentActivity : AppCompatActivity() {
                 val confirm = data?.getParcelableExtra<PaymentConfirmation>(PaymentActivity.EXTRA_RESULT_CONFIRMATION)
                 if (confirm != null) {
                     createNewOrder()
-                    addOrderToRestaurantDatabase()
                 } else {
                     Toast.makeText(this, "Error", Toast.LENGTH_LONG).show()
                 }

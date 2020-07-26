@@ -178,7 +178,10 @@
                     android:layout_marginEnd="20dp"
                     android:gravity="top"
                     android:hint="@string/text_hint_reason"
+                    android:theme="@style/color_control_black"
                     android:textColor="@color/black"
+                    android:textColorHint="@color/black"
+                    android:backgroundTint="@color/black"
                     android:textSize="18sp"
                     android:lines="10"/>
 

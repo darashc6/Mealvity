@@ -36,7 +36,12 @@ class LoadingActivity : AppCompatActivity() {
         mFirebaseFirestore.collection(Database.FIRESTORE_KEY_DATABASE_USERS).document(mFirebaseAuth.currentUser!!.uid).get()
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
-                    userLoggedIn=task.result!!.toObject(User::class.java)
+                    if (task.result!!.exists()) {
+                        userLoggedIn=task.result!!.toObject(User::class.java)
+                        UserSingleton.getInstance().setCurrentUser(userLoggedIn!!)
+                    } else {
+                        Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
+                    }
                 } else {
                     Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show()
                 }

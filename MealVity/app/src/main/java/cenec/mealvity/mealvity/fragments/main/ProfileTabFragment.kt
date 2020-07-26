@@ -9,14 +9,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.lifecycle.Observer
 import cenec.darash.mealvity.R
-import cenec.darash.mealvity.databinding.FragmentProfileTabBinding
-import cenec.darash.mealvity.databinding.FragmentProfileTabGoogleBinding
 import cenec.mealvity.mealvity.activities.*
 import cenec.mealvity.mealvity.classes.singleton.UserSingleton
 import cenec.mealvity.mealvity.classes.user.User
-import cenec.mealvity.mealvity.classes.viewmodels.UserViewModel
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 
@@ -35,13 +31,11 @@ class ProfileTabFragment : Fragment() {
     private lateinit var cvNotifications: CardView // Button for showing the notification preferences
     private lateinit var cvHelp: CardView // Button for showing an app guide for the user
     private val userLoggedIn by lazy { UserSingleton.getInstance().getCurrentUser() } // Instance of the user currently logged in
-    private lateinit var userViewModel: UserViewModel // ViewModel of the User class
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val isUserAccountGoogle=mFirebaseAuth.currentUser!!.
             getIdToken(false).result!!.signInProvider.equals("google.com", true)
-        userViewModel=(activity as FragmentContainerActivity).getUserViewModel()
         // the layout of the fragment will depend on whether the user has logged in via Google or E-Mail/Password
         fragmentView = if (!isUserAccountGoogle) {
             LayoutInflater.from(context).inflate(R.layout.fragment_profile_tab, null)
@@ -82,7 +76,7 @@ class ProfileTabFragment : Fragment() {
         }
 
         cvNotifications.setOnClickListener {
-            newActivity(ReservationsActivity::class.java)
+            newActivity(UserReservationsActivity::class.java)
         }
 
         cvHelp.setOnClickListener {
@@ -99,12 +93,10 @@ class ProfileTabFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        userViewModel.getUserLiveData().observe(viewLifecycleOwner, object : Observer<User>{
-            override fun onChanged(updatedUser: User?) {
-                updatedUser?.let {
-                    tvProfileName.text = it.fullName
-                    tvProfileEmail.text = it.email
-                }
+        UserSingleton.getInstance().setUserModelListener(object : UserSingleton.UserSingletonListener{
+            override fun onUserUpdate(updatedUser: User) {
+                tvProfileName.text = updatedUser.fullName
+                tvProfileEmail.text = updatedUser.email
             }
 
         })

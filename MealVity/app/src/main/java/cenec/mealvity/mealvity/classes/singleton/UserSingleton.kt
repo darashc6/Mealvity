@@ -30,9 +30,7 @@ class UserSingleton {
      */
     fun setCurrentUser(updatedUser: User) {
         currentUser = updatedUser
-        if (mUserListener != null) {
-            mUserListener!!.onUserUpdate(currentUser!!)
-        }
+        mUserListener?.onUserUpdate(updatedUser)
     }
 
     /**

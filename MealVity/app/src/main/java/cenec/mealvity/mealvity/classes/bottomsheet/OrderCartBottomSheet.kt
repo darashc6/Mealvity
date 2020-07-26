@@ -23,7 +23,7 @@ import java.util.*
 class OrderCartBottomSheet(private var appContext: Context, private var orderCart: OrderCart): BottomSheetDialogFragment() {
     private var _binding: BottomSheetOrderCartBinding? = null // View binding of the bottom sheet
     private val binding get() = _binding!! // Non-nullable version of the binding variable above
-    private lateinit var bsListener: OrderCartBottomSheetListener // Listener for the bottom sheet
+    private var bsListener: OrderCartBottomSheetListener? = null // Listener for the bottom sheet
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -70,7 +70,12 @@ class OrderCartBottomSheet(private var appContext: Context, private var orderCar
         }
 
         binding.buttonConfirmOrder.setOnClickListener {
-            bsListener.onConfirmOrderClick()
+            bsListener?.onConfirmOrderClick()
+            dismiss()
+        }
+
+        binding.buttonClearCart.setOnClickListener {
+            bsListener?.onClearCartClick()
             dismiss()
         }
     }
@@ -102,5 +107,10 @@ class OrderCartBottomSheet(private var appContext: Context, private var orderCar
          * Triggered when the user clicks the 'Confirm Order' button
          */
         fun onConfirmOrderClick()
+
+        /**
+         * Triggered when the user clicks the 'Clear Cart' button
+         */
+        fun onClearCartClick()
     }
 }

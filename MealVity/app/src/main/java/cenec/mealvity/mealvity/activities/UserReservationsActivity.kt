@@ -7,27 +7,24 @@ import android.view.MenuItem
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import cenec.darash.mealvity.R
-import cenec.darash.mealvity.databinding.ActivityReservationsBinding
+import cenec.darash.mealvity.databinding.ActivityReservationsUserBinding
 import cenec.mealvity.mealvity.classes.adapters.ReservationListRecyclerViewAdapter
 import cenec.mealvity.mealvity.classes.constants.Database
-import cenec.mealvity.mealvity.classes.reservations.Reservation
 import cenec.mealvity.mealvity.classes.singleton.UserSingleton
-import cenec.mealvity.mealvity.classes.user.Order
 import cenec.mealvity.mealvity.classes.user.User
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlin.collections.ArrayList
 
 /**
  * Activity showing all the reservations the logged in user has made
  */
-class ReservationsActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityReservationsBinding // View binding of the activity
+class UserReservationsActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityReservationsUserBinding // View binding of the activity
     private var rvAdapter: ReservationListRecyclerViewAdapter? = null // Adapter for the RecyclerView containing a list of reservations
     private val currentUser by lazy { UserSingleton.getInstance().getCurrentUser()} // User currently logged in
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityReservationsBinding.inflate(layoutInflater)
+        binding = ActivityReservationsUserBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupToolbar()

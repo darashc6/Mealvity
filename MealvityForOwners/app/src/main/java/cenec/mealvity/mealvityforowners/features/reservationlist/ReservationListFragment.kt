@@ -64,7 +64,7 @@ class ReservationListFragment : Fragment(), FragmentContainerActivity.FragmentCo
                 reason: String
             ) {
                 if (updatedStatus == Reservation.ReservationStatus.REJECTED) {
-                    dbRestaurant.reservations[position].rejectionReason = reason
+                    dbRestaurant.reservations[dbRestaurant.reservations.size-1-position].rejectionReason = reason
                 }
                 dbRestaurant.reservations[dbRestaurant.reservations.size-1-position].reservationStatus = updatedStatus
                 auxReservation = dbRestaurant.reservations[dbRestaurant.reservations.size-1-position]

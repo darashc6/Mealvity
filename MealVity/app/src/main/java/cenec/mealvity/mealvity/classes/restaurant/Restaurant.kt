@@ -2,6 +2,7 @@ package cenec.mealvity.mealvity.classes.restaurant
 
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 /**
  * Class containing all the Restaurant info
@@ -62,7 +63,7 @@ data class Restaurant(
  */
 data class Categories(
     var title: String
-)
+): Serializable
 
 /**
  * Class containing the restaurant address
@@ -71,4 +72,4 @@ data class Categories(
 data class Location(
     @SerializedName("address1")
     var address: String
-)
+): Serializable

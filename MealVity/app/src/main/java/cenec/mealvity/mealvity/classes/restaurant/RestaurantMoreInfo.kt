@@ -64,7 +64,7 @@ data class RestaurantMoreInfo(
 data class Coordinates(
     var latitude: String,
     var longitude: String
-)
+): Serializable
 
 /**
  * Class acting as a restaurant address
@@ -72,7 +72,7 @@ data class Coordinates(
  */
 data class DisplayAddress(
     var display_address: List<String>
-)
+): Serializable
 
 /**
  * Class acting as opening hours
@@ -80,7 +80,7 @@ data class DisplayAddress(
  */
 data class Hour(
     var open: List<Open>
-)
+): Serializable
 
 /**
  * Class acting as a timing
@@ -92,7 +92,7 @@ data class Open(
     var day: Int,
     var start: String,
     var end: String
-) {
+): Serializable {
 
     /**
      * Returns a string depending on the integer value of day

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -33,8 +33,10 @@
                 android:layout_margin="10dp"
                 android:layout_below="@id/image_view_restaurant"
                 android:textAlignment="center"
-                android:textSize="35sp"
-                android:text="Restaurant name"
+                android:textSize="30sp"
+                android:maxLines="2"
+                android:ellipsize="end"
+                tools:text="Restaurant name"
                 android:fontFamily="@font/fonarto_bold"
                 android:textColor="@android:color/black"
                 />
@@ -47,7 +49,7 @@
                 android:layout_below="@id/restaurant_name"
                 android:gravity="center"
                 android:textSize="20sp"
-                android:text="Categories"
+                tools:text="Categories"
                 android:fontFamily="@font/fonarto_regular"
                 android:textColor="@android:color/black"/>
 
@@ -58,7 +60,7 @@
                 android:layout_below="@id/restaurant_category"
                 android:gravity="center"
                 android:textSize="20sp"
-                android:text="Price range"
+                tools:text="Price range"
                 android:fontFamily="@font/fonarto_regular"
                 android:textColor="@android:color/black"/>
 
@@ -70,7 +72,7 @@
                 android:layout_below="@id/restaurant_price_range"
                 android:gravity="center"
                 android:textSize="20sp"
-                android:text="Address"
+                tools:text="Address"
                 android:fontFamily="@font/fonarto_regular"
                 android:textColor="@android:color/black"/>
 
@@ -81,7 +83,7 @@
                 android:layout_below="@id/restaurant_address"
                 android:gravity="center"
                 android:textSize="20sp"
-                android:text="Phone"
+                tools:text="Phone"
                 android:fontFamily="@font/fonarto_regular"
                 android:textColor="@android:color/black"/>
 
@@ -94,7 +96,7 @@
                 android:layout_marginBottom="10dp"
                 android:gravity="center"
                 android:textSize="22sp"
-                android:text="Distance"
+                tools:text="Distance"
                 android:fontFamily="@font/fonarto_regular"
                 android:textColor="@android:color/black"/>
 
@@ -129,7 +131,7 @@
                 android:padding="10dp"
                 android:gravity="center"
                 android:textSize="35sp"
-                android:text="+ More"
+                android:text="@string/text_more_Info"
                 android:fontFamily="@font/fonarto_regular"
                 android:textColor="@android:color/black"
                 />

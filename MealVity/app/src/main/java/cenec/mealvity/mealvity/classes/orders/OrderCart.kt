@@ -74,6 +74,15 @@ class OrderCart(
         return totalPrice - getBasePrice()
     }
 
+    /**
+     * Empties the order cart, resetting to it's initial values
+     */
+    fun emptyOrderCart() {
+        orderCart.clear()
+        quantityTotal = 0
+        totalPrice = 0f
+    }
+
 }
 
 /**
