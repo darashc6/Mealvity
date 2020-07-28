@@ -9,46 +9,51 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="cenec.mealvity.mealvity.activities.OrderInfoActivity"></activity>
-        <activity android:name="cenec.mealvity.mealvity.activities.OrderPaymentActivity" />
-        <activity android:name="cenec.mealvity.mealvity.activities.InfoActivity" />
+        <activity android:name="cenec.mealvity.mealvity.activities.OrderInfoActivity" android:screenOrientation="portrait"/>
+        <activity android:name="cenec.mealvity.mealvity.activities.OrderPaymentActivity" android:screenOrientation="portrait"/>
+        <activity android:name="cenec.mealvity.mealvity.activities.InfoActivity" android:screenOrientation="portrait"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDSbqgaeP6AA_XBb7VGazxKhepTOR6IQ68" />
 
-        <activity android:name="cenec.mealvity.mealvity.activities.RestaurantMoreInfoActivity" />
-        <activity android:name="cenec.mealvity.mealvity.activities.AutocompleteStreetActivity" />
-        <activity android:name="cenec.mealvity.mealvity.activities.ShowRestaurantListingActivity" />
-        <activity android:name="cenec.mealvity.mealvity.activities.SaveAddressActivity" />
+        <activity android:name="cenec.mealvity.mealvity.activities.RestaurantMoreInfoActivity" android:screenOrientation="portrait"/>
+        <activity android:name="cenec.mealvity.mealvity.activities.AutocompleteStreetActivity" android:screenOrientation="portrait"/>
+        <activity android:name="cenec.mealvity.mealvity.activities.ShowRestaurantListingActivity" android:screenOrientation="portrait"/>
+        <activity android:name="cenec.mealvity.mealvity.activities.SaveAddressActivity" android:screenOrientation="portrait"/>
         <activity
             android:name="cenec.mealvity.mealvity.activities.HelpActivity"
-            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
+            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="cenec.mealvity.mealvity.activities.UserReservationsActivity"
-            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
+            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="cenec.mealvity.mealvity.activities.UserAddressesActivity"
-            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
+            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="cenec.mealvity.mealvity.activities.ChangePasswordActivity"
-            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
+            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity"
+            android:screenOrientation="portrait"/>
         <activity
             android:name="cenec.mealvity.mealvity.activities.EditProfileActivity"
-            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
-        <activity android:name="cenec.mealvity.mealvity.activities.FragmentContainerActivity" />
-        <activity android:name="cenec.mealvity.mealvity.activities.LoadingActivity" />
-        <activity android:name="cenec.mealvity.mealvity.activities.ResetPasswordActivity" />
-        <activity android:name="cenec.mealvity.mealvity.activities.SplashScreenActivity">
+            android:parentActivityName="cenec.mealvity.mealvity.activities.FragmentContainerActivity"
+            android:screenOrientation="portrait"/>
+        <activity android:name="cenec.mealvity.mealvity.activities.FragmentContainerActivity" android:screenOrientation="portrait"/>
+        <activity android:name="cenec.mealvity.mealvity.activities.LoadingActivity" android:screenOrientation="portrait"/>
+        <activity android:name="cenec.mealvity.mealvity.activities.ResetPasswordActivity" android:screenOrientation="portrait"/>
+        <activity android:name="cenec.mealvity.mealvity.activities.SplashScreenActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="cenec.mealvity.mealvity.activities.SignUpActivity" />
-        <activity android:name="cenec.mealvity.mealvity.activities.SignInActivity" />
-        <activity android:name="cenec.mealvity.mealvity.activities.MainActivity" />
+        <activity android:name="cenec.mealvity.mealvity.activities.SignUpActivity" android:screenOrientation="portrait"/>
+        <activity android:name="cenec.mealvity.mealvity.activities.SignInActivity" android:screenOrientation="portrait"/>
+        <activity android:name="cenec.mealvity.mealvity.activities.MainActivity" android:screenOrientation="portrait"/>
     </application>
 
 </manifest>

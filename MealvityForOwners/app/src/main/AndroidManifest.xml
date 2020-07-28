@@ -9,10 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".OrderInfoActivity"></activity>
-        <activity android:name=".FragmentContainerActivity" />
-        <activity android:name=".LoadingActivity" />
-        <activity android:name=".MainActivity">
+        <activity android:name=".OrderInfoActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".FragmentContainerActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".LoadingActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".MainActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
